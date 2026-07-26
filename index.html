@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stuwie's Salon & Spa | No Place You'd Rather Be</title>
+  <meta name="description" content="Stuwie's Salon & Spa in Wilsen Hotel Building, Nansana-Masitowa. Salon, spa, barbering, nails, waxing, facials, massage, packages and bookings." />
+  <style>
+    :root {
+      --blue: #0064b4;
+      --blue-bright: #009fe3;
+      --warm: #d9a15f;
+      --warm-soft: #fff3df;
+      --grey: #8c8c8c;
+      --grey-light: #dcdcdc;
+      --black: #000000;
+      --ink: #141414;
+      --muted: #5f6670;
+      --paper: #ffffff;
+      --wash: #f5f9fc;
+      --line: rgba(0, 100, 180, 0.18);
+      --shadow: 0 18px 44px rgba(0, 34, 67, 0.13);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: background 0.4s ease, border-bottom 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+    }
+    .site-header.scrolled {
+      background: rgba(0, 13, 28, 0.9);
+      border-bottom: 1px solid rgba(0, 159, 227, 0.22);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(16px);
+    }
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      color: white;
+      transition: transform 0.25s ease, color 0.25s ease;
+    }
+    .brand-mark:hover { transform: translateY(-1px); color: var(--blue); }
+    .brand-mark span {
+      color: var(--blue);
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.82);
+      font-weight: 650;
+      position: relative;
+      padding: 6px 0;
+    }
+    .nav-links a:hover { color: white; }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: var(--blue-bright);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .btn {
+      border: 0;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      text-decoration: none;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: #004f90; }
+    .btn-dark { background: var(--black); color: white; }
+    .btn-light { background: white; color: var(--blue); border: 1px solid var(--line); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 34, 67, 0.16); }
+
+    .hero {
+      min-height: calc(100vh - 69px);
+      display: grid;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      background: #101820;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 78% 28%, rgba(217,161,95,0.22), transparent 26%),
+        linear-gradient(90deg, rgba(0,0,0,0.86), rgba(0,0,0,0.48) 47%, rgba(0,0,0,0.18)),
+        url("assets/images/hero2.png") center/cover;
+      animation: heroDrift 14s ease-in-out infinite alternate;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -7vw;
+      top: 9vh;
+      width: min(42vw, 520px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(255,255,255,0.18);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      background: linear-gradient(135deg, rgba(0,159,227,0.12), rgba(217,161,95,0.08));
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 112px 0 76px;
+      display: grid;
+      grid-template-columns: minmax(0, 680px) minmax(190px, 240px);
+      align-items: center;
+      gap: 72px;
+    }
+    .logo-panel {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius);
+      padding: 10px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+      max-width: 230px;
+      justify-self: end;
+      border: 1px solid rgba(255,255,255,0.55);
+      opacity: 0.95;
+      animation: floatIn 0.85s ease 0.28s both;
+    }
+    .logo-panel img {
+      width: 100%;
+      height: 185px;
+      display: block;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+    .eyebrow {
+      color: var(--blue-bright);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 12px;
+      font-family: "Segoe Script", "Brush Script MT", "Lucida Handwriting", cursive;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 20px;
+    }
+    h1 {
+      font-size: clamp(46px, 8vw, 92px);
+      line-height: 0.94;
+      margin: 0;
+      letter-spacing: 0;
+      animation: fadeUp 0.8s ease 0.08s both;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .hero-copy {
+      max-width: 520px;
+      color: rgba(255,255,255,0.9);
+      font-size: clamp(17px, 1.8vw, 20px);
+      margin: 18px 0 26px;
+      animation: fadeUp 0.8s ease 0.18s both;
+    }
+    .hero-kicker {
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+      animation: fadeUp 0.8s ease 0.24s both;
+    }
+    .hero-kicker li {
+      border: 1px solid rgba(255,255,255,0.24);
+      background: rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.92);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 850;
+      backdrop-filter: blur(10px);
+    }
+    .hero-actions, .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+    .hero-strip {
+      position: relative;
+      background: rgba(0, 13, 28, 0.9);
+      color: white;
+      padding: 10px 20px;
+      font-weight: 850;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      font-family: "Segoe Script", "Brush Script MT", cursive;
+      font-size: 18px;
+    }
+
+    section {
+      padding: 78px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    #services::before, #team::before, #contact::before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 165px;
+      right: max(18px, calc((100vw - 1180px) / 2));
+      top: 32px;
+      background: linear-gradient(135deg, rgba(0,100,180,0.11), rgba(217,161,95,0.13));
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      pointer-events: none;
+    }
+    .section-inner { max-width: 1180px; margin: 0 auto; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(31px, 4.2vw, 52px);
+      line-height: 1;
+    }
+    .section-head p { max-width: 520px; color: var(--muted); margin: 0; }
+    .trust-grid, .service-grid, .team-grid, .gallery-grid, .package-grid {
+      display: grid;
+      gap: 16px;
+    }
+    #trust {
+      padding: 72px 20px 58px;
+      margin-top: 0;
+      z-index: 2;
+    }
+    .trust-grid {
+      grid-template-columns: repeat(5, 1fr);
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .trust-card, .service-card, .member-card, .package-card, .contact-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      overflow: hidden;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    }
+    .trust-card:hover, .service-card:hover, .member-card:hover, .package-card:hover, .contact-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0, 100, 180, 0.34);
+    }
+    .trust-card {
+      padding: 20px;
+      min-height: 150px;
+      border: 0;
+      border-right: 1px solid var(--line);
+    }
+    .trust-card:last-child { border-right: 0; }
+    .trust-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #e9f5ff, var(--warm-soft));
+      color: var(--blue);
+      font-weight: 950;
+      margin-bottom: 12px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      font-size: 0;
+    }
+    .trust-icon::before {
+      font-size: 18px;
+      line-height: 1;
+      transform: translateY(7px);
+    }
+    .trust-card:nth-child(1) .trust-icon::before { content: "✦"; }
+    .trust-card:nth-child(2) .trust-icon::before { content: "◆"; }
+    .trust-card:nth-child(3) .trust-icon::before { content: "◌"; }
+    .trust-card:nth-child(4) .trust-icon::before { content: "✓"; }
+    .trust-card:nth-child(5) .trust-icon::before { content: "◇"; }
+    .trust-card h3, .service-card h3, .member-card h3, .package-card h3 { margin: 0 0 8px; }
+    .trust-card p, .member-card p, .package-card p { margin: 0; color: var(--muted); }
+
+    #services, #gallery { background: var(--wash); }
+    .service-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      overflow: visible;
+      padding-bottom: 0;
+      margin-bottom: 18px;
+    }
+    .service-tab {
+      white-space: normal;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+      min-height: 44px;
+      text-align: center;
+    }
+    .service-tab:hover { transform: translateY(-2px); }
+    .service-tab.active { background: var(--black); color: white; border-color: var(--black); }
+    .service-panel { display: none; }
+    .service-panel.active { display: block; animation: fadeUp 0.35s ease both; }
+    .service-grid { grid-template-columns: repeat(3, 1fr); }
+    .service-card img {
+      height: 230px;
+      width: 100%;
+      object-fit: cover;
+      transition: transform 0.55s ease, filter 0.55s ease;
+    }
+    .service-card:hover img { transform: scale(1.06); filter: saturate(1.08) contrast(1.03); }
+    .service-body { padding: 20px; }
+    .book-card-btn {
+      width: 100%;
+      margin-top: 16px;
+      min-height: 40px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    .price-list li {
+      align-items: center;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+    }
+    .item-add {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 5px 9px;
+      min-height: 28px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      justify-self: end;
+      align-self: center;
+    }
+    .item-add:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+    .booking-cart {
+      position: sticky;
+      bottom: 0;
+      z-index: 12;
+      margin-top: 24px;
+      background: rgba(0, 13, 28, 0.94);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.22);
+      padding: 16px;
+      display: none;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(14px);
+    }
+    .booking-cart.visible { display: flex; }
+    .cart-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .cart-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+    .cart-chip button {
+      border: 0;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 900;
+      padding: 0 2px;
+    }
+    .cart-meta { color: rgba(255,255,255,0.72); font-size: 13px; }
+    .selected-services {
+      grid-column: 1 / -1;
+      border: 1px solid var(--line);
+      background: var(--wash);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: none;
+    }
+    .selected-services.visible { display: block; }
+    .selected-services ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+    .subcategory-panel {
+      grid-column: 1 / -1;
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: #fff;
+    }
+    .subcategory-panel.visible { display: block; }
+    .subcategory-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .subcategory-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 9px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .subcategory-option input { width: auto; min-height: auto; }
+    .cart-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 60;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      background: var(--black);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      padding: 11px 16px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.28);
+      font-weight: 850;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .cart-toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .price-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }
+    .price-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      gap: 12px;
+      padding-bottom: 9px;
+      border-bottom: 1px dashed rgba(0,100,180,0.22);
+    }
+    .price-list span { color: var(--muted); font-size: 13px; }
+    .price-list strong { color: var(--blue); white-space: nowrap; }
+    .package-price { color: var(--warm); }
+
+    .packages {
+      background:
+        radial-gradient(circle at 12% 20%, rgba(0,159,227,0.18), transparent 24%),
+        radial-gradient(circle at 82% 8%, rgba(217,161,95,0.16), transparent 25%),
+        #07090c;
+      color: white;
+    }
+    .packages .section-head p { color: rgba(255,255,255,0.72); }
+    .package-grid {
+      grid-template-columns: 1.35fr 1fr 1fr;
+      align-items: stretch;
+    }
+    .package-card {
+      background: #10151b;
+      border-color: rgba(255,255,255,0.12);
+      color: white;
+    }
+    .package-card.featured-package {
+      grid-row: span 2;
+      min-height: 100%;
+    }
+    .package-card.featured-package img { height: 410px; }
+    .package-card img { height: 190px; width: 100%; object-fit: cover; }
+    .package-body { padding: 18px; }
+    .package-card p { color: rgba(255,255,255,0.76); }
+    .package-price { color: var(--warm); font-size: 23px; font-weight: 950; margin-top: 12px; }
+
+    .team-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .team-photo {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .team-photo img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; }
+    .team-grid { grid-template-columns: repeat(2, 1fr); }
+    .member-card img {
+      height: 250px;
+      width: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.55s ease;
+    }
+    .member-card:hover img { transform: scale(1.05); }
+    .member-card div { padding: 16px; }
+    .role { color: var(--blue); font-weight: 850; }
+
+    .gallery-grid { grid-template-columns: repeat(4, 1fr); }
+    .gallery-item {
+      position: relative;
+      min-height: 230px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #111;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      object-fit: cover;
+      transition: transform 0.65s ease, filter 0.65s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.08); filter: saturate(1.1); }
+    .gallery-item span {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      right: 12px;
+      color: white;
+      font-weight: 900;
+      padding: 10px;
+      background: rgba(0,0,0,0.58);
+      border-radius: var(--radius);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .contact-card { padding: 22px; }
+    .contact-list { display: grid; gap: 12px; margin: 20px 0; }
+    .contact-list p { margin: 0; }
+    .map-frame {
+      border: 0;
+      width: 100%;
+      min-height: 430px;
+      border-radius: var(--radius);
+      filter: saturate(0.95);
+    }
+
+    .booking-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.62);
+      z-index: 40;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .booking-modal.open { display: grid; opacity: 1; }
+    .booking-panel {
+      width: min(720px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.32);
+      animation: modalRise 0.32s ease both;
+    }
+    .confirmation-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.54);
+    }
+    .confirmation-modal.open { display: grid; }
+    .confirmation-panel {
+      width: min(460px, 100%);
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+      animation: modalRise 0.32s ease both;
+    }
+    .confirmation-head {
+      background: var(--blue);
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+    }
+    .confirmation-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .confirmation-body {
+      padding: 20px;
+    }
+    .confirmation-body p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    .confirmation-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .booking-head {
+      background: var(--blue);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .booking-head h2 { margin: 0; }
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .booking-form {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .field.full { grid-column: 1 / -1; }
+    label { display: block; font-weight: 850; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 44px;
+      background: white;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid rgba(217, 161, 95, 0.72);
+      outline-offset: 3px;
+    }
+    textarea { resize: vertical; }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .form-note {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: grid;
+      gap: 10px;
+      justify-items: end;
+    }
+    .fab-options {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .fab.open .fab-options { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .fab a, .fab button {
+      box-shadow: var(--shadow);
+    }
+
+    footer {
+      background: var(--black);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    footer p { margin: 6px 0; color: rgba(255,255,255,0.76); }
+
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .hero-inner, .team-layout, .contact-layout { grid-template-columns: 1fr; }
+      .logo-panel { justify-self: start; max-width: 210px; }
+      .trust-grid { grid-template-columns: repeat(2, 1fr); }
+      .service-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .service-grid, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .package-grid { grid-template-columns: 1fr 1fr; }
+      .package-card.featured-package { grid-column: 1 / -1; grid-row: auto; }
+      .package-card.featured-package img { height: 300px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+      .trust-card { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 640px) {
+      section { padding: 56px 16px; }
+      .hero-inner { width: calc(100% - 32px); padding: 92px 0 52px; gap: 32px; }
+      .logo-panel { max-width: 170px; }
+      .logo-panel img { height: 135px; }
+      .trust-grid, .service-grid, .package-grid, .team-grid, .gallery-grid, .booking-form, .form-actions { grid-template-columns: 1fr; }
+      .field.full, .form-actions, .form-note { grid-column: auto; }
+      .gallery-item { min-height: 210px; }
+      .service-tabs { grid-template-columns: 1fr 1fr; }
+      .service-tab { padding: 9px 10px; font-size: 13px; }
+      #trust { margin-top: 0; padding-top: 20px; }
+      .package-card.featured-package img { height: 240px; }
+      .price-list li {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 6px 10px;
+      }
+      .price-list li span,
+      .price-list li strong {
+        grid-row: 2;
+      }
+      .price-list li span { grid-column: 1; }
+      .price-list li strong { grid-column: 2; justify-self: end; }
+      .price-list li .item-add {
+        grid-column: 2;
+        grid-row: 1;
+      }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes heroDrift {
+      from { transform: scale(1); }
+      to { transform: scale(1.07) translateX(-1.4%); }
+    }
+    @keyframes shimmerBar {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes modalRise {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand-mark" href="#top">Stuwie's <span>Salon & Spa</span></a>
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#packages">Packages</a>
+        <a href="#team">Team</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button class="btn btn-primary open-booking" type="button">Book Now</button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Stuwie's Salon and Spa">
+      <div class="hero-inner">
+        <div>
+          <p class="eyebrow">Nansana-Masitowa, Kampala</p>
+          <h1>Stuwie's Salon & Spa</h1>
+          <p class="hero-copy">No Place You'd Rather Be. Professional salon, spa, barbering and beauty care for looking good, feeling great and living beautifully.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary open-booking" type="button">Book an Appointment</button>
+            <a class="btn btn-light" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer">WhatsApp Us</a>
+          </div>
+        </div>
+        <div class="logo-panel" aria-label="Stuwie's logo">
+          <img src="assets/Stuwie LogoClare_page-0001.jpg" alt="Stuwie's Salon & Spa logo" />
+        </div>
+      </div>
+      <div class="hero-strip">Feel Good. Look Great. Be Your Best.</div>
+    </section>
+
+    <section id="trust">
+      <div class="section-inner">
+        <div class="trust-grid">
+          <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Professional Care</h3><p>Experienced therapists and stylists dedicated to you.</p></article>
+          <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Quality Products</h3><p>Premium, skin and hair friendly products.</p></article>
+          <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Relaxing Experience</h3><p>A calm, clean and comfortable salon environment.</p></article>
+          <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Hygiene & Safety</h3><p>Your health and safety stay our top priority.</p></article>
+          <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Value for Money</h3><p>Full-service care at approachable prices.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Service Menu</p><h2>Care for every visit</h2></div>
+          <p>Prices are pulled from the supplied July 2026 Stuwie's menu asset and shown in UGX.</p>
+        </div>
+        <div class="service-tabs" role="tablist">
+          <button class="service-tab active" data-panel="face" type="button">Facials & Scrubs</button>
+          <button class="service-tab" data-panel="massage" type="button">Massage</button>
+          <button class="service-tab" data-panel="beauty" type="button">Waxing & Nails</button>
+          <button class="service-tab" data-panel="hair" type="button">Hair & Barbering</button>
+        </div>
+
+        <div class="service-panel active" id="panel-face">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <span>30 mins</span><strong>40,000</strong></li><li>Classic Deep Cleansing <span>60 mins</span><strong>65,000</strong></li><li>Hydrating Facial <span>60 mins</span><strong>75,000</strong></li><li>Gold Facial Luxury <span>90 mins</span><strong>120,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list"><li>Brown Sugar Scrub <span>45 mins</span><strong>65,000</strong></li><li>Coffee Body Scrub <span>60 mins</span><strong>75,000</strong></li><li>Turmeric Glow Scrub <span>60 mins</span><strong>80,000</strong></li><li>Coconut & Vanilla Scrub <span>60 mins</span><strong>95,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Spa combo" /><div class="service-body"><h3>Signature Combos</h3><ul class="price-list"><li>Body Scrub + Swedish Massage <span>90 mins</span><strong>130,000</strong></li><li>Body Scrub + Steam + Massage <span>120 mins</span><strong>160,000</strong></li><li>Couples Body Scrub <span>60 mins each</span><strong>140,000</strong></li></ul></div></article>
+          </div>
+        </div>
+        <div class="service-panel" id="panel-massage">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <span>60 / 90 mins</span><strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Prenatal Massage <span>60 mins</span><strong>80,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/hero.webp" alt="Relaxing spa room" /><div class="service-body"><h3>Targeted Care</h3><ul class="price-list"><li>Back, Neck & Shoulder <span>30 mins</span><strong>45,000</strong></li><li>Foot Reflexology <span>45 mins</span><strong>50,000</strong></li><li>Hot Stone Massage <span>75 mins</span><strong>110,000</strong></li><li>Massage Add-ons <span>Oil / Cupping</span><strong>20,000</strong></li></ul></div></article>
+          </div>
+        </div>
+        <div class="service-panel" id="panel-beauty">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows / Upper Lip <span>from</span><strong>10,000</strong></li><li>Underarms <span></span><strong>15,000</strong></li><li>Bikini Line <span></span><strong>25,000</strong></li><li>Full Legs / Brazilian <span></span><strong>60,000 / 50,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list"><li>Manicure <span></span><strong>30,000</strong></li><li>Pedicure <span></span><strong>40,000</strong></li><li>Deluxe Manicure <span></span><strong>45,000</strong></li><li>Deluxe Pedicure <span></span><strong>60,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/nail-enhancements.png" alt="Nail enhancements" /><div class="service-body"><h3>Nail Enhancements</h3><ul class="price-list"><li>Gel Polish Hands <span></span><strong>40,000</strong></li><li>Gel Polish Feet <span></span><strong>50,000</strong></li><li>Nail Extensions Acrylic <span>From</span><strong>70,000</strong></li><li>Nail Art <span>Per nail</span><strong>2,000+</strong></li></ul></div></article>
+          </div>
+        </div>
+        <div class="service-panel" id="panel-hair">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" /><div class="service-body"><h3>Hair Services (Ladies)</h3><ul class="price-list"><li>Wash & Blow Dry <span></span><strong>25,000</strong></li><li>Wash, Blow Dry & Style <span></span><strong>35,000</strong></li><li>Braids / Weave On <span>From</span><strong>30,000</strong></li><li>Dreadlocks / Faux Locs <span>From</span><strong>80,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" /><div class="service-body"><h3>Barbering (Gents)</h3><ul class="price-list"><li>Hair Cut <span></span><strong>10,000</strong></li><li>Skin Fade <span></span><strong>15,000</strong></li><li>Beard Shaping <span></span><strong>15,000</strong></li><li>Hair Cut + Shave + Beard Trim <span></span><strong>25,000</strong></li></ul></div></article>
+          </div>
+        </div>
+        <div class="booking-cart" id="bookingCart" aria-live="polite">
+          <div>
+            <strong id="cartTitle">Selected services</strong>
+            <div class="cart-meta" id="cartMeta"></div>
+            <div class="cart-items" id="cartItems"></div>
+          </div>
+          <button class="btn btn-primary" id="cartCheckout" type="button">Complete Booking Request</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="packages" id="packages">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Packages</p><h2>High-value bookings</h2></div>
+          <p>Built for celebrations, couples, bridal prep, birthdays and group wellness days.</p>
+        </div>
+        <div class="package-grid">
+          <article class="package-card featured-package reveal"><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" /><div class="package-body"><h3>Royal Glow Experience</h3><p>Scrub + Massage + Facial, 2.5 hours.</p><div class="package-price">180,000</div></div></article>
+          <article class="package-card reveal"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" /><div class="package-body"><h3>Couples Spa Escape</h3><p>Scrub + Massage + Facial, 2.5 hours each.</p><div class="package-price">300,000</div></div></article>
+          <article class="package-card reveal"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" /><div class="package-body"><h3>Bridal Luxury</h3><p>Facial, massage, manicure, pedicure, waxing and hair treatment.</p><div class="package-price">380,000</div></div></article>
+          <article class="package-card reveal"><img src="assets/images/vip-group-package.png" alt="Group package" /><div class="package-body"><h3>VIP & Group</h3><p>Birthday spa party for 4+ people, refreshments included.</p><div class="package-price">From 150,000 pp</div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Meet the Team</p><h2>Friendly specialists</h2></div>
+          <p>Names and roles are clear placeholders so the client can edit them after review.</p>
+        </div>
+        <div class="team-layout">
+          <div class="team-photo reveal"><img src="assets/images/Team.png" alt="Stuwie's Salon and Spa team" /></div>
+          <div class="team-grid">
+            <article class="member-card reveal"><img src="assets/images/Barbra-Hairstylist.png" alt="Barbra hairstylist" /><div><h3>Barbra</h3><p class="role">Hairstylist</p><p>Ladies' hair, styling and treatments.</p></div></article>
+            <article class="member-card reveal"><img src="assets/images/james-Barber.png" alt="James barber" /><div><h3>James</h3><p class="role">Barber</p><p>Gents' cuts, fades and beard care.</p></div></article>
+            <article class="member-card reveal"><img src="assets/images/Brenda-Massage-Therapist.png" alt="Brenda massage therapist" /><div><h3>Brenda</h3><p class="role">Massage Therapist</p><p>Relaxation, deep tissue and prenatal care.</p></div></article>
+            <article class="member-card reveal"><img src="assets/images/Scovia-Nails.png" alt="Scovia nail technician" /><div><h3>Scovia</h3><p class="role">Nail Technician</p><p>Manicures, pedicures and nail enhancements.</p></div></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Gallery</p><h2>Inside the experience</h2></div>
+        </div>
+        <div class="gallery-grid">
+          <div class="gallery-item reveal"><img src="assets/images/Facials.png" alt="Facials" /><span>Facials</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/Massages.png" alt="Massages" /><span>Massage</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" /><span>Nails</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair" /><span>Ladies' Hair</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/Barbering (Gents).png" alt="Barbering" /><span>Barbering</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/waxing.png" alt="Waxing" /><span>Waxing</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/BodyScrab.png" alt="Body scrub" /><span>Body Scrubs</span></div>
+          <div class="gallery-item reveal"><img src="assets/images/hero2.png" alt="Salon interior" /><span>Salon Interior</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Location / Contact / Book</p><h2>Visit Wilsen Hotel Building</h2></div>
+          <p>Walk-ins are welcome. Advance booking is recommended for packages, bridal services and group visits.</p>
+        </div>
+        <div class="contact-layout">
+          <div class="contact-card reveal">
+            <h3>Stuwie's Salon & Spa</h3>
+            <div class="contact-list">
+              <p><strong>Address:</strong> Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala</p>
+              <p><strong>WhatsApp:</strong> <a href="https://wa.me/256706081927" target="_blank" rel="noreferrer">+256 706 081 927</a></p>
+              <p><strong>Email:</strong> Kmantalgosolo@gmail.com</p>
+              <p><strong>Hours:</strong> Daily, 8:00 AM - 8:00 PM <span aria-label="placeholder">(confirm with client)</span></p>
+              <p><strong>Loyalty:</strong> Ask our team about loyalty membership, vouchers and group offers.</p>
+            </div>
+            <div class="contact-actions">
+              <button class="btn btn-primary open-booking" type="button">Open Booking Form</button>
+              <a class="btn btn-dark" href="tel:+256706081927">Call Salon</a>
+            </div>
+          </div>
+          <iframe class="map-frame" title="Map to Wilsen Hotel Building, Nansana-Masitowa" src="https://www.openstreetmap.org/export/embed.html?bbox=32.515%2C0.350%2C32.575%2C0.405&amp;layer=mapnik&amp;marker=0.3775%2C32.5450"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="fab" id="fab">
+    <div class="fab-options">
+      <a class="btn btn-light" href="tel:+256706081927">Call</a>
+      <a class="btn btn-light" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer">WhatsApp</a>
+    </div>
+    <button class="btn btn-primary" id="fabToggle" type="button" aria-expanded="false">Contact</button>
+  </div>
+
+  <div class="booking-modal" id="bookingModal" aria-hidden="true">
+    <div class="booking-panel" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+      <div class="booking-head">
+        <div>
+          <p class="eyebrow" style="color:white;margin-bottom:5px;">Book an Appointment</p>
+          <h2 id="bookingTitle">Choose WhatsApp or email notification</h2>
+        </div>
+        <button class="close-btn" id="modalClose" type="button" aria-label="Close booking form">&times;</button>
+      </div>
+      <form class="booking-form" id="bookingForm">
+        <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
+        <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
+        <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
+        <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
+        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Signature Combos</option><option>Massages</option><option>Targeted Care</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Nail Enhancements</option><option>Hair Services (Ladies)</option><option>Barbering (Gents)</option><option>Royal Glow Experience</option><option>Couples Spa Escape</option><option>Bridal Luxury</option><option>VIP & Group</option><option>Gift Voucher</option></select></div>
+        <div class="subcategory-panel" id="subcategoryPanel">
+          <strong>Choose specific options</strong>
+          <div class="subcategory-options" id="subcategoryOptions"></div>
+        </div>
+        <div class="field"><label for="preferredDate">Preferred Date</label><input id="preferredDate" name="date" type="date" required /></div>
+        <div class="field"><label for="preferredTime">Preferred Time</label><input id="preferredTime" name="time" type="time" required /></div>
+        <div class="field full"><label for="bookingNotes">Notes</label><textarea id="bookingNotes" name="notes" rows="4" placeholder="Any special requests"></textarea></div>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="sendBookingRequest" type="submit">Send Booking Request</button>
+        </div>
+        <p class="form-note">Booking notifications use a Google Apps Script Web App after configuration. It emails the salon and saves the request to a styled Google Sheet.</p>
+      </form>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" id="confirmationModal" aria-hidden="true">
+    <div class="confirmation-panel" role="dialog" aria-modal="true" aria-labelledby="confirmationTitle">
+      <div class="confirmation-head">
+        <h2 id="confirmationTitle">Booking request sent</h2>
+        <button class="close-btn" id="confirmationClose" type="button" aria-label="Close confirmation">&times;</button>
+      </div>
+      <div class="confirmation-body">
+        <p>Your booking request has been sent to Stuwie's Salon & Spa.</p>
+        <div class="confirmation-actions">
+          <button class="btn btn-primary" id="confirmationWhatsApp" type="button">Also Send via WhatsApp</button>
+          <button class="btn btn-light" id="confirmationDone" type="button">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Stuwie's Salon & Spa</strong>
+    <p>No Place You'd Rather Be</p>
+    <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
+  </footer>
+  <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
+
+  <script>
+    /*
+      Booking notification configuration
+      Service used: Google Apps Script Web App.
+      Before launch:
+      1. Create a Google Sheet for bookings.
+      2. Open Extensions > Apps Script and paste apps-script-booking.gs.
+      3. Set SALON_EMAIL and SHEET_ID in Apps Script.
+      4. Deploy as Web App: Execute as "Me", access "Anyone".
+      5. Replace BOOKING_WEB_APP_URL below with the deployment URL.
+
+      If BOOKING_WEB_APP_URL is left unchanged, this demo does not open a new
+      window or email client; it logs the generated payload for developer
+      inspection and shows the normal confirmation UI.
+    */
+    const SALON_WHATSAPP = "256706081927";
+    const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
+    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8K5kueMhaz8vAnZgvdskUqJKwSpAZgOCF8MNP_fM7_rKCmw-XA8LPf8gN1OBjfGFd/exec";
+    const CLIENT_EMAIL_PLACEHOLDER = "stuwiessalonandspa@gmail.com";
+    const BRAND = { blue: "#0064b4", brightBlue: "#009fe3", grey: "#dcdcdc", black: "#000000" };
+    const header = document.querySelector(".site-header");
+
+    const modal = document.getElementById("bookingModal");
+    const form = document.getElementById("bookingForm");
+    const confirmationModal = document.getElementById("confirmationModal");
+    let lastSubmittedBooking = null;
+    let bookingCart = [];
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("preferredDate").min = today;
+
+    function updateHeaderState() {
+      header.classList.toggle("scrolled", window.scrollY > 40);
+    }
+    updateHeaderState();
+    window.addEventListener("scroll", updateHeaderState, { passive: true });
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.14, rootMargin: "0px 0px -40px 0px" });
+    document.querySelectorAll(".reveal").forEach((element, index) => {
+      element.style.transitionDelay = `${Math.min(index % 5, 4) * 70}ms`;
+      revealObserver.observe(element);
+    });
+
+    function openBooking(serviceName = "") {
+      if (serviceName) {
+        const serviceSelect = document.getElementById("requestedService");
+        const match = Array.from(serviceSelect.options).find((option) => option.value === serviceName);
+        if (match) serviceSelect.value = serviceName;
+      }
+      renderSelectedServices();
+      renderSubcategoryOptions(document.getElementById("requestedService").value);
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeBooking() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    document.querySelectorAll(".open-booking").forEach((button) => button.addEventListener("click", () => openBooking()));
+    document.getElementById("modalClose").addEventListener("click", closeBooking);
+    modal.addEventListener("click", (event) => { if (event.target === modal) closeBooking(); });
+
+    function openConfirmation(data) {
+      lastSubmittedBooking = data;
+      confirmationModal.classList.add("open");
+      confirmationModal.setAttribute("aria-hidden", "false");
+    }
+    function closeConfirmation() {
+      confirmationModal.classList.remove("open");
+      confirmationModal.setAttribute("aria-hidden", "true");
+    }
+    document.getElementById("confirmationClose").addEventListener("click", closeConfirmation);
+    document.getElementById("confirmationDone").addEventListener("click", closeConfirmation);
+    confirmationModal.addEventListener("click", (event) => { if (event.target === confirmationModal) closeConfirmation(); });
+    document.getElementById("confirmationWhatsApp").addEventListener("click", () => {
+      if (!lastSubmittedBooking) return;
+      window.open(salonBookingUrl(lastSubmittedBooking), "_blank");
+      closeConfirmation();
+    });
+
+    function parsePrice(value) {
+      const prices = String(value).match(/\d[\d,]*/g);
+      if (!prices) return 0;
+      return prices.map((price) => Number(price.replace(/,/g, ""))).filter(Boolean)[0] || 0;
+    }
+    function formatUgx(value) {
+      return `UGX ${Number(value || 0).toLocaleString("en-US")}`;
+    }
+    function addCartItem(item) {
+      const key = `${item.category}|${item.name}|${item.duration}|${item.price}`;
+      if (!bookingCart.some((existing) => existing.key === key)) {
+        bookingCart.push({ ...item, key });
+        showCartToast(`${item.name} added`);
+      } else {
+        showCartToast(`${item.name} is already selected`);
+      }
+      renderCart();
+      renderSelectedServices();
+      renderSubcategoryOptions(document.getElementById("requestedService").value);
+    }
+    function showCartToast(message) {
+      const toast = document.getElementById("cartToast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(showCartToast.timeout);
+      showCartToast.timeout = window.setTimeout(() => toast.classList.remove("visible"), 1800);
+    }
+    function removeCartItem(key) {
+      bookingCart = bookingCart.filter((item) => item.key !== key);
+      renderCart();
+      renderSelectedServices();
+      renderSubcategoryOptions(document.getElementById("requestedService").value);
+    }
+    function cartTotal() {
+      return bookingCart.reduce((sum, item) => sum + parsePrice(item.price), 0);
+    }
+    function renderCart() {
+      const cart = document.getElementById("bookingCart");
+      const items = document.getElementById("cartItems");
+      const meta = document.getElementById("cartMeta");
+      cart.classList.toggle("visible", bookingCart.length > 0);
+      items.innerHTML = "";
+      bookingCart.forEach((item) => {
+        const chip = document.createElement("span");
+        chip.className = "cart-chip";
+        chip.innerHTML = `${item.name} <button type="button" aria-label="Remove ${item.name}">&times;</button>`;
+        chip.querySelector("button").addEventListener("click", () => removeCartItem(item.key));
+        items.appendChild(chip);
+      });
+      meta.textContent = `${bookingCart.length} item${bookingCart.length === 1 ? "" : "s"} selected - Estimate ${formatUgx(cartTotal())}`;
+    }
+    function renderSelectedServices() {
+      const panel = document.getElementById("selectedServices");
+      const list = document.getElementById("selectedServicesList");
+      panel.classList.toggle("visible", bookingCart.length > 0);
+      list.innerHTML = "";
+      bookingCart.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`;
+        list.appendChild(li);
+      });
+    }
+    function bookingItemsText(data) {
+      if (!data.items.length) return data.service;
+      return data.items.map((item, index) => `${index + 1}. ${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`).join("\n");
+    }
+    function serviceCatalog() {
+      const catalog = {};
+      document.querySelectorAll(".service-card").forEach((card) => {
+        const category = card.querySelector("h3")?.textContent.trim();
+        if (!category) return;
+        catalog[category] = Array.from(card.querySelectorAll(".price-list li")).map((row) => ({
+          category,
+          name: Array.from(row.childNodes).find((node) => node.nodeType === Node.TEXT_NODE)?.textContent.trim() || category,
+          duration: row.querySelector("span")?.textContent.trim() || "",
+          price: row.querySelector("strong")?.textContent.trim() || ""
+        }));
+      });
+      return catalog;
+    }
+    const catalogByCategory = serviceCatalog();
+    function renderSubcategoryOptions(category) {
+      const panel = document.getElementById("subcategoryPanel");
+      const options = document.getElementById("subcategoryOptions");
+      const items = catalogByCategory[category] || [];
+      options.innerHTML = "";
+      panel.classList.toggle("visible", items.length > 0);
+      items.forEach((item) => {
+        const label = document.createElement("label");
+        label.className = "subcategory-option";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = bookingCart.some((selected) => selected.category === item.category && selected.name === item.name);
+        input.addEventListener("change", () => {
+          const key = `${item.category}|${item.name}|${item.duration}|${item.price}`;
+          if (input.checked) addCartItem(item);
+          else removeCartItem(key);
+        });
+        label.append(input, document.createTextNode(`${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`));
+        options.appendChild(label);
+      });
+    }
+    document.querySelectorAll(".price-list li").forEach((row) => {
+      const card = row.closest(".service-card");
+      if (!card) return;
+      const category = card.querySelector("h3")?.textContent.trim() || "Service";
+      const name = Array.from(row.childNodes).find((node) => node.nodeType === Node.TEXT_NODE)?.textContent.trim() || category;
+      const duration = row.querySelector("span")?.textContent.trim() || "";
+      const price = row.querySelector("strong")?.textContent.trim() || "";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "item-add";
+      button.textContent = "Add";
+      button.addEventListener("click", () => addCartItem({ name, category, duration, price }));
+      row.appendChild(button);
+    });
+    document.querySelectorAll(".service-card, .package-card").forEach((card) => {
+      const title = card.querySelector("h3")?.textContent.trim();
+      const body = card.querySelector(".service-body, .package-body");
+      if (!title || !body || body.querySelector(".book-card-btn")) return;
+      const price = card.querySelector(".package-price")?.textContent.trim() || "";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn-primary book-card-btn";
+      button.dataset.service = title;
+      button.textContent = "Book This";
+      button.addEventListener("click", () => {
+        if (card.classList.contains("package-card")) addCartItem({ name: title, category: "Package", duration: "", price });
+        openBooking(title);
+      });
+      body.appendChild(button);
+    });
+    document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
+    document.getElementById("requestedService").addEventListener("change", (event) => {
+      renderSubcategoryOptions(event.target.value);
+    });
+
+    document.querySelectorAll(".service-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".service-tab").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".service-panel").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`panel-${tab.dataset.panel}`).classList.add("active");
+      });
+    });
+
+    document.getElementById("fabToggle").addEventListener("click", () => {
+      const fab = document.getElementById("fab");
+      const isOpen = fab.classList.toggle("open");
+      document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
+    });
+
+    function collectBooking() {
+      return {
+        name: document.getElementById("customerName").value.trim(),
+        phone: document.getElementById("customerPhone").value.trim(),
+        email: document.getElementById("customerEmail").value.trim(),
+        service: document.getElementById("requestedService").value,
+        items: [...bookingCart],
+        total: cartTotal(),
+        date: document.getElementById("preferredDate").value,
+        time: document.getElementById("preferredTime").value,
+        notes: document.getElementById("bookingNotes").value.trim()
+      };
+    }
+    function digitsOnlyPhone(phone) {
+      let digits = phone.replace(/\D/g, "");
+      if (digits.startsWith("0")) digits = `256${digits.slice(1)}`;
+      return digits;
+    }
+    function validateBooking(data) {
+      if (!data.name || !data.phone || !data.email || (!data.service && !data.items.length) || !data.date || !data.time) {
+        alert("Please enter your name, phone, email, service selection, preferred date and preferred time.");
+        return false;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        alert("Please enter a valid email address.");
+        return false;
+      }
+      return true;
+    }
+    function customerConfirmUrl(data) {
+      const digits = digitsOnlyPhone(data.phone);
+      const serviceSummary = data.items.length === 1 ? data.items[0].name : (data.items.length > 1 ? `${data.items.length} selected services` : data.service);
+      const message = `Hi ${data.name}, confirming your ${serviceSummary} appointment on ${data.date} at ${data.time} at Stuwie's Salon & Spa.`;
+      return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+    }
+    function salonBookingUrl(data) {
+      let message = "Hello Stuwie's Salon & Spa, I'd like to book an appointment.\n\n";
+      message += `*Name:* ${data.name}\n`;
+      message += `*Phone:* ${data.phone}\n`;
+      message += `*Email:* ${data.email}\n`;
+      message += `*Service:* ${data.items.length ? "Multiple selected services" : data.service}\n`;
+      if (data.items.length) message += `*Items:*\n${bookingItemsText(data)}\n*Estimated Total:* ${formatUgx(data.total)}\n`;
+      message += `*Date:* ${data.date}\n`;
+      message += `*Time:* ${data.time}\n`;
+      if (data.notes) message += `*Notes:* ${data.notes}\n`;
+      return `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
+    }
+    function buildHtmlEmail(data) {
+      const rows = [
+        ["Customer Name", data.name],
+        ["Phone", data.phone],
+        ["Email", data.email],
+        ["Service Requested", data.items.length ? "Multiple selected services" : data.service],
+        ["Selected Items", data.items.length ? bookingItemsText(data).replace(/\n/g, "<br>") : data.service],
+        ["Estimated Total", data.items.length ? formatUgx(data.total) : "Confirm after review"],
+        ["Preferred Date", data.date],
+        ["Preferred Time", data.time],
+        ["Notes", data.notes || "None provided"]
+      ];
+      const rowHtml = rows.map(([label, value], index) => {
+        const bg = index % 2 === 0 ? "#e9f5ff" : "#f1f1f1";
+        return `<tr><th style="text-align:left;padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};width:42%;">${label}</th><td style="padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};">${value}</td></tr>`;
+      }).join("");
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table><p style="margin:24px 0 0;"><a href="${customerConfirmUrl(data)}" style="display:inline-block;background:${BRAND.blue};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;">Reply to Confirm Booking</a></p></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = collectBooking();
+      if (!validateBooking(data)) return;
+      const htmlEmail = buildHtmlEmail(data);
+
+      if (BOOKING_WEB_APP_URL.includes("REPLACE_WITH")) {
+        console.info("Booking Web App URL is not configured. Replace BOOKING_WEB_APP_URL to send email and save to Google Sheets.", {
+          recipient: CLIENT_EMAIL_PLACEHOLDER,
+          booking: data,
+          html_email: htmlEmail
+        });
+        closeBooking();
+        openConfirmation(data);
+        return;
+      }
+
+      try {
+        const payload = {
+          recipient: CLIENT_EMAIL_PLACEHOLDER,
+          subject: `New Stuwie's booking request - ${data.items.length ? `${data.items.length} selected services` : data.service}`,
+          customer_name: data.name,
+          phone: data.phone,
+          customer_email: data.email,
+          service: data.items.length ? "Multiple selected services" : data.service,
+          selected_items: bookingItemsText(data),
+          estimated_total: data.items.length ? formatUgx(data.total) : "",
+          preferred_date: data.date,
+          preferred_time: data.time,
+          notes: data.notes,
+          confirm_whatsapp_url: customerConfirmUrl(data),
+          html_email: htmlEmail,
+          raw_items: data.items
+        };
+        await fetch(BOOKING_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        form.reset();
+        bookingCart = [];
+        renderCart();
+        renderSelectedServices();
+        renderSubcategoryOptions("");
+        closeBooking();
+        openConfirmation(data);
+      } catch (error) {
+        alert("The email notification could not be sent. Please use WhatsApp or call the salon.");
+      }
+    });
+  </script>
+</body>
+</html>
