@@ -74,6 +74,14 @@
       transition: transform 0.25s ease, color 0.25s ease;
     }
     .brand-mark:hover { transform: translateY(-1px); color: var(--blue); }
+    .brand-mark img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.88);
+      padding: 3px;
+    }
     .brand-mark span {
       color: var(--blue);
       display: block;
@@ -232,9 +240,18 @@
     .hero-copy {
       max-width: 520px;
       color: rgba(255,255,255,0.9);
-      font-size: clamp(17px, 1.8vw, 20px);
-      margin: 18px 0 26px;
+      font-size: clamp(24px, 3vw, 38px);
+      margin: 18px 0 10px;
       animation: fadeUp 0.8s ease 0.18s both;
+      font-family: "Segoe Script", "Brush Script MT", cursive;
+      color: #fff;
+    }
+    .hero-subcopy {
+      max-width: 500px;
+      color: rgba(255,255,255,0.84);
+      font-size: clamp(16px, 1.8vw, 20px);
+      margin: 0 0 26px;
+      animation: fadeUp 0.8s ease 0.22s both;
     }
     .hero-kicker {
       display: none;
@@ -1027,12 +1044,9 @@
   <div class="demo-badge" aria-label="Demo site notice">Demo site</div>
   <header class="site-header">
     <nav class="nav" aria-label="Primary navigation">
-      <a class="brand-mark" href="#top">Stuwie's <span>Salon & Spa</span></a>
+      <a class="brand-mark" href="#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
       <div class="nav-links">
         <a href="#services">Services</a>
-        <a href="#packages">Packages</a>
-        <a href="#team">Team</a>
-        <a href="#gallery">Gallery</a>
         <a href="#contact">Contact</a>
       </div>
       <button class="btn btn-primary open-booking" type="button">Book Now</button>
@@ -1046,14 +1060,12 @@
         <div>
           <p class="eyebrow">Nansana-Masitowa, Kampala</p>
           <h1>Stuwie's Salon & Spa</h1>
-          <p class="hero-copy">No Place You'd Rather Be. Professional salon, spa, barbering and beauty care for looking good, feeling great and living beautifully.</p>
+          <p class="hero-copy">Look Good. Feel Great. Be Your Best.</p>
+          <p class="hero-subcopy">Professional salon, spa, barbering and beauty care in Nansana-Masitowa.</p>
           <div class="hero-actions">
             <button class="btn btn-primary open-booking" type="button">Book an Appointment</button>
             <a class="btn btn-light" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer">WhatsApp Us</a>
           </div>
-        </div>
-        <div class="logo-panel" aria-label="Stuwie's logo">
-          <img src="assets/Stuwie LogoClare_page-0001.jpg" alt="Stuwie's Salon & Spa logo" loading="eager" fetchpriority="high" decoding="async" />
         </div>
       </div>
       <div class="hero-strip">Feel Good. Look Great. Be Your Best.</div>
@@ -1075,7 +1087,7 @@
       <div class="section-inner">
         <div class="section-head reveal">
           <div><p class="eyebrow">Service Menu</p><h2>Care for every visit</h2></div>
-          <p>Prices are pulled from the supplied July 2026 Stuwie's menu asset given by client and shown in UGX.</p>
+          <p>Choose individual treatments, combine services, and send one clear booking request with your preferred date and time.</p>
         </div>
         <div class="service-tabs" role="tablist">
           <button class="service-tab active" data-panel="face" type="button">Facials & Scrubs</button>
@@ -1140,7 +1152,7 @@
       <div class="section-inner">
         <div class="section-head reveal">
           <div><p class="eyebrow">Meet the Team</p><h2>Friendly specialists</h2></div>
-          <p>Names and roles are clear placeholders so the client will need to confirm then I  edit them after review.</p>
+          <p>Meet the friendly specialists behind Stuwie's salon, spa, nails and barbering services.</p>
         </div>
         <div class="team-layout">
           <div class="team-photo reveal"><img src="assets/images/Team.png" alt="Stuwie's Salon and Spa team" /></div>
@@ -1185,7 +1197,7 @@
               <p><strong>Address:</strong> Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala</p>
               <p><strong>WhatsApp:</strong> <a href="https://wa.me/256706081927" target="_blank" rel="noreferrer">+256 706 081 927</a></p>
               <p><strong>Email:</strong> stuwiessalonandspa@gmail.com</p>
-              <p><strong>Hours:</strong> Daily, 8:00 AM - 8:00 PM <span aria-label="placeholder">(I will need confirmation from client)</span></p>
+              <p><strong>Hours:</strong> Contact the salon to confirm today's availability.</p>
               <p><strong>Loyalty:</strong> Ask our team about loyalty membership, vouchers and group offers.</p>
             </div>
             <div class="contact-actions">
@@ -1609,7 +1621,7 @@
         ["Email", data.email],
         ["Service Requested", data.items.length ? "Multiple selected services" : data.service],
         ["Selected Items", data.items.length ? bookingItemsText(data).replace(/\n/g, "<br>") : data.service],
-        ["Estimated Total", data.items.length ? formatUgx(data.total) : "Confirm after review"],
+        ["Estimated Total", data.items.length ? formatUgx(data.total) : "Confirm after consultation"],
         ["Preferred Date", data.date],
         ["Preferred Time", data.time],
         ["Notes", data.notes || "None provided"]
