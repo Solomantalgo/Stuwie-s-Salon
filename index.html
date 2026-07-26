@@ -908,6 +908,32 @@
       text-decoration: none;
     }
     .site-credit a:hover { color: var(--blue-bright); }
+    .demo-badge {
+      position: fixed;
+      left: 16px;
+      top: 84px;
+      z-index: 29;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0, 100, 180, 0.18);
+      background: rgba(255,255,255,0.9);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 850;
+      box-shadow: 0 10px 24px rgba(0,34,67,0.12);
+      backdrop-filter: blur(10px);
+    }
+    .demo-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warm);
+      animation: demoPulse 1.5s ease-in-out infinite;
+    }
 
     @media (max-width: 980px) {
       .nav-links { display: none; }
@@ -991,9 +1017,14 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    @keyframes demoPulse {
+      0%, 100% { opacity: 0.45; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.18); }
+    }
   </style>
 </head>
 <body>
+  <div class="demo-badge" aria-label="Demo site notice">Demo site</div>
   <header class="site-header">
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand-mark" href="#top">Stuwie's <span>Salon & Spa</span></a>
