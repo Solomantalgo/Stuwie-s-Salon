@@ -6,6 +6,8 @@
   <title>Stuwie's Salon & Spa | No Place You'd Rather Be</title>
   <meta name="description" content="Stuwie's Salon & Spa in Wilsen Hotel Building, Nansana-Masitowa. Salon, spa, barbering, nails, waxing, facials, massage, packages and bookings." />
   <link rel="icon" href="assets/Stuwie LogoClare_page-0001.jpg" type="image/jpeg" />
+  <link rel="preload" as="image" href="assets/images/hero2.png" />
+  <link rel="preload" as="image" href="assets/Stuwie LogoClare_page-0001.jpg" />
   <style>
     :root {
       --blue: #0064b4;
@@ -126,6 +128,20 @@
     .btn-dark { background: var(--black); color: white; }
     .btn-light { background: white; color: var(--blue); border: 1px solid var(--line); }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 34, 67, 0.16); }
+    .btn.is-loading {
+      pointer-events: none;
+      opacity: 0.78;
+      position: relative;
+    }
+    .btn.is-loading::before {
+      content: "";
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,0.55);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
 
     .hero {
       min-height: calc(100vh - 69px);
@@ -135,6 +151,13 @@
       overflow: hidden;
       color: white;
       background: #101820;
+    }
+    .hero-preload {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
     }
     .hero::before {
       content: "";
@@ -848,6 +871,9 @@
       from { opacity: 0; transform: translateY(18px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -867,6 +893,7 @@
 
   <main id="top">
     <section class="hero" aria-label="Stuwie's Salon and Spa">
+      <img class="hero-preload" src="assets/images/hero2.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async" />
       <div class="hero-inner">
         <div>
           <p class="eyebrow">Nansana-Masitowa, Kampala</p>
@@ -878,7 +905,7 @@
           </div>
         </div>
         <div class="logo-panel" aria-label="Stuwie's logo">
-          <img src="assets/Stuwie LogoClare_page-0001.jpg" alt="Stuwie's Salon & Spa logo" />
+          <img src="assets/Stuwie LogoClare_page-0001.jpg" alt="Stuwie's Salon & Spa logo" loading="eager" fetchpriority="high" decoding="async" />
         </div>
       </div>
       <div class="hero-strip">Feel Good. Look Great. Be Your Best.</div>
@@ -1112,6 +1139,7 @@
     const confirmationModal = document.getElementById("confirmationModal");
     let lastSubmittedBooking = null;
     let bookingCart = [];
+    let bookingSubmitting = false;
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("preferredDate").min = today;
 
@@ -1392,9 +1420,16 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (bookingSubmitting) return;
       const data = collectBooking();
       if (!validateBooking(data)) return;
       const htmlEmail = buildHtmlEmail(data);
+      const submitButton = document.getElementById("sendBookingRequest");
+      bookingSubmitting = true;
+      submitButton.disabled = true;
+      submitButton.classList.add("is-loading");
+      submitButton.dataset.originalText = submitButton.textContent;
+      submitButton.textContent = "Sending...";
 
       if (BOOKING_WEB_APP_URL.includes("REPLACE_WITH")) {
         console.info("Booking Web App URL is not configured. Replace BOOKING_WEB_APP_URL to send email and save to Google Sheets.", {
@@ -1404,6 +1439,10 @@
         });
         closeBooking();
         openConfirmation(data);
+        bookingSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+        submitButton.textContent = submitButton.dataset.originalText || "Send Booking Request";
         return;
       }
 
@@ -1439,6 +1478,11 @@
         openConfirmation(data);
       } catch (error) {
         alert("The email notification could not be sent. Please use WhatsApp or call the salon.");
+      } finally {
+        bookingSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+        submitButton.textContent = submitButton.dataset.originalText || "Send Booking Request";
       }
     });
   </script>

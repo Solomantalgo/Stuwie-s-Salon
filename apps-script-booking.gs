@@ -11,8 +11,8 @@
   5. Copy the Web App URL into index.html as BOOKING_WEB_APP_URL.
 */
 
-const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
-const SHEET_ID = 'REPLACE_WITH_GOOGLE_SHEET_ID';
+const SALON_EMAIL = 'kmantalgosolo@gmail.com';
+const SHEET_ID = '11ef_KyjslER3On5KrjcwLQI7fWvrcrajhH1sXDeyu-8';
 const SHEET_NAME = 'Website Bookings';
 
 const BRAND = {
@@ -36,6 +36,23 @@ function doPost(e) {
   }
 }
 
+function doGet() {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheet = getBookingSheet_();
+    return json_({
+      ok: true,
+      message: 'Stuwie booking endpoint is active.',
+      spreadsheetName: ss.getName(),
+      spreadsheetUrl: ss.getUrl(),
+      sheetName: sheet.getName(),
+      lastRow: sheet.getLastRow()
+    });
+  } catch (error) {
+    return json_({ ok: false, error: String(error), sheetId: SHEET_ID });
+  }
+}
+
 function getBookingSheet_() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME);
@@ -52,7 +69,6 @@ function getBookingSheet_() {
     'Preferred Date',
     'Preferred Time',
     'Notes',
-    'Confirm via WhatsApp',
     'Status'
   ];
 
@@ -77,7 +93,6 @@ function appendBooking_(sheet, data) {
     data.preferred_date || '',
     data.preferred_time || '',
     data.notes || '',
-    data.confirm_whatsapp_url || '',
     'New'
   ];
 
@@ -93,15 +108,13 @@ function appendBooking_(sheet, data) {
 
   sheet.getRange(lastRow, 1).setNumberFormat('yyyy-mm-dd hh:mm');
   sheet.getRange(lastRow, 7).setFontWeight('bold').setFontColor(BRAND.blue);
-  sheet.getRange(lastRow, 11).setFontColor(BRAND.blue).setFontLine('underline');
-  sheet.getRange(lastRow, 12).setBackground(BRAND.lightBlue).setFontWeight('bold');
+  sheet.getRange(lastRow, 11).setBackground(BRAND.lightBlue).setFontWeight('bold');
 
   const bg = lastRow % 2 === 0 ? '#ffffff' : '#f6fbff';
   sheet.getRange(lastRow, 1, 1, lastCol).setBackground(bg);
   sheet.autoResizeColumns(1, lastCol);
   sheet.setColumnWidth(6, 320);
   sheet.setColumnWidth(10, 260);
-  sheet.setColumnWidth(11, 260);
 }
 
 function styleHeader_(sheet, headerCount) {
@@ -120,10 +133,11 @@ function styleHeader_(sheet, headerCount) {
 
 function sendBookingEmail_(data) {
   const htmlBody = data.html_email || fallbackEmail_(data);
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   MailApp.sendEmail({
     to: SALON_EMAIL,
     subject: data.subject || 'New Stuwie booking request',
-    htmlBody: htmlBody,
+    htmlBody: htmlBody + '<p style="font-family:Arial,sans-serif;font-size:12px;color:#666;margin-top:18px;">Saved to Google Sheet: <a href="' + ss.getUrl() + '">Open bookings sheet</a></p>',
     replyTo: data.customer_email || undefined,
     name: "Stuwie's Website Bookings"
   });
