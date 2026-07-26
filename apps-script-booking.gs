@@ -11,7 +11,7 @@
   5. Copy the Web App URL into index.html as BOOKING_WEB_APP_URL.
 */
 
-const SALON_EMAIL = 'kmantalgosolo@gmail.com';
+const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
 const SHEET_ID = '11ef_KyjslER3On5KrjcwLQI7fWvrcrajhH1sXDeyu-8';
 const SHEET_NAME = 'Website Bookings';
 

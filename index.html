@@ -635,13 +635,79 @@
     .contact-card { padding: 22px; }
     .contact-list { display: grid; gap: 12px; margin: 20px 0; }
     .contact-list p { margin: 0; }
+    .map-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: white;
+      box-shadow: var(--shadow);
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+    .map-embed-wrap {
+      position: relative;
+      min-height: 390px;
+    }
     .map-frame {
       border: 0;
       width: 100%;
-      min-height: 430px;
+      min-height: 390px;
       border-radius: var(--radius);
       filter: saturate(0.95);
+      pointer-events: none;
     }
+    .map-card.map-active .map-frame { pointer-events: auto; }
+    .map-lock {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 13, 28, 0.12);
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .map-card.map-active .map-lock {
+      opacity: 0;
+    }
+    .map-enable {
+      pointer-events: auto;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+    }
+    .map-info {
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 12px;
+    }
+    .map-info p { margin: 0; color: var(--muted); }
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .map-actions .btn {
+      min-height: 40px;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+    .map-reference {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--wash);
+    }
+    .map-reference img {
+      width: 96px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .map-reference strong { display: block; }
 
     .booking-modal {
       position: fixed;
@@ -1045,7 +1111,26 @@
               <a class="btn btn-dark" href="tel:+256706081927">Call Salon</a>
             </div>
           </div>
-          <iframe class="map-frame" title="Map to Wilsen Hotel Building, Nansana-Masitowa" src="https://www.openstreetmap.org/export/embed.html?bbox=32.515%2C0.350%2C32.575%2C0.405&amp;layer=mapnik&amp;marker=0.3775%2C32.5450"></iframe>
+          <div class="map-card reveal">
+            <div class="map-embed-wrap">
+              <iframe class="map-frame" title="Map to Wilsen Hotel Building, Nansana-Masitowa" src="https://www.openstreetmap.org/export/embed.html?bbox=32.51325%2C0.35787%2C32.53325%2C0.37787&amp;layer=mapnik&amp;marker=0.36787%2C32.52325"></iframe>
+              <div class="map-lock">
+                <button class="btn btn-primary map-enable" id="mapEnable" type="button" aria-pressed="false">Interact with Map</button>
+              </div>
+            </div>
+            <div class="map-info">
+              <div class="map-reference">
+                <img src="assets/images/map.webp" alt="Location reference for Stuwie's Salon & Spa" loading="lazy" />
+                <p><strong>Location reference</strong> Use this visual guide together with the map pin when finding the salon.</p>
+              </div>
+              <p><strong>Finding us:</strong> Ask for Stuwie's Salon & Spa in the basement at Wilsen Hotel / Wilsen Mall, Nansana-Masitowa.</p>
+              <div class="map-actions">
+                <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&query=Wilsen%20Hotel%20Nansana%20Masitowa%20Wilsen%20Mall" target="_blank" rel="noreferrer">Open in Google Maps</a>
+                <a class="btn btn-light" href="https://www.openstreetmap.org/?mlat=0.36787&mlon=32.52325#map=17/0.36787/32.52325" target="_blank" rel="noreferrer">Open OSM</a>
+                <a class="btn btn-dark" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%2C%20please%20send%20me%20directions%20to%20the%20salon." target="_blank" rel="noreferrer">Ask for Directions</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1350,6 +1435,13 @@
       const fab = document.getElementById("fab");
       const isOpen = fab.classList.toggle("open");
       document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
+    });
+    document.getElementById("mapEnable").addEventListener("click", () => {
+      const mapCard = document.querySelector(".map-card");
+      const button = document.getElementById("mapEnable");
+      const isActive = mapCard.classList.toggle("map-active");
+      button.setAttribute("aria-pressed", String(isActive));
+      button.textContent = isActive ? "Map Interaction On" : "Interact with Map";
     });
 
     function collectBooking() {

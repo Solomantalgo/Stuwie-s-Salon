@@ -304,3 +304,10 @@ site posts booking data to a deployed Apps Script Web App. Apps Script should:
 The frontend config is `BOOKING_WEB_APP_URL` in `index.html`. The Apps Script
 source is `apps-script-booking.gs`; set `SHEET_ID` and `SALON_EMAIL`, deploy as a
 Web App, then paste the deployment URL into `BOOKING_WEB_APP_URL`.
+
+## Map/location refinement
+The map should be more useful than a raw iframe. Use an OpenStreetMap embed near
+Nansana-Masitowa/Wilsen Mall and pair it with clear human directions:
+"basement at Wilsen Hotel / Wilsen Mall, Nansana-Masitowa." Include direct
+actions for Google Maps search, OpenStreetMap, and WhatsApp directions so users
+have a fallback if the exact pin varies between map providers.
