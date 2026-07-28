@@ -474,7 +474,7 @@
     #services, #gallery { background: var(--wash); }
     .service-tabs {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 8px;
       overflow: visible;
       padding-bottom: 0;
@@ -497,7 +497,17 @@
     .service-tab.active { background: var(--black); color: white; border-color: var(--black); }
     .service-panel { display: none; }
     .service-panel.active { display: block; animation: fadeUp 0.35s ease both; }
+    .service-panel.all-visible {
+      display: contents;
+      animation: fadeUp 0.35s ease both;
+    }
     .service-grid { grid-template-columns: repeat(3, 1fr); }
+    .service-panels.all-mode {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .service-panels.all-mode .service-grid { display: contents; }
     .service-card img {
       height: 230px;
       width: 100%;
@@ -505,13 +515,14 @@
       transition: transform 0.55s ease, filter 0.55s ease;
     }
     .service-card:hover img { transform: scale(1.06); filter: saturate(1.08) contrast(1.03); }
-    .service-body { padding: 20px; }
+    .service-body { padding: 20px; display: flex; flex-direction: column; }
     .book-card-btn {
-      width: 100%;
+      width: fit-content;
       margin-top: 16px;
       min-height: 40px;
-      padding: 10px 12px;
-      font-size: 14px;
+      padding: 8px 13px;
+      font-size: 13px;
+      align-self: flex-end;
     }
     .price-list li {
       align-items: center;
@@ -575,6 +586,22 @@
       padding: 0 2px;
     }
     .cart-meta { color: rgba(255,255,255,0.72); font-size: 13px; }
+    .booking-cart > div { min-width: 0; }
+    .cart-toggle {
+      position: fixed;
+      right: 14px;
+      bottom: 84px;
+      z-index: 36;
+      display: none;
+      border: 0;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
     .selected-services {
       grid-column: 1 / -1;
       border: 1px solid var(--line);
@@ -1184,6 +1211,7 @@
       .trust-grid { grid-template-columns: repeat(2, 1fr); }
       .service-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .service-grid, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .service-panels.all-mode { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: repeat(2, 1fr); }
       .package-grid { grid-template-columns: 1fr 1fr; }
       .package-card.featured-package { grid-column: 1 / -1; grid-row: auto; }
@@ -1198,6 +1226,7 @@
       .logo-panel { max-width: 170px; }
       .logo-panel img { height: 135px; }
       .trust-grid, .service-grid, .package-grid, .team-grid, .gallery-grid, .booking-form, .form-actions { grid-template-columns: 1fr; }
+      .service-panels.all-mode { grid-template-columns: 1fr; }
       .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: 1fr; }
       .hero-proof { grid-template-columns: 1fr 1fr; }
       .field.full, .form-actions, .form-note { grid-column: auto; }
@@ -1220,6 +1249,77 @@
         grid-column: 2;
         grid-row: 1;
       }
+      .cart-toggle.visible {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .booking-cart {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        margin-top: 0;
+        padding: 16px 14px 14px;
+        gap: 12px;
+        align-items: stretch;
+        flex-direction: column;
+        max-height: min(58vh, 430px);
+        overflow: hidden;
+        z-index: 35;
+        transform: translateY(calc(100% + 18px));
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.22s ease, opacity 0.22s ease;
+      }
+      .booking-cart.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .booking-cart::before {
+        content: "";
+        width: 42px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.28);
+        align-self: center;
+        margin-top: -4px;
+      }
+      .booking-cart > div {
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        min-height: 0;
+      }
+      .booking-cart strong { font-size: 14px; }
+      .cart-meta { font-size: 12px; }
+      .cart-items {
+        display: grid;
+        gap: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-width: 100%;
+        max-height: min(34vh, 230px);
+        padding: 4px 2px 2px 0;
+        scrollbar-width: thin;
+      }
+      .cart-chip {
+        width: 100%;
+        max-width: none;
+        overflow: hidden;
+        white-space: normal;
+        justify-content: space-between;
+        border-radius: 10px;
+        padding: 9px 10px;
+        line-height: 1.25;
+      }
+      #cartCheckout {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 14px;
+        flex: 0 0 auto;
+      }
+      body.cart-active { padding-bottom: 0; }
       .fab { right: 14px; bottom: 14px; }
       .offer-pop { bottom: 84px; }
     }
@@ -1346,37 +1446,49 @@
           <p>A preview of common bookings. Open the full service menu for every category, package and price.</p>
         </div>
         <div class="service-tabs" role="tablist">
-          <button class="service-tab active" data-panel="face" type="button">Facials & Scrubs</button>
+          <button class="service-tab active" data-panel="all" type="button">All</button>
+          <button class="service-tab" data-panel="face" type="button">Facials & Scrubs</button>
           <button class="service-tab" data-panel="massage" type="button">Massage</button>
           <button class="service-tab" data-panel="beauty" type="button">Waxing & Nails</button>
           <button class="service-tab" data-panel="hair" type="button">Hair & Barbering</button>
+          <button class="service-tab" data-panel="packages" type="button">Packages</button>
         </div>
 
-        <div class="service-panel active" id="panel-face">
+        <div class="service-panels all-mode" id="servicePanels">
+        <div class="service-panel all-visible" id="panel-face">
           <div class="service-grid">
             <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <span>30 mins</span><strong>40,000</strong></li><li>Classic Deep Cleansing <span>60 mins</span><strong>65,000</strong></li><li>Hydrating Facial <span>60 mins</span><strong>75,000</strong></li><li>Gold Facial Luxury <span>90 mins</span><strong>120,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list"><li>Brown Sugar Scrub <span>45 mins</span><strong>65,000</strong></li><li>Coffee Body Scrub <span>60 mins</span><strong>75,000</strong></li><li>Turmeric Glow Scrub <span>60 mins</span><strong>80,000</strong></li><li>Coconut & Vanilla Scrub <span>60 mins</span><strong>95,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Spa combo" /><div class="service-body"><h3>Signature Combos</h3><ul class="price-list"><li>Body Scrub + Swedish Massage <span>90 mins</span><strong>130,000</strong></li><li>Body Scrub + Steam + Massage <span>120 mins</span><strong>160,000</strong></li><li>Couples Body Scrub <span>60 mins each</span><strong>140,000</strong></li></ul></div></article>
           </div>
         </div>
-        <div class="service-panel" id="panel-massage">
+        <div class="service-panel all-visible" id="panel-massage">
           <div class="service-grid">
             <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <span>60 / 90 mins</span><strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Prenatal Massage <span>60 mins</span><strong>80,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/hero.webp" alt="Relaxing spa room" /><div class="service-body"><h3>Targeted Care</h3><ul class="price-list"><li>Back, Neck & Shoulder <span>30 mins</span><strong>45,000</strong></li><li>Foot Reflexology <span>45 mins</span><strong>50,000</strong></li><li>Hot Stone Massage <span>75 mins</span><strong>110,000</strong></li><li>Massage Add-ons <span>Oil / Cupping</span><strong>20,000</strong></li></ul></div></article>
           </div>
         </div>
-        <div class="service-panel" id="panel-beauty">
+        <div class="service-panel all-visible" id="panel-beauty">
           <div class="service-grid">
             <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows / Upper Lip <span>from</span><strong>10,000</strong></li><li>Underarms <span></span><strong>15,000</strong></li><li>Bikini Line <span></span><strong>25,000</strong></li><li>Full Legs / Brazilian <span></span><strong>60,000 / 50,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list"><li>Manicure <span></span><strong>30,000</strong></li><li>Pedicure <span></span><strong>40,000</strong></li><li>Deluxe Manicure <span></span><strong>45,000</strong></li><li>Deluxe Pedicure <span></span><strong>60,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/nail-enhancements.png" alt="Nail enhancements" /><div class="service-body"><h3>Nail Enhancements</h3><ul class="price-list"><li>Gel Polish Hands <span></span><strong>40,000</strong></li><li>Gel Polish Feet <span></span><strong>50,000</strong></li><li>Nail Extensions Acrylic <span>From</span><strong>70,000</strong></li><li>Nail Art <span>Per nail</span><strong>2,000+</strong></li></ul></div></article>
           </div>
         </div>
-        <div class="service-panel" id="panel-hair">
+        <div class="service-panel all-visible" id="panel-hair">
           <div class="service-grid">
             <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" /><div class="service-body"><h3>Hair Services (Ladies)</h3><ul class="price-list"><li>Wash & Blow Dry <span></span><strong>25,000</strong></li><li>Wash, Blow Dry & Style <span></span><strong>35,000</strong></li><li>Braids / Weave On <span>From</span><strong>30,000</strong></li><li>Dreadlocks / Faux Locs <span>From</span><strong>80,000</strong></li></ul></div></article>
             <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" /><div class="service-body"><h3>Barbering (Gents)</h3><ul class="price-list"><li>Hair Cut <span></span><strong>10,000</strong></li><li>Skin Fade <span></span><strong>15,000</strong></li><li>Beard Shaping <span></span><strong>15,000</strong></li><li>Hair Cut + Shave + Beard Trim <span></span><strong>25,000</strong></li></ul></div></article>
           </div>
+        </div>
+        <div class="service-panel all-visible" id="panel-packages">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" loading="lazy" decoding="async" /><div class="service-body"><h3>Royal Glow Experience</h3><ul class="price-list"><li>Scrub + Massage + Facial <span>2.5 hours</span><strong>180,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" loading="lazy" decoding="async" /><div class="service-body"><h3>Couples Spa Escape</h3><ul class="price-list"><li>Scrub + Massage + Facial <span>2.5 hours each</span><strong>300,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Bridal Luxury</h3><ul class="price-list"><li>Facial, massage, manicure, pedicure, waxing and hair treatment <span></span><strong>380,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/vip-group-package.png" alt="Group package" loading="lazy" decoding="async" /><div class="service-body"><h3>VIP & Group</h3><ul class="price-list"><li>Birthday spa party for 4+ people, refreshments included <span></span><strong>From 150,000 pp</strong></li></ul></div></article>
+          </div>
+        </div>
         </div>
         <div class="booking-cart" id="bookingCart" aria-live="polite">
           <div>
@@ -1397,27 +1509,12 @@
           <p>Order hair, beard, skin and gift items directly on WhatsApp.</p>
         </div>
         <div class="product-grid">
-          <article class="product-card reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/images/Barbering (Gents).png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/images/BodyScrab.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/images/royal-glow-package.png" alt="Gift voucher" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card reveal"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card reveal"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card reveal"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card reveal"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
         </div>
         <div class="section-actions reveal"><a class="btn btn-primary" href="shop.html">View All Products</a></div>
-      </div>
-    </section>
-
-    <section class="packages" id="packages">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <div><p class="eyebrow">Packages</p><h2>High-value bookings</h2></div>
-          <p>Built for celebrations, couples, bridal prep, birthdays and group wellness days.</p>
-        </div>
-        <div class="package-grid">
-          <article class="package-card featured-package reveal"><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" /><div class="package-body"><h3>Royal Glow Experience</h3><p>Scrub + Massage + Facial, 2.5 hours.</p><div class="package-price">180,000</div></div></article>
-          <article class="package-card reveal"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" /><div class="package-body"><h3>Couples Spa Escape</h3><p>Scrub + Massage + Facial, 2.5 hours each.</p><div class="package-price">300,000</div></div></article>
-          <article class="package-card reveal"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" /><div class="package-body"><h3>Bridal Luxury</h3><p>Facial, massage, manicure, pedicure, waxing and hair treatment.</p><div class="package-price">380,000</div></div></article>
-          <article class="package-card reveal"><img src="assets/images/vip-group-package.png" alt="Group package" /><div class="package-body"><h3>VIP & Group</h3><p>Birthday spa party for 4+ people, refreshments included.</p><div class="package-price">From 150,000 pp</div></div></article>
-        </div>
       </div>
     </section>
 
@@ -1590,6 +1687,7 @@
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
   <!-- Website by Solomantalgo: https://solomantalgo.com -->
+  <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
   <div class="image-modal" id="mapImageModal" aria-hidden="true">
     <div class="image-modal-panel" role="dialog" aria-modal="true" aria-labelledby="mapImageTitle">
@@ -1741,9 +1839,15 @@
     }
     function renderCart() {
       const cart = document.getElementById("bookingCart");
+      const toggle = document.getElementById("cartToggle");
       const items = document.getElementById("cartItems");
       const meta = document.getElementById("cartMeta");
       cart.classList.toggle("visible", bookingCart.length > 0);
+      if (!bookingCart.length) cart.classList.remove("open");
+      toggle.classList.toggle("visible", bookingCart.length > 0);
+      toggle.textContent = `Cart ${bookingCart.length}`;
+      toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
+      document.body.classList.toggle("cart-active", bookingCart.length > 0);
       items.innerHTML = "";
       bookingCart.forEach((item) => {
         const chip = document.createElement("span");
@@ -1805,13 +1909,19 @@
         options.appendChild(label);
       });
     }
+    function getServiceRowName(row, fallback) {
+      const clone = row.cloneNode(true);
+      clone.querySelectorAll("span, strong, button").forEach((node) => node.remove());
+      return clone.textContent.replace(/\s+/g, " ").trim() || fallback;
+    }
     document.querySelectorAll(".price-list li").forEach((row) => {
       const card = row.closest(".service-card");
       if (!card) return;
       const category = card.querySelector("h3")?.textContent.trim() || "Service";
-      const name = Array.from(row.childNodes).find((node) => node.nodeType === Node.TEXT_NODE)?.textContent.trim() || category;
+      const name = getServiceRowName(row, category);
       const duration = row.querySelector("span")?.textContent.trim() || "";
       const price = row.querySelector("strong")?.textContent.trim() || "";
+      if (!name || !price) return;
       const button = document.createElement("button");
       button.type = "button";
       button.className = "item-add";
@@ -1836,16 +1946,31 @@
       body.appendChild(button);
     });
     document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
+    document.getElementById("cartToggle").addEventListener("click", () => {
+      const cart = document.getElementById("bookingCart");
+      const isOpen = cart.classList.toggle("open");
+      document.getElementById("cartToggle").setAttribute("aria-expanded", String(isOpen));
+    });
     document.getElementById("requestedService").addEventListener("change", (event) => {
       renderSubcategoryOptions(event.target.value);
     });
 
+    function activateServicePanel(panel) {
+      const panels = document.getElementById("servicePanels");
+      document.querySelectorAll(".service-panel").forEach((item) => item.classList.remove("active", "all-visible"));
+      if (panel === "all") {
+        panels.classList.add("all-mode");
+        document.querySelectorAll(".service-panel").forEach((item) => item.classList.add("all-visible"));
+        return;
+      }
+      panels.classList.remove("all-mode");
+      document.getElementById(`panel-${panel}`).classList.add("active");
+    }
     document.querySelectorAll(".service-tab").forEach((tab) => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".service-tab").forEach((item) => item.classList.remove("active"));
-        document.querySelectorAll(".service-panel").forEach((item) => item.classList.remove("active"));
         tab.classList.add("active");
-        document.getElementById(`panel-${tab.dataset.panel}`).classList.add("active");
+        activateServicePanel(tab.dataset.panel);
       });
     });
 

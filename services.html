@@ -139,6 +139,39 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
+    .service-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .service-tab {
+      white-space: normal;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 850;
+      cursor: pointer;
+      min-height: 44px;
+      text-align: center;
+      transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+    .service-tab:hover { transform: translateY(-2px); }
+    .service-tab.active { background: #000; color: white; border-color: #000; }
+    .service-panel { display: none; }
+    .service-panel.active { display: block; animation: fadeUp 0.28s ease both; }
+    .service-panel.all-visible {
+      display: contents;
+      animation: fadeUp 0.28s ease both;
+    }
+    .service-panels.all-mode {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .service-panels.all-mode .service-grid { display: contents; }
     .service-card {
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -148,7 +181,7 @@
     }
     .service-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: rgba(0, 100, 180, 0.34); }
     .service-card img { width: 100%; height: 220px; object-fit: cover; }
-    .service-body { padding: 18px; }
+    .service-body { padding: 18px; display: flex; flex-direction: column; }
     .service-body h3 { margin: 0 0 12px; font-size: 22px; }
     .price-list {
       margin: 0 0 16px;
@@ -159,14 +192,155 @@
     }
     .price-list li {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       gap: 10px;
       padding-bottom: 9px;
       border-bottom: 1px dashed rgba(0,100,180,0.22);
     }
     .price-list span { color: var(--muted); font-size: 13px; }
     .price-list strong { color: var(--blue); white-space: nowrap; }
-    .service-card .btn { width: fit-content; min-height: 38px; padding: 8px 13px; font-size: 13px; }
+    .service-card .btn { width: fit-content; min-height: 34px; padding: 7px 12px; font-size: 12px; align-self: flex-end; }
+    .item-add {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 5px 9px;
+      min-height: 28px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      justify-self: end;
+    }
+    .item-add:hover { background: var(--blue); color: #fff; }
+    .booking-cart {
+      position: sticky;
+      bottom: 0;
+      z-index: 12;
+      margin-top: 24px;
+      background: rgba(0, 13, 28, 0.94);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.22);
+      padding: 16px;
+      display: none;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(14px);
+    }
+    .booking-cart.visible { display: flex; }
+    .cart-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .cart-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+    .cart-chip button { border: 0; background: transparent; color: #fff; cursor: pointer; font-weight: 900; padding: 0 2px; }
+    .cart-meta { color: rgba(255,255,255,0.72); font-size: 13px; }
+    .booking-cart > div { min-width: 0; }
+    .cart-toggle {
+      position: fixed;
+      right: 14px;
+      bottom: 84px;
+      z-index: 36;
+      display: none;
+      border: 0;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .cart-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 60;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      padding: 11px 16px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.28);
+      font-weight: 850;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .cart-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+    .booking-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.62);
+      z-index: 40;
+    }
+    .booking-modal.open { display: grid; }
+    .booking-panel {
+      width: min(720px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.32);
+    }
+    .booking-head {
+      background: var(--blue);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .booking-head h2 { margin: 0; }
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .booking-form {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .field.full, .selected-services, .form-actions { grid-column: 1 / -1; }
+    label { display: block; font-weight: 850; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 44px;
+      background: white;
+      font: inherit;
+    }
+    textarea { resize: vertical; }
+    .selected-services {
+      border: 1px solid var(--line);
+      background: var(--wash);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: none;
+    }
+    .selected-services.visible { display: block; }
+    .selected-services ul { margin: 8px 0 0; padding-left: 18px; }
     .route-strip {
       background: #000;
       color: white;
@@ -239,6 +413,8 @@
     @media (max-width: 900px) {
       .nav-links { display: none; }
       .service-grid { grid-template-columns: repeat(2, 1fr); }
+      .service-panels.all-mode { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .service-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .section-head { display: block; }
       .section-head p { margin-top: 10px; }
     }
@@ -246,7 +422,83 @@
       section { padding: 54px 16px; }
       .services-hero { padding: 82px 16px 58px; }
       .service-grid { grid-template-columns: 1fr; }
+      .service-panels.all-mode { grid-template-columns: 1fr; }
+      .service-tabs { grid-template-columns: 1fr 1fr; }
+      .service-tab { padding: 9px 10px; font-size: 13px; }
       .service-card img { height: 210px; }
+      .cart-toggle.visible {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .booking-cart {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        margin-top: 0;
+        padding: 16px 14px 14px;
+        gap: 12px;
+        align-items: stretch;
+        flex-direction: column;
+        max-height: min(58vh, 430px);
+        overflow: hidden;
+        z-index: 35;
+        transform: translateY(calc(100% + 18px));
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.22s ease, opacity 0.22s ease;
+      }
+      .booking-cart.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .booking-cart::before {
+        content: "";
+        width: 42px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.28);
+        align-self: center;
+        margin-top: -4px;
+      }
+      .booking-cart > div {
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        min-height: 0;
+      }
+      .booking-cart strong { font-size: 14px; }
+      .cart-meta { font-size: 12px; }
+      .cart-items {
+        display: grid;
+        gap: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-width: 100%;
+        max-height: min(34vh, 230px);
+        padding: 4px 2px 2px 0;
+        scrollbar-width: thin;
+      }
+      .cart-chip {
+        width: 100%;
+        max-width: none;
+        overflow: hidden;
+        white-space: normal;
+        justify-content: space-between;
+        border-radius: 10px;
+        padding: 9px 10px;
+        line-height: 1.25;
+      }
+      #cartCheckout {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 14px;
+        flex: 0 0 auto;
+      }
+      body.cart-active { padding-bottom: 0; }
+      .booking-form { grid-template-columns: 1fr; }
+      .field.full, .selected-services, .form-actions { grid-column: auto; }
       .fab { right: 14px; bottom: 14px; }
     }
   </style>
@@ -256,13 +508,13 @@
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand-mark" href="index.html#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
       <div class="nav-links">
-        <a href="index.html#quick-book">Book</a>
+        <a href="#booking" class="open-booking">Book</a>
         <a href="services.html">Services</a>
         <a href="shop.html">Shop</a>
         <a href="index.html#offers">Offers</a>
         <a href="index.html#contact">Contact</a>
       </div>
-      <a class="btn btn-primary" href="index.html#quick-book">Book Now</a>
+        <button class="btn btn-primary open-booking" type="button">Book Now</button>
     </nav>
   </header>
 
@@ -281,16 +533,56 @@
           <div><p class="eyebrow">Services</p><h2>Everything you can book</h2></div>
           <p>Prices are current website estimates. Confirm final availability and timing when booking.</p>
         </div>
-        <div class="service-grid">
-          <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" loading="lazy" decoding="async" /><div class="service-body"><h3>Barbering</h3><ul class="price-list"><li>Hair Cut <strong>10,000</strong></li><li>Skin Fade <strong>15,000</strong></li><li>Beard Shaping <strong>15,000</strong></li><li>Hair Cut + Shave + Beard Trim <strong>25,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="service-body"><h3>Ladies Hair</h3><ul class="price-list"><li>Wash & Blow Dry <strong>25,000</strong></li><li>Wash, Blow Dry & Style <strong>35,000</strong></li><li>Braids / Weave On <strong>From 30,000</strong></li><li>Dreadlocks / Faux Locs <strong>From 80,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/nail-enhancements.png" alt="Nail enhancements" loading="lazy" decoding="async" /><div class="service-body"><h3>Nails</h3><ul class="price-list"><li>Gel Polish Hands <strong>40,000</strong></li><li>Gel Polish Feet <strong>50,000</strong></li><li>Nail Extensions Acrylic <strong>From 70,000</strong></li><li>Nail Art <strong>2,000+</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" loading="lazy" decoding="async" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <strong>80,000 / 110,000</strong></li><li>Prenatal Massage <strong>80,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <strong>40,000</strong></li><li>Classic Deep Cleansing <strong>65,000</strong></li><li>Hydrating Facial <strong>75,000</strong></li><li>Gold Facial Luxury <strong>120,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list"><li>Brown Sugar Scrub <strong>65,000</strong></li><li>Coffee Body Scrub <strong>75,000</strong></li><li>Turmeric Glow Scrub <strong>80,000</strong></li><li>Coconut & Vanilla Scrub <strong>95,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" loading="lazy" decoding="async" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows / Upper Lip <strong>From 10,000</strong></li><li>Underarms <strong>15,000</strong></li><li>Bikini Line <strong>25,000</strong></li><li>Full Legs / Brazilian <strong>60,000 / 50,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" loading="lazy" decoding="async" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list"><li>Manicure <strong>30,000</strong></li><li>Pedicure <strong>40,000</strong></li><li>Deluxe Manicure <strong>45,000</strong></li><li>Deluxe Pedicure <strong>60,000</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
-          <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Spa packages" loading="lazy" decoding="async" /><div class="service-body"><h3>Packages</h3><ul class="price-list"><li>Royal Glow Experience <strong>180,000</strong></li><li>Couples Spa Escape <strong>300,000</strong></li><li>Bridal Luxury <strong>380,000</strong></li><li>VIP & Group <strong>From 150,000 pp</strong></li></ul><a class="btn btn-primary" href="index.html#quick-book">Book</a></div></article>
+        <div class="service-tabs" role="tablist">
+          <button class="service-tab active" data-panel="all" type="button">All</button>
+          <button class="service-tab" data-panel="hair" type="button">Hair & Barbering</button>
+          <button class="service-tab" data-panel="spa" type="button">Spa & Massage</button>
+          <button class="service-tab" data-panel="beauty" type="button">Beauty & Nails</button>
+          <button class="service-tab" data-panel="face" type="button">Facials & Scrubs</button>
+          <button class="service-tab" data-panel="packages" type="button">Packages</button>
+        </div>
+        <div class="service-panels all-mode" id="servicePanels">
+        <div class="service-panel all-visible" id="panel-hair">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" loading="lazy" decoding="async" /><div class="service-body"><h3>Barbering</h3><ul class="price-list"><li>Hair Cut <strong>10,000</strong></li><li>Skin Fade <strong>15,000</strong></li><li>Beard Shaping <strong>15,000</strong></li><li>Hair Cut + Shave + Beard Trim <strong>25,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Barbering">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="service-body"><h3>Ladies Hair</h3><ul class="price-list"><li>Wash & Blow Dry <strong>25,000</strong></li><li>Wash, Blow Dry & Style <strong>35,000</strong></li><li>Braids / Weave On <strong>From 30,000</strong></li><li>Dreadlocks / Faux Locs <strong>From 80,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Ladies Hair">Book</button></div></article>
+          </div>
+        </div>
+        <div class="service-panel all-visible" id="panel-spa">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" loading="lazy" decoding="async" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <strong>80,000 / 110,000</strong></li><li>Prenatal Massage <strong>80,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Massages">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/hero.webp" alt="Steam and sauna service" loading="lazy" decoding="async" /><div class="service-body"><h3>Steam & Targeted Care</h3><ul class="price-list"><li>Back, Neck & Shoulder <strong>45,000</strong></li><li>Foot Reflexology <strong>50,000</strong></li><li>Hot Stone Massage <strong>110,000</strong></li><li>Massage Add-ons <strong>20,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Steam & Targeted Care">Book</button></div></article>
+          </div>
+        </div>
+        <div class="service-panel all-visible" id="panel-beauty">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/nail-enhancements.png" alt="Nail enhancements" loading="lazy" decoding="async" /><div class="service-body"><h3>Nails</h3><ul class="price-list"><li>Gel Polish Hands <strong>40,000</strong></li><li>Gel Polish Feet <strong>50,000</strong></li><li>Nail Extensions Acrylic <strong>From 70,000</strong></li><li>Nail Art <strong>2,000+</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Nails">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" loading="lazy" decoding="async" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list"><li>Manicure <strong>30,000</strong></li><li>Pedicure <strong>40,000</strong></li><li>Deluxe Manicure <strong>45,000</strong></li><li>Deluxe Pedicure <strong>60,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Manicure & Pedicure">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" loading="lazy" decoding="async" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows / Upper Lip <strong>From 10,000</strong></li><li>Underarms <strong>15,000</strong></li><li>Bikini Line <strong>25,000</strong></li><li>Full Legs / Brazilian <strong>60,000 / 50,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Waxing">Book</button></div></article>
+          </div>
+        </div>
+        <div class="service-panel all-visible" id="panel-face">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <strong>40,000</strong></li><li>Classic Deep Cleansing <strong>65,000</strong></li><li>Hydrating Facial <strong>75,000</strong></li><li>Gold Facial Luxury <strong>120,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Facials">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list"><li>Brown Sugar Scrub <strong>65,000</strong></li><li>Coffee Body Scrub <strong>75,000</strong></li><li>Turmeric Glow Scrub <strong>80,000</strong></li><li>Coconut & Vanilla Scrub <strong>95,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Body Scrubs">Book</button></div></article>
+          </div>
+        </div>
+        <div class="service-panel all-visible" id="panel-packages">
+          <div class="service-grid">
+            <article class="service-card"><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" loading="lazy" decoding="async" /><div class="service-body"><h3>Royal Glow Experience</h3><ul class="price-list"><li>Scrub + Massage + Facial <strong>180,000</strong></li><li><span>2.5 hours</span><strong></strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Royal Glow Experience">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" loading="lazy" decoding="async" /><div class="service-body"><h3>Couples Spa Escape</h3><ul class="price-list"><li>Scrub + Massage + Facial <strong>300,000</strong></li><li><span>2.5 hours each</span><strong></strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Couples Spa Escape">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Bridal Luxury</h3><ul class="price-list"><li>Facial, massage, manicure, pedicure, waxing and hair treatment <strong>380,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Bridal Luxury">Book</button></div></article>
+            <article class="service-card"><img src="assets/images/vip-group-package.png" alt="Group package" loading="lazy" decoding="async" /><div class="service-body"><h3>VIP & Group</h3><ul class="price-list"><li>Birthday spa party for 4+ people, refreshments included <strong>From 150,000 pp</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="VIP & Group">Book</button></div></article>
+          </div>
+        </div>
+        </div>
+        <div class="booking-cart" id="bookingCart" aria-live="polite">
+          <div>
+            <strong>Selected services</strong>
+            <div class="cart-meta" id="cartMeta"></div>
+            <div class="cart-items" id="cartItems"></div>
+          </div>
+          <button class="btn btn-primary" id="cartCheckout" type="button">Complete Booking</button>
         </div>
       </div>
     </section>
@@ -307,9 +599,31 @@
     </div>
   </main>
 
+  <div class="booking-modal" id="bookingModal" aria-hidden="true">
+    <div class="booking-panel" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+      <div class="booking-head">
+        <div>
+          <p class="eyebrow" style="color:white;margin-bottom:5px;">Book an Appointment</p>
+          <h2 id="bookingTitle">Complete Your Booking Request</h2>
+        </div>
+        <button class="close-btn" id="modalClose" type="button" aria-label="Close booking form">&times;</button>
+      </div>
+      <form class="booking-form" id="bookingForm">
+        <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
+        <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
+        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Barbering</option><option>Ladies Hair</option><option>Massages</option><option>Steam & Targeted Care</option><option>Nails</option><option>Manicure & Pedicure</option><option>Waxing</option><option>Facials</option><option>Body Scrubs</option><option>Royal Glow Experience</option><option>Couples Spa Escape</option><option>Bridal Luxury</option><option>VIP & Group</option></select></div>
+        <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
+        <div class="field"><label for="preferredDate">Preferred Date</label><input id="preferredDate" name="date" type="date" required /></div>
+        <div class="field"><label for="preferredTime">Preferred Time</label><input id="preferredTime" name="time" type="time" required /></div>
+        <div class="field full"><label for="bookingNotes">Notes</label><textarea id="bookingNotes" name="notes" rows="4" placeholder="Any special requests"></textarea></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Send via WhatsApp</button></div>
+      </form>
+    </div>
+  </div>
+
   <div class="fab" id="fab">
     <div class="fab-options">
-      <a class="btn btn-primary fab-icon-btn fab-action" href="index.html#quick-book" aria-label="Book appointment"><span class="fab-label">Book</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg></a>
+      <button class="btn btn-primary fab-icon-btn fab-action open-booking" type="button" aria-label="Book appointment"><span class="fab-label">Book</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path></svg></button>
       <a class="btn btn-light fab-icon-btn fab-action" href="shop.html" aria-label="Open shop"><span class="fab-label">Shop</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg></a>
       <a class="btn btn-whatsapp fab-icon-btn fab-action" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer" aria-label="WhatsApp Stuwie's"><span class="fab-label">WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7l-3.7 1 1-3.6A8 8 0 1 1 20 11.5Z"></path><path d="M9 8.8c.2 3 2.3 5.1 5.2 5.8l1.5-1.2"></path></svg></a>
       <a class="btn btn-dark fab-icon-btn fab-action" href="tel:+256706081927" aria-label="Call Stuwie's"><span class="fab-label">Call</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7l.5 2.8a2 2 0 0 1-.6 1.8l-1.3 1.3a16 16 0 0 0 4.7 4.7l1.3-1.3a2 2 0 0 1 1.8-.6l2.8.5a2 2 0 0 1 1.7 2Z"></path></svg></a>
@@ -324,8 +638,175 @@
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
   <!-- Website by Solomantalgo: https://solomantalgo.com -->
+  <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
+  <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
 
   <script>
+    const SALON_WHATSAPP = "256706081927";
+    const bookingModal = document.getElementById("bookingModal");
+    const bookingForm = document.getElementById("bookingForm");
+    let bookingCart = [];
+    document.getElementById("preferredDate").min = new Date().toISOString().split("T")[0];
+
+    function parsePrice(value) {
+      const prices = String(value).match(/\d[\d,]*/g);
+      if (!prices) return 0;
+      return Number(prices[0].replace(/,/g, "")) || 0;
+    }
+    function formatUgx(value) {
+      return `UGX ${Number(value || 0).toLocaleString("en-US")}`;
+    }
+    function cartTotal() {
+      return bookingCart.reduce((sum, item) => sum + parsePrice(item.price), 0);
+    }
+    function showCartToast(message) {
+      const toast = document.getElementById("cartToast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(showCartToast.timeout);
+      showCartToast.timeout = window.setTimeout(() => toast.classList.remove("visible"), 1800);
+    }
+    function addCartItem(item) {
+      const key = `${item.category}|${item.name}|${item.price}`;
+      if (!bookingCart.some((existing) => existing.key === key)) {
+        bookingCart.push({ ...item, key });
+        showCartToast(`${item.name} added`);
+      } else {
+        showCartToast(`${item.name} is already selected`);
+      }
+      renderCart();
+      renderSelectedServices();
+    }
+    function removeCartItem(key) {
+      bookingCart = bookingCart.filter((item) => item.key !== key);
+      renderCart();
+      renderSelectedServices();
+    }
+    function renderCart() {
+      const cart = document.getElementById("bookingCart");
+      const toggle = document.getElementById("cartToggle");
+      const items = document.getElementById("cartItems");
+      const meta = document.getElementById("cartMeta");
+      cart.classList.toggle("visible", bookingCart.length > 0);
+      if (!bookingCart.length) cart.classList.remove("open");
+      toggle.classList.toggle("visible", bookingCart.length > 0);
+      toggle.textContent = `Cart ${bookingCart.length}`;
+      toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
+      document.body.classList.toggle("cart-active", bookingCart.length > 0);
+      items.innerHTML = "";
+      bookingCart.forEach((item) => {
+        const chip = document.createElement("span");
+        chip.className = "cart-chip";
+        chip.innerHTML = `${item.name} <button type="button" aria-label="Remove ${item.name}">&times;</button>`;
+        chip.querySelector("button").addEventListener("click", () => removeCartItem(item.key));
+        items.appendChild(chip);
+      });
+      meta.textContent = `${bookingCart.length} item${bookingCart.length === 1 ? "" : "s"} selected - Estimate ${formatUgx(cartTotal())}`;
+    }
+    function renderSelectedServices() {
+      const panel = document.getElementById("selectedServices");
+      const list = document.getElementById("selectedServicesList");
+      panel.classList.toggle("visible", bookingCart.length > 0);
+      list.innerHTML = "";
+      bookingCart.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.category}: ${item.name} - UGX ${item.price}`;
+        list.appendChild(li);
+      });
+    }
+    function openBooking(serviceName = "") {
+      if (serviceName) {
+        const serviceSelect = document.getElementById("requestedService");
+        const match = Array.from(serviceSelect.options).find((option) => option.value === serviceName);
+        if (match) serviceSelect.value = serviceName;
+      }
+      renderSelectedServices();
+      bookingModal.classList.add("open");
+      bookingModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeBooking() {
+      bookingModal.classList.remove("open");
+      bookingModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    function getServiceRowName(row, fallback) {
+      const clone = row.cloneNode(true);
+      clone.querySelectorAll("span, strong, button").forEach((node) => node.remove());
+      return clone.textContent.replace(/\s+/g, " ").trim() || fallback;
+    }
+    document.querySelectorAll(".price-list li").forEach((row) => {
+      const card = row.closest(".service-card");
+      if (!card) return;
+      const category = card.querySelector("h3")?.textContent.trim() || "Service";
+      const name = getServiceRowName(row, category);
+      const price = row.querySelector("strong")?.textContent.trim() || "";
+      if (!name || !price) return;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "item-add";
+      button.textContent = "Add";
+      button.addEventListener("click", () => addCartItem({ category, name, price }));
+      row.appendChild(button);
+    });
+    document.querySelectorAll(".open-booking").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        openBooking(button.dataset.service || "");
+      });
+    });
+    document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
+    document.getElementById("cartToggle").addEventListener("click", () => {
+      const cart = document.getElementById("bookingCart");
+      const isOpen = cart.classList.toggle("open");
+      document.getElementById("cartToggle").setAttribute("aria-expanded", String(isOpen));
+    });
+    document.getElementById("modalClose").addEventListener("click", closeBooking);
+    bookingModal.addEventListener("click", (event) => { if (event.target === bookingModal) closeBooking(); });
+    bookingForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = document.getElementById("customerName").value.trim();
+      const phone = document.getElementById("customerPhone").value.trim();
+      const service = document.getElementById("requestedService").value;
+      const date = document.getElementById("preferredDate").value;
+      const time = document.getElementById("preferredTime").value;
+      const notes = document.getElementById("bookingNotes").value.trim();
+      if (!name || !phone || (!service && !bookingCart.length) || !date || !time) {
+        alert("Please enter your name, phone, service selection, preferred date and preferred time.");
+        return;
+      }
+      let message = "Hello Stuwie's Salon & Spa, I'd like to book an appointment.\n\n";
+      message += `*Name:* ${name}\n*Phone:* ${phone}\n`;
+      message += `*Service:* ${bookingCart.length ? "Multiple selected services" : service}\n`;
+      if (bookingCart.length) {
+        message += "*Items:*\n";
+        message += bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - UGX ${item.price}`).join("\n");
+        message += `\n*Estimated Total:* ${formatUgx(cartTotal())}\n`;
+      }
+      message += `*Date:* ${date}\n*Time:* ${time}\n`;
+      if (notes) message += `*Notes:* ${notes}\n`;
+      window.open(`https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank");
+      closeBooking();
+    });
+
+    function activateServicePanel(panel) {
+      const panels = document.getElementById("servicePanels");
+      document.querySelectorAll(".service-panel").forEach((item) => item.classList.remove("active", "all-visible"));
+      if (panel === "all") {
+        panels.classList.add("all-mode");
+        document.querySelectorAll(".service-panel").forEach((item) => item.classList.add("all-visible"));
+        return;
+      }
+      panels.classList.remove("all-mode");
+      document.getElementById(`panel-${panel}`).classList.add("active");
+    }
+    document.querySelectorAll(".service-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".service-tab").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        activateServicePanel(tab.dataset.panel);
+      });
+    });
     document.getElementById("fabToggle").addEventListener("click", () => {
       const fab = document.getElementById("fab");
       const isOpen = fab.classList.toggle("open");
