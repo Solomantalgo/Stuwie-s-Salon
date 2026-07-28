@@ -1717,7 +1717,6 @@
         <div class="form-actions">
           <button class="btn btn-primary" id="sendBookingRequest" type="submit">Send Booking Request</button>
         </div>
-        <p class="form-note">Booking notifications use a Google Apps Script Web App after configuration. It emails the salon and saves the request to a styled Google Sheet.</p>
       </form>
     </div>
   </div>
@@ -1743,7 +1742,6 @@
     <p>No Place You'd Rather Be</p>
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
-  <!-- Website by Solomantalgo: https://solomantalgo.com -->
   <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
   <div class="image-modal" id="mapImageModal" aria-hidden="true">
@@ -1757,20 +1755,6 @@
   </div>
 
   <script>
-    /*
-      Booking notification configuration
-      Service used: Google Apps Script Web App.
-      Before launch:
-      1. Create a Google Sheet for bookings.
-      2. Open Extensions > Apps Script and paste apps-script-booking.gs.
-      3. Set SALON_EMAIL and SHEET_ID in Apps Script.
-      4. Deploy as Web App: Execute as "Me", access "Anyone".
-      5. Replace BOOKING_WEB_APP_URL below with the deployment URL.
-
-      If BOOKING_WEB_APP_URL is left unchanged, this demo does not open a new
-      window or email client; it logs the generated payload for developer
-      inspection and shows the normal confirmation UI.
-    */
     const SALON_WHATSAPP = "256706081927";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
     const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKb63CyNeW5w65Aglh6sK1ZtrdFZbQXHyeE9Cf8HmEKGZOBNyGECqGJy5GudF3lN6T/exec";
