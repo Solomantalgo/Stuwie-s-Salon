@@ -135,6 +135,20 @@
     .btn-primary:hover { background: #004f90; }
     .btn-dark { background: var(--black); color: white; }
     .btn-light { background: white; color: var(--blue); border: 1px solid var(--line); }
+    .btn-whatsapp { background: #25d366; color: #06170c; border: 1px solid rgba(255,255,255,0.28); }
+    .btn-whatsapp:hover { background: #1ebe5d; }
+    .wa-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      background: #fff;
+      color: #128c4a;
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1;
+    }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 34, 67, 0.16); }
     .btn.is-loading {
       pointer-events: none;
@@ -272,6 +286,24 @@
       font-weight: 850;
       backdrop-filter: blur(10px);
     }
+    .hero-proof {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 690px;
+      margin: 0 0 24px;
+      animation: fadeUp 0.8s ease 0.26s both;
+    }
+    .proof-pill {
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 10px 11px;
+      backdrop-filter: blur(10px);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
     .hero-actions, .contact-actions {
       display: flex;
       flex-wrap: wrap;
@@ -320,7 +352,7 @@
       line-height: 1;
     }
     .section-head p { max-width: 520px; color: var(--muted); margin: 0; }
-    .trust-grid, .service-grid, .team-grid, .gallery-grid, .package-grid {
+    .trust-grid, .service-grid, .team-grid, .gallery-grid, .package-grid, .quick-book-grid, .product-grid, .offer-grid {
       display: grid;
       gap: 16px;
     }
@@ -381,6 +413,63 @@
     .trust-card:nth-child(5) .trust-icon::before { content: "◇"; }
     .trust-card h3, .service-card h3, .member-card h3, .package-card h3 { margin: 0 0 8px; }
     .trust-card p, .member-card p, .package-card p { margin: 0; color: var(--muted); }
+
+    #quick-book {
+      padding-top: 38px;
+      background: var(--paper);
+    }
+    .quick-book-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .quick-book-card {
+      min-height: 210px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      align-items: end;
+      color: white;
+      text-decoration: none;
+      background: #111;
+      border: 1px solid rgba(0,100,180,0.18);
+    }
+    .quick-book-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.55s ease, filter 0.55s ease;
+      z-index: -2;
+    }
+    .quick-book-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.72));
+      z-index: -1;
+    }
+    .quick-book-card:hover img { transform: scale(1.06); filter: saturate(1.08); }
+    .quick-book-body {
+      width: 100%;
+      padding: 18px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .quick-book-body h3 { margin: 0; font-size: 24px; line-height: 1.05; }
+    .mini-book-btn {
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--blue);
+      color: #fff;
+      min-height: 38px;
+      padding: 8px 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
 
     #services, #gallery { background: var(--wash); }
     .service-tabs {
@@ -563,6 +652,85 @@
     .price-list span { color: var(--muted); font-size: 13px; }
     .price-list strong { color: var(--blue); white-space: nowrap; }
     .package-price { color: var(--warm); }
+
+    #featured-products { background: var(--paper); }
+    .product-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .product-card, .offer-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      overflow: hidden;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    }
+    .product-card:hover, .offer-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0, 100, 180, 0.34);
+    }
+    .product-card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+    }
+    .product-body {
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .product-body h3 { margin: 0; font-size: 19px; line-height: 1.15; }
+    .product-price { color: var(--blue); font-weight: 950; }
+    .product-card .btn { width: 100%; min-height: 40px; padding: 9px 11px; font-size: 13px; }
+    .section-actions {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+    }
+    .offer-grid { grid-template-columns: repeat(4, 1fr); }
+    .offer-card {
+      min-height: 178px;
+      padding: 20px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+    }
+    .offer-card.today {
+      background: linear-gradient(135deg, #07131d, #0d2c43);
+      color: white;
+      border-color: rgba(255,255,255,0.14);
+    }
+    .offer-card h3 { margin: 0; font-size: 22px; line-height: 1.1; }
+    .offer-card p { margin: 0; color: var(--muted); }
+    .offer-card.today p { color: rgba(255,255,255,0.76); }
+    .offer-tag {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--warm-soft);
+      color: #6e3f05;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .offer-card.today .offer-tag { background: var(--warm); color: #111; }
+    .offer-pop {
+      position: fixed;
+      right: 18px;
+      bottom: 92px;
+      z-index: 31;
+      width: min(340px, calc(100vw - 36px));
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: var(--radius);
+      background: #07131d;
+      color: #fff;
+      box-shadow: 0 20px 54px rgba(0,0,0,0.34);
+      padding: 16px;
+      display: none;
+    }
+    .offer-pop.visible { display: block; animation: fadeUp 0.28s ease both; }
+    .offer-pop h3 { margin: 0 0 6px; }
+    .offer-pop p { margin: 0 0 12px; color: rgba(255,255,255,0.76); }
+    .offer-pop-actions { display: flex; gap: 10px; }
 
     .packages {
       background:
@@ -906,6 +1074,54 @@
     .fab a, .fab button {
       box-shadow: var(--shadow);
     }
+    .fab-toggle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 0;
+    }
+    .fab-icon-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      padding: 0;
+      border: 0;
+    }
+    .fab svg {
+      width: 21px;
+      height: 21px;
+      stroke: currentColor;
+      stroke-width: 2.25;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .fab-label {
+      position: absolute;
+      right: 58px;
+      min-width: max-content;
+      border-radius: 999px;
+      background: rgba(0, 13, 28, 0.9);
+      color: white;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 850;
+      opacity: 0;
+      transform: translateX(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .fab-action {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fab-action:hover .fab-label,
+    .fab-action:focus-visible .fab-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
 
     footer {
       background: var(--black);
@@ -959,6 +1175,7 @@
       .trust-grid { grid-template-columns: repeat(2, 1fr); }
       .service-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .service-grid, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: repeat(2, 1fr); }
       .package-grid { grid-template-columns: 1fr 1fr; }
       .package-card.featured-package { grid-column: 1 / -1; grid-row: auto; }
       .package-card.featured-package img { height: 300px; }
@@ -972,6 +1189,8 @@
       .logo-panel { max-width: 170px; }
       .logo-panel img { height: 135px; }
       .trust-grid, .service-grid, .package-grid, .team-grid, .gallery-grid, .booking-form, .form-actions { grid-template-columns: 1fr; }
+      .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: 1fr; }
+      .hero-proof { grid-template-columns: 1fr 1fr; }
       .field.full, .form-actions, .form-note { grid-column: auto; }
       .gallery-item { min-height: 210px; }
       .service-tabs { grid-template-columns: 1fr 1fr; }
@@ -992,6 +1211,8 @@
         grid-column: 2;
         grid-row: 1;
       }
+      .fab { right: 14px; bottom: 14px; }
+      .offer-pop { bottom: 84px; }
     }
     .reveal {
       opacity: 0;
@@ -1046,7 +1267,10 @@
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand-mark" href="#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
       <div class="nav-links">
+        <a href="#quick-book">Book</a>
         <a href="#services">Services</a>
+        <a href="shop.html">Shop</a>
+        <a href="#offers">Offers</a>
         <a href="#contact">Contact</a>
       </div>
       <button class="btn btn-primary open-booking" type="button">Book Now</button>
@@ -1061,10 +1285,16 @@
           <p class="eyebrow">Nansana-Masitowa, Kampala</p>
           <h1>Stuwie's Salon & Spa</h1>
           <p class="hero-copy">Look Good. Feel Great. Be Your Best.</p>
-          <p class="hero-subcopy">Professional salon, spa, barbering and beauty care in Nansana-Masitowa.</p>
+          <p class="hero-subcopy">Nansana's premium destination for barbering, beauty, spa and wellness. Book your appointment in under a minute.</p>
+          <div class="hero-proof" aria-label="Salon highlights">
+            <div class="proof-pill">4.9/5 Customer Rating</div>
+            <div class="proof-pill">3,000+ Happy Clients</div>
+            <div class="proof-pill">Wilsen Hotel, Nansana</div>
+            <div class="proof-pill">Open Daily</div>
+          </div>
           <div class="hero-actions">
             <button class="btn btn-primary open-booking" type="button">Book an Appointment</button>
-            <a class="btn btn-light" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer">WhatsApp Us</a>
+            <a class="btn btn-whatsapp" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer"><span class="wa-icon" aria-hidden="true">WA</span>WhatsApp Us</a>
           </div>
         </div>
       </div>
@@ -1079,6 +1309,23 @@
           <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Relaxing Experience</h3><p>A calm, clean and comfortable salon environment.</p></article>
           <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Hygiene & Safety</h3><p>Your health and safety stay our top priority.</p></article>
           <article class="trust-card reveal"><div class="trust-icon" aria-hidden="true"></div><h3>Value for Money</h3><p>Full-service care at approachable prices.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="quick-book">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">What can I book?</p><h2>Start with your service</h2></div>
+          <p>Pick the care you need, then send one clear booking request with your preferred date and time.</p>
+        </div>
+        <div class="quick-book-grid">
+          <article class="quick-book-card reveal"><img src="assets/images/Barbering (Gents).png" alt="Barbering service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Barbering</h3><button class="mini-book-btn open-booking" data-service="Barbering (Gents)" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Ladies Hair</h3><button class="mini-book-btn open-booking" data-service="Hair Services (Ladies)" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/nail-enhancements.png" alt="Nail service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Nails</h3><button class="mini-book-btn open-booking" data-service="Nail Enhancements" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Massages.png" alt="Spa and massage service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Spa & Massage</h3><button class="mini-book-btn open-booking" data-service="Massages" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/hero.webp" alt="Steam and sauna service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Steam & Sauna</h3><button class="mini-book-btn open-booking" data-service="Targeted Care" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Team.png" alt="Kids salon service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Kids Services</h3><button class="mini-book-btn open-booking" data-service="Kids Services" type="button">Book</button></div></article>
         </div>
       </div>
     </section>
@@ -1133,6 +1380,22 @@
       </div>
     </section>
 
+    <section id="featured-products">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Featured Products</p><h2>Take the salon care home</h2></div>
+          <p>Order hair, beard, skin and gift items directly on WhatsApp.</p>
+        </div>
+        <div class="product-grid">
+          <article class="product-card reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><div class="product-price">From UGX 25,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products" data-price="From UGX 25,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card reveal"><img src="assets/images/Barbering (Gents).png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><div class="product-price">From UGX 20,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils" data-price="From UGX 20,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card reveal"><img src="assets/images/BodyScrab.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><div class="product-price">From UGX 18,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion" data-price="From UGX 18,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card reveal"><img src="assets/images/royal-glow-package.png" alt="Gift voucher" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><div class="product-price">From UGX 50,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers" data-price="From UGX 50,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+        </div>
+        <div class="section-actions reveal"><a class="btn btn-primary" href="shop.html">View All Products</a></div>
+      </div>
+    </section>
+
     <section class="packages" id="packages">
       <div class="section-inner">
         <div class="section-head reveal">
@@ -1144,6 +1407,21 @@
           <article class="package-card reveal"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" /><div class="package-body"><h3>Couples Spa Escape</h3><p>Scrub + Massage + Facial, 2.5 hours each.</p><div class="package-price">300,000</div></div></article>
           <article class="package-card reveal"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" /><div class="package-body"><h3>Bridal Luxury</h3><p>Facial, massage, manicure, pedicure, waxing and hair treatment.</p><div class="package-price">380,000</div></div></article>
           <article class="package-card reveal"><img src="assets/images/vip-group-package.png" alt="Group package" /><div class="package-body"><h3>VIP & Group</h3><p>Birthday spa party for 4+ people, refreshments included.</p><div class="package-price">From 150,000 pp</div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="offers">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Memberships & Offers</p><h2>Reasons to come back</h2></div>
+          <p>Offers are visible without crowding the hero. The midweek discount becomes a small pop-up only on Tuesday or Wednesday.</p>
+        </div>
+        <div class="offer-grid">
+          <article class="offer-card reveal" id="midweekOffer"><span class="offer-tag">Tuesday & Wednesday</span><h3>15% Off</h3><p>Book selected services on Tuesday or Wednesday and ask for the midweek discount.</p></article>
+          <article class="offer-card reveal"><span class="offer-tag">Birthday Month</span><h3>Birthday Month Discount</h3><p>Celebrate with a discounted beauty, barbering or spa visit during your birthday month.</p></article>
+          <article class="offer-card reveal"><span class="offer-tag">Bring someone</span><h3>Refer a Friend</h3><p>Refer a new client and ask the team about the current reward on your next visit.</p></article>
+          <article class="offer-card reveal"><span class="offer-tag">Membership</span><h3>Loyalty Card</h3><p>10 visits earns a free haircut.</p></article>
         </div>
       </div>
     </section>
@@ -1232,10 +1510,21 @@
 
   <div class="fab" id="fab">
     <div class="fab-options">
-      <a class="btn btn-light" href="tel:+256706081927">Call</a>
-      <a class="btn btn-light" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer">WhatsApp</a>
+      <button class="btn btn-primary fab-icon-btn fab-action open-booking" type="button" aria-label="Book appointment"><span class="fab-label">Book</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path></svg></button>
+      <a class="btn btn-whatsapp fab-icon-btn fab-action" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20book%20a%20service." target="_blank" rel="noreferrer" aria-label="WhatsApp Stuwie's"><span class="fab-label">WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7l-3.7 1 1-3.6A8 8 0 1 1 20 11.5Z"></path><path d="M9 8.8c.2 3 2.3 5.1 5.2 5.8l1.5-1.2"></path></svg></a>
+      <a class="btn btn-dark fab-icon-btn fab-action" href="tel:+256706081927" aria-label="Call Stuwie's"><span class="fab-label">Call</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7l.5 2.8a2 2 0 0 1-.6 1.8l-1.3 1.3a16 16 0 0 0 4.7 4.7l1.3-1.3a2 2 0 0 1 1.8-.6l2.8.5a2 2 0 0 1 1.7 2Z"></path></svg></a>
+      <a class="btn btn-light fab-icon-btn fab-action" href="https://www.google.com/maps/search/?api=1&query=Wilsen%20Hotel%20Nansana%20Masitowa%20Wilsen%20Mall" target="_blank" rel="noreferrer" aria-label="Get directions"><span class="fab-label">Directions</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-5.3 7-12a7 7 0 0 0-14 0c0 6.7 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg></a>
     </div>
-    <button class="btn btn-primary" id="fabToggle" type="button" aria-expanded="false">Contact</button>
+    <button class="btn btn-primary fab-toggle" id="fabToggle" type="button" aria-expanded="false" aria-label="Open quick actions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>
+  </div>
+
+  <div class="offer-pop" id="offerPop" role="status" aria-live="polite">
+    <h3>15% Off Today</h3>
+    <p>It is midweek offer day. Book selected services and ask for the Tuesday / Wednesday discount.</p>
+    <div class="offer-pop-actions">
+      <button class="btn btn-primary open-booking" type="button">Book Now</button>
+      <button class="btn btn-light" id="offerPopClose" type="button">Close</button>
+    </div>
   </div>
 
   <div class="booking-modal" id="bookingModal" aria-hidden="true">
@@ -1252,7 +1541,7 @@
         <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
         <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
         <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
-        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Signature Combos</option><option>Massages</option><option>Targeted Care</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Nail Enhancements</option><option>Hair Services (Ladies)</option><option>Barbering (Gents)</option><option>Royal Glow Experience</option><option>Couples Spa Escape</option><option>Bridal Luxury</option><option>VIP & Group</option><option>Gift Voucher</option></select></div>
+        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Signature Combos</option><option>Massages</option><option>Targeted Care</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Nail Enhancements</option><option>Hair Services (Ladies)</option><option>Barbering (Gents)</option><option>Steam & Sauna</option><option>Kids Services</option><option>Royal Glow Experience</option><option>Couples Spa Escape</option><option>Bridal Luxury</option><option>VIP & Group</option><option>Gift Voucher</option></select></div>
         <div class="subcategory-panel" id="subcategoryPanel">
           <strong>Choose specific options</strong>
           <div class="subcategory-options" id="subcategoryOptions"></div>
@@ -1367,9 +1656,24 @@
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
     }
-    document.querySelectorAll(".open-booking").forEach((button) => button.addEventListener("click", () => openBooking()));
+    document.querySelectorAll(".open-booking").forEach((button) => button.addEventListener("click", () => openBooking(button.dataset.service || "")));
     document.getElementById("modalClose").addEventListener("click", closeBooking);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeBooking(); });
+    document.querySelectorAll(".product-order").forEach((link) => {
+      const product = link.dataset.product;
+      const price = link.dataset.price;
+      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Price shown: ${price}. Please confirm availability.`;
+      link.href = `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+    });
+    const offerPop = document.getElementById("offerPop");
+    const todayDay = new Date().getDay();
+    if (todayDay === 2 || todayDay === 3) {
+      document.getElementById("midweekOffer")?.classList.add("today");
+      window.setTimeout(() => offerPop.classList.add("visible"), 1200);
+    }
+    document.getElementById("offerPopClose").addEventListener("click", () => offerPop.classList.remove("visible"));
 
     function openConfirmation(data) {
       lastSubmittedBooking = data;

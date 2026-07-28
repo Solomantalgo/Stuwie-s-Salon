@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop | Stuwie's Salon & Spa</title>
+  <meta name="description" content="Shop hair products, beard oils, shampoos, conditioners, hair food, body lotion, perfumes and gift vouchers from Stuwie's Salon & Spa." />
+  <link rel="icon" href="assets/Stuwie LogoClare_page-0001.jpg" type="image/jpeg" />
+  <style>
+    :root {
+      --blue: #0064b4;
+      --blue-bright: #009fe3;
+      --warm: #d9a15f;
+      --warm-soft: #fff3df;
+      --ink: #141414;
+      --muted: #5f6670;
+      --paper: #ffffff;
+      --wash: #f5f9fc;
+      --line: rgba(0, 100, 180, 0.18);
+      --shadow: 0 18px 44px rgba(0, 34, 67, 0.13);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--wash);
+      line-height: 1.55;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(0, 13, 28, 0.94);
+      border-bottom: 1px solid rgba(0, 159, 227, 0.22);
+      backdrop-filter: blur(16px);
+    }
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: white;
+      font-weight: 800;
+    }
+    .brand-mark img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.88);
+      padding: 3px;
+    }
+    .brand-mark span {
+      color: var(--blue-bright);
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.82);
+      text-decoration: none;
+      font-weight: 750;
+    }
+    .nav-links a:hover { color: white; }
+    .btn {
+      border: 0;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      text-decoration: none;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 34, 67, 0.16); }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-dark { background: #000; color: white; }
+    .btn-light { background: white; color: var(--blue); border: 1px solid var(--line); }
+    .btn-whatsapp { background: #25d366; color: #06170c; border: 1px solid rgba(255,255,255,0.28); }
+    .wa-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      background: #fff;
+      color: #128c4a;
+      font-size: 10px;
+      font-weight: 950;
+    }
+    .shop-hero {
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.86), rgba(0,0,0,0.38)),
+        url("assets/images/Hair Services (Ladies).png") center/cover;
+      color: white;
+      padding: 90px 20px 70px;
+    }
+    .shop-hero-inner, .section-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      color: var(--blue-bright);
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 12px;
+      font-family: "Segoe Script", "Brush Script MT", cursive;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: 0.95;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .shop-hero p:not(.eyebrow) {
+      max-width: 560px;
+      color: rgba(255,255,255,0.84);
+      font-size: 18px;
+      margin: 18px 0 0;
+    }
+    section { padding: 70px 20px; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(30px, 4.2vw, 50px);
+      line-height: 1;
+    }
+    .section-head p { margin: 0; max-width: 520px; color: var(--muted); }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .product-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      overflow: hidden;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0, 100, 180, 0.34);
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .product-body {
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .product-body h3 { margin: 0; font-size: 20px; line-height: 1.15; }
+    .product-price { color: var(--blue); font-weight: 950; }
+    .product-card .btn { width: 100%; min-height: 40px; padding: 9px 11px; font-size: 13px; }
+    .route-strip {
+      background: #000;
+      color: white;
+      padding: 24px 20px;
+    }
+    .route-strip .section-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .route-strip p { margin: 0; color: rgba(255,255,255,0.76); }
+    .route-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    footer {
+      background: #000;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    footer p { margin: 6px 0; color: rgba(255,255,255,0.76); }
+    .fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: grid;
+      gap: 10px;
+      justify-items: end;
+    }
+    .fab-options {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .fab.open .fab-options { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .fab-toggle, .fab-icon-btn {
+      border-radius: 50%;
+      padding: 0;
+      box-shadow: var(--shadow);
+    }
+    .fab-toggle { width: 58px; height: 58px; }
+    .fab-icon-btn { width: 48px; height: 48px; }
+    .fab svg {
+      width: 21px;
+      height: 21px;
+      stroke: currentColor;
+      stroke-width: 2.25;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .fab-label {
+      position: absolute;
+      right: 58px;
+      min-width: max-content;
+      border-radius: 999px;
+      background: rgba(0, 13, 28, 0.9);
+      color: white;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 850;
+      opacity: 0;
+      transform: translateX(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .fab-action {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fab-action:hover .fab-label,
+    .fab-action:focus-visible .fab-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+    }
+    @media (max-width: 620px) {
+      section { padding: 54px 16px; }
+      .shop-hero { padding: 82px 16px 58px; }
+      .product-grid { grid-template-columns: 1fr; }
+      .product-card img { height: 210px; }
+      .fab { right: 14px; bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand-mark" href="index.html#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
+      <div class="nav-links">
+        <a href="index.html#quick-book">Book</a>
+        <a href="index.html#services">Services</a>
+        <a href="shop.html">Shop</a>
+        <a href="index.html#offers">Offers</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <a class="btn btn-primary" href="index.html#quick-book">Book Now</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="shop-hero">
+      <div class="shop-hero-inner">
+        <p class="eyebrow">Stuwie's Shop</p>
+        <h1>Products, perfumes and gift vouchers</h1>
+        <p>Browse the catalogue, order on WhatsApp, and the team will confirm available brands, sizes and final price before pickup or delivery.</p>
+      </div>
+    </section>
+
+    <section id="catalogue">
+      <div class="section-inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Catalogue</p><h2>Order on WhatsApp</h2></div>
+          <p>Prices are starting estimates until the client provides the final product list and sizes.</p>
+        </div>
+        <div class="product-grid">
+          <article class="product-card"><img src="assets/images/Hair Services (Ladies).png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><div class="product-price">From UGX 25,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products" data-price="From UGX 25,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/Barbering (Gents).png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><div class="product-price">From UGX 20,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils" data-price="From UGX 20,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/Facials.png" alt="Shampoos" loading="lazy" decoding="async" /><div class="product-body"><h3>Shampoos</h3><div class="product-price">From UGX 22,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Shampoos" data-price="From UGX 22,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/Manicure & Pedicure.png" alt="Conditioners" loading="lazy" decoding="async" /><div class="product-body"><h3>Conditioners</h3><div class="product-price">From UGX 22,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Conditioners" data-price="From UGX 22,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/waxing.png" alt="Hair food" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Food</h3><div class="product-price">From UGX 15,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Food" data-price="From UGX 15,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/BodyScrab.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><div class="product-price">From UGX 18,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion" data-price="From UGX 18,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/Spa Packages  Couples.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><div class="product-price">From UGX 35,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes" data-price="From UGX 35,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/royal-glow-package.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><div class="product-price">From UGX 50,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers" data-price="From UGX 50,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+        </div>
+      </div>
+    </section>
+
+    <div class="route-strip">
+      <div class="section-inner">
+        <p>Need a service instead of a product?</p>
+        <div class="route-actions">
+          <a class="btn btn-primary" href="index.html#quick-book">Book a Service</a>
+          <a class="btn btn-light" href="index.html#offers">See Offers</a>
+          <a class="btn btn-dark" href="index.html#contact">Contact Salon</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="fab" id="fab">
+    <div class="fab-options">
+      <a class="btn btn-primary fab-icon-btn fab-action" href="index.html#quick-book" aria-label="Book appointment"><span class="fab-label">Book</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path></svg></a>
+      <a class="btn btn-whatsapp fab-icon-btn fab-action" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20order%20a%20product." target="_blank" rel="noreferrer" aria-label="WhatsApp Stuwie's"><span class="fab-label">WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7l-3.7 1 1-3.6A8 8 0 1 1 20 11.5Z"></path><path d="M9 8.8c.2 3 2.3 5.1 5.2 5.8l1.5-1.2"></path></svg></a>
+      <a class="btn btn-dark fab-icon-btn fab-action" href="tel:+256706081927" aria-label="Call Stuwie's"><span class="fab-label">Call</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7l.5 2.8a2 2 0 0 1-.6 1.8l-1.3 1.3a16 16 0 0 0 4.7 4.7l1.3-1.3a2 2 0 0 1 1.8-.6l2.8.5a2 2 0 0 1 1.7 2Z"></path></svg></a>
+      <a class="btn btn-light fab-icon-btn fab-action" href="https://www.google.com/maps/search/?api=1&query=Wilsen%20Hotel%20Nansana%20Masitowa%20Wilsen%20Mall" target="_blank" rel="noreferrer" aria-label="Get directions"><span class="fab-label">Directions</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-5.3 7-12a7 7 0 0 0-14 0c0 6.7 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg></a>
+    </div>
+    <button class="btn btn-primary fab-toggle" id="fabToggle" type="button" aria-expanded="false" aria-label="Open quick actions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>
+  </div>
+
+  <footer>
+    <strong>Stuwie's Salon & Spa</strong>
+    <p>No Place You'd Rather Be</p>
+    <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
+  </footer>
+
+  <script>
+    const SALON_WHATSAPP = "256706081927";
+    document.querySelectorAll(".product-order").forEach((link) => {
+      const product = link.dataset.product;
+      const price = link.dataset.price;
+      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Price shown: ${price}. Please confirm availability.`;
+      link.href = `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+    });
+    document.getElementById("fabToggle").addEventListener("click", () => {
+      const fab = document.getElementById("fab");
+      const isOpen = fab.classList.toggle("open");
+      document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
+    });
+  </script>
+</body>
+</html>
