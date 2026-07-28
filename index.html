@@ -1220,33 +1220,6 @@
       text-decoration: none;
     }
     .site-credit a:hover { color: var(--blue-bright); }
-    .demo-badge {
-      position: fixed;
-      left: 16px;
-      top: 84px;
-      z-index: 29;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid rgba(0, 100, 180, 0.18);
-      background: rgba(255,255,255,0.9);
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 8px 11px;
-      font-size: 12px;
-      font-weight: 850;
-      box-shadow: 0 10px 24px rgba(0,34,67,0.12);
-      backdrop-filter: blur(10px);
-    }
-    .demo-badge::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--warm);
-      animation: demoPulse 1.5s ease-in-out infinite;
-    }
-
     @media (max-width: 980px) {
       .nav-links { display: none; }
       .hero-inner, .team-layout, .contact-layout { grid-template-columns: 1fr; }
@@ -1416,14 +1389,9 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    @keyframes demoPulse {
-      0%, 100% { opacity: 0.45; transform: scale(0.9); }
-      50% { opacity: 1; transform: scale(1.18); }
-    }
   </style>
 </head>
 <body>
-  <div class="demo-badge" aria-label="Demo site notice">Demo site</div>
   <header class="site-header">
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand-mark" href="#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
@@ -1574,7 +1542,6 @@
       <div class="section-inner">
         <div class="section-head reveal">
           <div><p class="eyebrow">Memberships & Offers</p><h2>Reasons to come back</h2></div>
-          <p>Offers are visible without crowding the hero. The midweek discount becomes a small pop-up only on Tuesday or Wednesday.</p>
         </div>
         <div class="offer-grid">
           <article class="offer-card reveal" id="midweekOffer"><span class="offer-tag">Tuesday & Wednesday</span><h3>15% Off</h3><p>Book selected services on Tuesday or Wednesday and ask for the midweek discount.</p></article>
@@ -1742,6 +1709,7 @@
     <p>No Place You'd Rather Be</p>
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
+  <!-- Website by Solomantalgo: https://solomantalgo.com -->
   <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
   <div class="image-modal" id="mapImageModal" aria-hidden="true">
