@@ -304,7 +304,23 @@
       font-weight: 850;
       line-height: 1.25;
     }
-    .proof-icon, .rating-star { color: #d9a15f; }
+    .rating-star { color: #d9a15f; }
+    .proof-icon {
+      width: 15px;
+      height: 15px;
+      vertical-align: -2px;
+      margin-right: 4px;
+    }
+    .proof-icon.clients { color: var(--blue-bright); }
+    .proof-icon.location { color: #ef4444; }
+    .proof-icon.open { color: #25d366; }
+    .proof-icon path, .proof-icon circle, .proof-icon polyline {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .hero-actions, .contact-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1418,9 +1434,9 @@
           <p class="hero-subcopy">Nansana's premium destination for barbering, beauty, spa and wellness. Book your appointment in under a minute.</p>
           <div class="hero-proof" aria-label="Salon highlights">
             <div class="proof-pill"><span class="rating-star">★</span> 4.9/5 Customer Rating</div>
-            <div class="proof-pill"><span class="proof-icon">◆</span> <span id="happyClientsCount">0</span>+ Happy Clients</div>
-            <div class="proof-pill"><span class="proof-icon">⌖</span> Wilsen Hotel, Nansana</div>
-            <div class="proof-pill"><span class="proof-icon">◷</span> Open Daily</div>
+            <div class="proof-pill"><svg class="proof-icon clients" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg><span id="happyClientsCount">0</span>+ Happy Clients</div>
+            <div class="proof-pill"><svg class="proof-icon location" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-5.3 7-12a7 7 0 0 0-14 0c0 6.7 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Wilsen Hotel, Nansana</div>
+            <div class="proof-pill"><svg class="proof-icon open" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 16 14"></polyline></svg>Open Daily</div>
           </div>
           <div class="hero-actions">
             <button class="btn btn-primary open-booking" type="button">Book an Appointment</button>
