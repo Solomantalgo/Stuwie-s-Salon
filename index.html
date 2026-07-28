@@ -304,6 +304,7 @@
       font-weight: 850;
       line-height: 1.25;
     }
+    .proof-icon, .rating-star { color: #d9a15f; }
     .hero-actions, .contact-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1416,10 +1417,10 @@
           <p class="hero-copy">Look Good. Feel Great. Be Your Best.</p>
           <p class="hero-subcopy">Nansana's premium destination for barbering, beauty, spa and wellness. Book your appointment in under a minute.</p>
           <div class="hero-proof" aria-label="Salon highlights">
-            <div class="proof-pill">★ 4.9/5 Customer Rating</div>
-            <div class="proof-pill">3,000+ Happy Clients</div>
-            <div class="proof-pill">Wilsen Hotel, Nansana</div>
-            <div class="proof-pill">Open Daily</div>
+            <div class="proof-pill"><span class="rating-star">★</span> 4.9/5 Customer Rating</div>
+            <div class="proof-pill"><span class="proof-icon">◆</span> <span id="happyClientsCount">0</span>+ Happy Clients</div>
+            <div class="proof-pill"><span class="proof-icon">⌖</span> Wilsen Hotel, Nansana</div>
+            <div class="proof-pill"><span class="proof-icon">◷</span> Open Daily</div>
           </div>
           <div class="hero-actions">
             <button class="btn btn-primary open-booking" type="button">Book an Appointment</button>
@@ -1756,6 +1757,23 @@
       element.style.transitionDelay = `${Math.min(index % 5, 4) * 70}ms`;
       revealObserver.observe(element);
     });
+
+    function animateCount(element, target, duration = 1900) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion) {
+        element.textContent = target.toLocaleString("en-US");
+        return;
+      }
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        element.textContent = Math.round(target * eased).toLocaleString("en-US");
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    animateCount(document.getElementById("happyClientsCount"), 3000);
 
     function openBooking(serviceName = "") {
       if (serviceName) {
