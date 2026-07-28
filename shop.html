@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shop | Stuwie's Salon & Spa</title>
   <meta name="description" content="Shop hair products, beard oils, shampoos, conditioners, hair food, body lotion, perfumes and gift vouchers from Stuwie's Salon & Spa." />
+  <meta name="author" content="Solomantalgo" />
   <link rel="icon" href="assets/Stuwie LogoClare_page-0001.jpg" type="image/jpeg" />
   <style>
     :root {
@@ -112,9 +113,8 @@
       place-items: center;
       background: #fff;
       color: #128c4a;
-      font-size: 10px;
-      font-weight: 950;
     }
+    .wa-icon svg { width: 13px; height: 13px; fill: currentColor; }
     .shop-hero {
       background:
         linear-gradient(90deg, rgba(0,0,0,0.86), rgba(0,0,0,0.38)),
@@ -166,6 +166,7 @@
       gap: 16px;
     }
     .product-card {
+      position: relative;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: white;
@@ -188,8 +189,16 @@
       gap: 10px;
     }
     .product-body h3 { margin: 0; font-size: 20px; line-height: 1.15; }
-    .product-price { color: var(--blue); font-weight: 950; }
-    .product-card .btn { width: 100%; min-height: 40px; padding: 9px 11px; font-size: 13px; }
+    .product-price { display: none; }
+    .product-card .btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      min-height: 36px;
+      padding: 8px 11px;
+      font-size: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+    }
     .route-strip {
       background: #000;
       color: white;
@@ -297,12 +306,12 @@
       <a class="brand-mark" href="index.html#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
       <div class="nav-links">
         <a href="index.html#quick-book">Book</a>
-        <a href="index.html#services">Services</a>
+        <a href="services.html">Services</a>
         <a href="shop.html">Shop</a>
         <a href="index.html#offers">Offers</a>
         <a href="index.html#contact">Contact</a>
       </div>
-      <a class="btn btn-primary" href="index.html#quick-book">Book Now</a>
+      <a class="btn btn-primary" href="services.html">Services</a>
     </nav>
   </header>
 
@@ -319,17 +328,17 @@
       <div class="section-inner">
         <div class="section-head">
           <div><p class="eyebrow">Catalogue</p><h2>Order on WhatsApp</h2></div>
-          <p>Prices are starting estimates until the client provides the final product list and sizes.</p>
+          <p>Prices will be added after the client confirms the final product list and sizes.</p>
         </div>
         <div class="product-grid">
-          <article class="product-card"><img src="assets/images/Hair Services (Ladies).png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><div class="product-price">From UGX 25,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products" data-price="From UGX 25,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/Barbering (Gents).png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><div class="product-price">From UGX 20,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils" data-price="From UGX 20,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/Facials.png" alt="Shampoos" loading="lazy" decoding="async" /><div class="product-body"><h3>Shampoos</h3><div class="product-price">From UGX 22,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Shampoos" data-price="From UGX 22,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/Manicure & Pedicure.png" alt="Conditioners" loading="lazy" decoding="async" /><div class="product-body"><h3>Conditioners</h3><div class="product-price">From UGX 22,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Conditioners" data-price="From UGX 22,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/waxing.png" alt="Hair food" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Food</h3><div class="product-price">From UGX 15,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Food" data-price="From UGX 15,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/BodyScrab.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><div class="product-price">From UGX 18,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion" data-price="From UGX 18,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/Spa Packages  Couples.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><div class="product-price">From UGX 35,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes" data-price="From UGX 35,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
-          <article class="product-card"><img src="assets/images/royal-glow-package.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><div class="product-price">From UGX 50,000</div><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers" data-price="From UGX 50,000"><span class="wa-icon" aria-hidden="true">WA</span>Order on WhatsApp</a></div></article>
+          <article class="product-card"><img src="assets/images/Hair Services (Ladies).png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/Barbering (Gents).png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/Facials.png" alt="Shampoos" loading="lazy" decoding="async" /><div class="product-body"><h3>Shampoos</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Shampoos"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/Manicure & Pedicure.png" alt="Conditioners" loading="lazy" decoding="async" /><div class="product-body"><h3>Conditioners</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Conditioners"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/waxing.png" alt="Hair food" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Food</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Food"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/BodyScrab.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/Spa Packages  Couples.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card"><img src="assets/images/royal-glow-package.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
         </div>
       </div>
     </section>
@@ -338,7 +347,7 @@
       <div class="section-inner">
         <p>Need a service instead of a product?</p>
         <div class="route-actions">
-          <a class="btn btn-primary" href="index.html#quick-book">Book a Service</a>
+          <a class="btn btn-primary" href="services.html">View Services</a>
           <a class="btn btn-light" href="index.html#offers">See Offers</a>
           <a class="btn btn-dark" href="index.html#contact">Contact Salon</a>
         </div>
@@ -366,8 +375,7 @@
     const SALON_WHATSAPP = "256706081927";
     document.querySelectorAll(".product-order").forEach((link) => {
       const product = link.dataset.product;
-      const price = link.dataset.price;
-      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Price shown: ${price}. Please confirm availability.`;
+      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Please confirm availability.`;
       link.href = `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
       link.target = "_blank";
       link.rel = "noreferrer";
