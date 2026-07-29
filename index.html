@@ -563,6 +563,10 @@
       padding: 7px 12px;
       font-size: 12px;
       align-self: flex-end;
+      position: relative;
+      z-index: 4;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
     .price-list li {
       align-items: center;
@@ -1679,6 +1683,14 @@
       .gallery-item { min-height: 210px; }
       .service-tabs { grid-template-columns: 1fr 1fr; }
       .service-tab { padding: 9px 10px; font-size: 13px; }
+      .book-card-btn {
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+        align-self: stretch;
+        margin-top: 14px;
+        padding: 12px 14px;
+      }
       #trust { margin-top: 0; padding-top: 20px; }
       .package-card.featured-package img { height: 240px; }
       .price-list li {
@@ -2860,15 +2872,19 @@
       button.className = "btn btn-primary book-card-btn";
       button.dataset.service = title;
       button.textContent = "Book";
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (card.classList.contains("package-card")) addCartItem({ name: title, category: "Package", duration: "", price });
-        openBooking(title);
-      });
+      if (card.classList.contains("package-card")) button.dataset.packagePrice = price;
       body.appendChild(button);
     });
     document.addEventListener("click", (event) => {
+      const cardButton = event.target.closest(".book-card-btn");
+      if (cardButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        const title = cardButton.dataset.service || "";
+        if (cardButton.closest(".package-card")) addCartItem({ name: title, category: "Package", duration: "", price: cardButton.dataset.packagePrice || "" });
+        openBooking(title);
+        return;
+      }
       const button = event.target.closest(".open-booking");
       if (!button) return;
       event.preventDefault();
