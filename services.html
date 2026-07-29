@@ -1105,6 +1105,11 @@
     function availabilityMonthLabel(date) {
       return date.toLocaleDateString("en-UG", { month: "long", year: "numeric" });
     }
+    function availabilityWeekLabel(days) {
+      const first = days[0];
+      const last = days[days.length - 1];
+      return `${first.toLocaleDateString("en-UG", { month: "short", day: "numeric" })} - ${last.toLocaleDateString("en-UG", { month: "short", day: "numeric" })}`;
+    }
     function formatAvailabilityDate(date) {
       return date.toLocaleDateString("en-UG", { weekday: "short", month: "short", day: "numeric" });
     }
@@ -1134,7 +1139,8 @@
       if (!grid) return;
       const selectedDate = document.getElementById("preferredDate").value;
       const selectedTime = document.getElementById("preferredTime").value;
-      const openMonths = Array.from(grid.querySelectorAll(".availability-month.open")).map((month) => month.dataset.month);
+      const activeMonth = grid.querySelector(".availability-month.open")?.dataset.month || "";
+      const activeWeeks = new Map(Array.from(grid.querySelectorAll(".availability-week.open")).map((week) => [week.closest(".availability-month")?.dataset.month || "", week.dataset.week]));
       grid.innerHTML = "";
       const months = new Map();
       const start = new Date();
@@ -1143,53 +1149,80 @@
       for (let day = new Date(start); day < end; day.setDate(day.getDate() + 1)) {
         const date = new Date(day);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-        if (!months.has(monthKey)) months.set(monthKey, { label: availabilityMonthLabel(date), days: [] });
-        months.get(monthKey).days.push(date);
+        if (!months.has(monthKey)) months.set(monthKey, { label: availabilityMonthLabel(date), weeks: new Map(), days: [] });
+        const month = months.get(monthKey);
+        const weekKey = `${monthKey}-w${Math.floor((date.getDate() - 1) / 7) + 1}`;
+        if (!month.weeks.has(weekKey)) month.weeks.set(weekKey, []);
+        month.weeks.get(weekKey).push(date);
+        month.days.push(date);
       }
       Array.from(months.entries()).forEach(([monthKey, month], index) => {
         const monthWrap = document.createElement("div");
-        monthWrap.className = `availability-month ${index === 0 || openMonths.includes(monthKey) ? "open" : ""}`;
+        monthWrap.className = `availability-month ${(!activeMonth && index === 0) || activeMonth === monthKey ? "open" : ""}`;
         monthWrap.dataset.month = monthKey;
         const toggle = document.createElement("button");
         toggle.type = "button";
         toggle.className = "availability-month-toggle";
         toggle.innerHTML = `<span>${month.label}</span><span>${month.days.length} days</span>`;
-        toggle.addEventListener("click", () => monthWrap.classList.toggle("open"));
-        const daysWrap = document.createElement("div");
-        daysWrap.className = "availability-month-days";
-        month.days.forEach((monthDay) => {
-        const day = new Date();
-        day.setTime(monthDay.getTime());
-        const dateValue = dateInputValue(day);
-        const closed = isDateClosed(dateValue);
-        const wrap = document.createElement("div");
-        wrap.className = "availability-day";
-        wrap.innerHTML = `<h4>${formatAvailabilityDate(day)}</h4><div class="availability-slots"></div>`;
-        const slots = wrap.querySelector(".availability-slots");
-        availabilitySlots().forEach((time) => {
-          const chip = document.createElement("button");
-          chip.type = "button";
-          chip.className = "availability-slot";
-          chip.textContent = time;
-          if (closed || isSlotBlocked(dateValue, time)) {
-            chip.classList.add(closed ? "closed" : "blocked");
-            chip.disabled = true;
-            chip.title = closed ? "Closed" : "Booked";
-          } else {
-            chip.addEventListener("click", () => {
-              document.getElementById("preferredDate").value = dateValue;
-              document.getElementById("preferredTime").value = time;
-              closeAvailabilityDashboard();
-              loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
-            });
-          }
-          if (dateValue === selectedDate && time === selectedTime) chip.classList.add("selected");
-          slots.appendChild(chip);
+        toggle.addEventListener("click", () => {
+          const willOpen = !monthWrap.classList.contains("open");
+          grid.querySelectorAll(".availability-month.open").forEach((item) => item.classList.remove("open"));
+          if (willOpen) monthWrap.classList.add("open");
         });
-        daysWrap.appendChild(wrap);
+        const weeksWrap = document.createElement("div");
+        weeksWrap.className = "availability-month-weeks";
+        Array.from(month.weeks.entries()).forEach(([weekKey, weekDays], weekIndex) => {
+          const weekWrap = document.createElement("div");
+          weekWrap.className = `availability-week ${(!activeWeeks.get(monthKey) && weekIndex === 0) || activeWeeks.get(monthKey) === weekKey ? "open" : ""}`;
+          weekWrap.dataset.week = weekKey;
+          const weekToggle = document.createElement("button");
+          weekToggle.type = "button";
+          weekToggle.className = "availability-week-toggle";
+          weekToggle.innerHTML = `<span>${availabilityWeekLabel(weekDays)}</span><span>${weekDays.length} days</span>`;
+          weekToggle.addEventListener("click", () => {
+            const willOpen = !weekWrap.classList.contains("open");
+            monthWrap.querySelectorAll(".availability-week.open").forEach((item) => item.classList.remove("open"));
+            if (willOpen) weekWrap.classList.add("open");
+          });
+          const weekDaysWrap = document.createElement("div");
+          weekDaysWrap.className = "availability-week-days";
+          weekDays.forEach((monthDay) => {
+            const day = new Date();
+            day.setTime(monthDay.getTime());
+            const dateValue = dateInputValue(day);
+            const closed = isDateClosed(dateValue);
+            const wrap = document.createElement("div");
+            wrap.className = "availability-day";
+            wrap.innerHTML = `<h4>${formatAvailabilityDate(day)}</h4><div class="availability-slots"></div>`;
+            const slots = wrap.querySelector(".availability-slots");
+            availabilitySlots().forEach((time) => {
+              const chip = document.createElement("button");
+              chip.type = "button";
+              chip.className = "availability-slot";
+              chip.textContent = time;
+              if (closed || isSlotBlocked(dateValue, time)) {
+                chip.classList.add(closed ? "closed" : "blocked");
+                chip.disabled = true;
+                chip.title = closed ? "Closed" : "Booked";
+              } else {
+                chip.addEventListener("click", () => {
+                  document.getElementById("preferredDate").value = dateValue;
+                  document.getElementById("preferredTime").value = time;
+                  closeAvailabilityDashboard();
+                  loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
+                });
+              }
+              if (dateValue === selectedDate && time === selectedTime) chip.classList.add("selected");
+              slots.appendChild(chip);
+            });
+            weekDaysWrap.appendChild(wrap);
+          });
+          weekWrap.appendChild(weekToggle);
+          weekWrap.appendChild(weekDaysWrap);
+          weeksWrap.appendChild(weekWrap);
         });
         monthWrap.appendChild(toggle);
-        monthWrap.appendChild(daysWrap);
+        monthWrap.appendChild(weeksWrap);
         grid.appendChild(monthWrap);
       });
     }
