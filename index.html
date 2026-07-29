@@ -1059,19 +1059,40 @@
 
     #reviews { background: var(--paper); }
     .reviews-shell {
+      position: relative;
       border: 1px solid rgba(0,100,180,0.16);
       border-radius: var(--radius);
       background: #fff;
       box-shadow: 0 18px 44px rgba(0,0,0,0.06);
-      padding: 18px;
+      padding: 18px 18px 42px;
       min-height: 260px;
       max-width: 100%;
       overflow-x: hidden;
+    }
+    .reviews-shell::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 38px;
+      z-index: 4;
+      background: #fff;
+      border-radius: 0 0 var(--radius) var(--radius);
+      pointer-events: auto;
     }
     .reviews-shell iframe,
     .reviews-shell [class*="elfsight"] {
       max-width: 100% !important;
       overflow-x: hidden !important;
+    }
+    .reviews-shell a[href*="elfsight.com"],
+    .reviews-shell [class*="badge"],
+    .reviews-shell [class*="watermark"],
+    .reviews-shell [class*="branding"] {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
     .gallery-grid { grid-template-columns: repeat(4, 1fr); }
@@ -1342,6 +1363,47 @@
       font-size: 13px;
       margin: 0;
     }
+    .availability-message {
+      grid-column: 1 / -1;
+      display: none;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--wash);
+      color: var(--muted);
+      padding: 11px 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .availability-message.visible { display: flex; }
+    .availability-message::before {
+      content: "";
+      display: none;
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      border: 2px solid rgba(0,100,180,0.18);
+      border-top-color: var(--blue);
+      animation: spin 0.75s linear infinite;
+    }
+    .availability-message.checking::before { display: inline-block; }
+    .availability-message.checking {
+      border-color: rgba(0,100,180,0.24);
+      background: #f0f8ff;
+      color: var(--blue);
+    }
+    .availability-message.available {
+      border-color: rgba(36, 145, 75, 0.28);
+      background: #effaf2;
+      color: #146433;
+    }
+    .availability-message.blocked {
+      border-color: rgba(177, 53, 53, 0.28);
+      background: #fff1f1;
+      color: #8a1f1f;
+    }
 
     .fab {
       position: fixed;
@@ -1467,6 +1529,12 @@
       .nav > .btn {
         flex: 0 0 auto;
         padding: 10px 12px;
+      }
+      .reviews-shell {
+        padding-bottom: 50px;
+      }
+      .reviews-shell::after {
+        height: 48px;
       }
       section { padding: 56px 16px; }
       .hero-inner { width: calc(100% - 32px); padding: 92px 0 52px; gap: 32px; }
@@ -1947,6 +2015,7 @@
         </div>
         <div class="field"><label for="preferredDate">Preferred Date</label><input id="preferredDate" name="date" type="date" required /></div>
         <div class="field"><label for="preferredTime">Preferred Time</label><input id="preferredTime" name="time" type="time" required /></div>
+        <div class="availability-message" id="availabilityMessage" role="status" aria-live="polite"></div>
         <div class="field full"><label for="bookingNotes">Notes</label><textarea id="bookingNotes" name="notes" rows="4" placeholder="Any special requests"></textarea></div>
         <div class="form-actions">
           <button class="btn btn-primary" id="sendBookingRequest" type="submit">Send Booking Request</button>
@@ -2003,7 +2072,7 @@
   <script>
     const SALON_WHATSAPP = "256706081927";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
-    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKb63CyNeW5w65Aglh6sK1ZtrdFZbQXHyeE9Cf8HmEKGZOBNyGECqGJy5GudF3lN6T/exec";
+    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJBhJx1_eemR4JjKy8x3Fy27auIuPvduuEbPcG1p3idqRG4FXI4RqTJDUIo6--UeLZ/exec";
     const CLIENT_EMAIL_PLACEHOLDER = "stuwiessalonandspa@gmail.com";
     const BRAND = { blue: "#0064b4", brightBlue: "#009fe3", grey: "#dcdcdc", black: "#000000" };
     const header = document.querySelector(".site-header");
@@ -2012,6 +2081,7 @@
     const form = document.getElementById("bookingForm");
     const confirmationModal = document.getElementById("confirmationModal");
     let lastSubmittedBooking = null;
+    let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
     const CART_STORAGE_KEY = "stuwiesBookingCart";
     function loadStoredCart() {
       try {
@@ -2040,6 +2110,97 @@
     let bookingSubmitting = false;
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("preferredDate").min = today;
+
+    function availabilityUrl() {
+      return `${BOOKING_WEB_APP_URL}?action=availability&callback=__stuwiesAvailability`;
+    }
+    function setAvailabilityChecking() {
+      const message = document.getElementById("availabilityMessage");
+      const date = document.getElementById("preferredDate").value;
+      const time = document.getElementById("preferredTime").value;
+      if (!message || !date || !time) return;
+      message.className = "availability-message visible checking";
+      message.textContent = "Checking availability...";
+    }
+    function setAvailabilityCheckFailed() {
+      const message = document.getElementById("availabilityMessage");
+      if (!message) return;
+      message.className = "availability-message visible blocked";
+      message.textContent = "Availability could not be checked right now. Please try again or contact the salon.";
+    }
+    function loadBookingAvailability() {
+      return new Promise((resolve) => {
+        const date = document.getElementById("preferredDate").value;
+        const time = document.getElementById("preferredTime").value;
+        if (!date || !time) {
+          updateAvailabilityMessage();
+          resolve(bookingAvailability);
+          return;
+        }
+        setAvailabilityChecking();
+        const previous = document.getElementById("availabilityJsonp");
+        if (previous) previous.remove();
+        window.__stuwiesAvailability = (payload) => {
+          bookingAvailability = payload && payload.ok ? payload : { booked_slots: [], blocked_slots: [], closed_days: [] };
+          updateAvailabilityMessage();
+          resolve(bookingAvailability);
+        };
+        const script = document.createElement("script");
+        script.id = "availabilityJsonp";
+        script.src = availabilityUrl();
+        script.async = true;
+        script.onerror = () => {
+          setAvailabilityCheckFailed();
+          resolve(bookingAvailability);
+        };
+        document.body.appendChild(script);
+      });
+    }
+    function isDateClosed(date) {
+      return Boolean(date && bookingAvailability.closed_days && bookingAvailability.closed_days.includes(date));
+    }
+    function isSlotBlocked(date, time) {
+      if (!date || !time) return false;
+      const allSlots = (bookingAvailability.booked_slots || []).concat(bookingAvailability.blocked_slots || []);
+      return allSlots.some((slot) => slot.date === date && slot.time === time);
+    }
+    function updateAvailabilityMessage() {
+      const message = document.getElementById("availabilityMessage");
+      if (!message) return true;
+      const date = document.getElementById("preferredDate").value;
+      const time = document.getElementById("preferredTime").value;
+      message.className = "availability-message";
+      if (!date && !time) {
+        message.textContent = "";
+        return true;
+      }
+      message.classList.add("visible");
+      if (!date || !time) {
+        message.textContent = "Enter both preferred date and time to check availability.";
+        return true;
+      }
+      if (isDateClosed(date)) {
+        message.textContent = "This date is not available. Please choose another day.";
+        message.classList.add("blocked");
+        return false;
+      }
+      if (isSlotBlocked(date, time)) {
+        message.textContent = "That time is already booked or blocked. Please choose another time.";
+        message.classList.add("blocked");
+        return false;
+      }
+      if (date && time) {
+        message.textContent = "This date and time is currently available.";
+        message.classList.add("available");
+        return true;
+      }
+      return true;
+    }
+    function checkAvailabilityWhenReady() {
+      loadBookingAvailability().then(updateAvailabilityMessage);
+    }
+    document.getElementById("preferredDate").addEventListener("change", checkAvailabilityWhenReady);
+    document.getElementById("preferredTime").addEventListener("change", checkAvailabilityWhenReady);
 
     function updateHeaderState() {
       header.classList.toggle("scrolled", window.scrollY > 40);
@@ -2441,6 +2602,16 @@
       const isOpen = fab.classList.toggle("open");
       document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
     });
+    function hideElfsightBranding() {
+      document.querySelectorAll('#reviews a[href*="elfsight.com"], #reviews [class*="badge"], #reviews [class*="watermark"], #reviews [class*="branding"]').forEach((element) => {
+        element.style.setProperty("display", "none", "important");
+        element.style.setProperty("visibility", "hidden", "important");
+        element.style.setProperty("pointer-events", "none", "important");
+      });
+    }
+    hideElfsightBranding();
+    window.setTimeout(hideElfsightBranding, 1200);
+    window.setTimeout(hideElfsightBranding, 3000);
     document.getElementById("mapEnable").addEventListener("click", () => {
       const mapCard = document.querySelector(".map-card");
       const button = document.getElementById("mapEnable");
@@ -2503,6 +2674,10 @@
       const message = `Hi ${data.name}, confirming your ${serviceSummary} appointment on ${data.date} at ${data.time} at Stuwie's Salon & Spa.`;
       return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
     }
+    function customerCallUrl(data) {
+      const digits = digitsOnlyPhone(data.phone);
+      return digits ? `tel:+${digits}` : "#";
+    }
     function salonBookingUrl(data) {
       let message = "Hello Stuwie's Salon & Spa, I'd like to book an appointment.\n\n";
       message += `*Name:* ${data.name}\n`;
@@ -2531,7 +2706,7 @@
         const bg = index % 2 === 0 ? "#e9f5ff" : "#f1f1f1";
         return `<tr><th style="text-align:left;padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};width:42%;">${label}</th><td style="padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};">${value}</td></tr>`;
       }).join("");
-      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table><p style="margin:24px 0 0;"><a href="${customerConfirmUrl(data)}" style="display:inline-block;background:${BRAND.blue};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;">Reply to Confirm Booking</a></p></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table><p style="margin:24px 0 0;"><a href="${customerCallUrl(data)}" style="display:inline-block;background:${BRAND.black};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 8px 10px 0;">&#9742; Call Customer</a><a href="${customerConfirmUrl(data)}" style="display:inline-block;background:${BRAND.blue};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 0 10px 0;">Reply to Confirm Booking</a></p></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
     }
 
     form.addEventListener("submit", async (event) => {
@@ -2539,6 +2714,8 @@
       if (bookingSubmitting) return;
       const data = collectBooking();
       if (!validateBooking(data)) return;
+      await loadBookingAvailability();
+      if (!updateAvailabilityMessage()) return;
       const htmlEmail = buildHtmlEmail(data);
       const submitButton = document.getElementById("sendBookingRequest");
       bookingSubmitting = true;
