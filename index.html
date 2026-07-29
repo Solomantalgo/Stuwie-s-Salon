@@ -554,8 +554,17 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      position: relative;
+      isolation: isolate;
     }
-    .service-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+    .service-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
     .book-card-btn {
       width: fit-content;
       margin-top: 12px;
@@ -567,6 +576,10 @@
       z-index: 4;
       pointer-events: auto;
       touch-action: manipulation;
+    }
+    .service-body > .view-more,
+    .service-body > .book-card-btn {
+      flex: 0 0 auto;
     }
     .price-list li {
       align-items: center;
@@ -754,6 +767,10 @@
       font-weight: 900;
       cursor: pointer;
       margin: 8px 0 0;
+      position: relative;
+      z-index: 3;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
     .view-more:hover { background: var(--blue); color: #fff; }
     .package-price { color: var(--warm); }
@@ -1690,6 +1707,10 @@
         align-self: stretch;
         margin-top: 14px;
         padding: 12px 14px;
+      }
+      .service-body > .book-card-btn {
+        position: relative;
+        z-index: 10;
       }
       #trust { margin-top: 0; padding-top: 20px; }
       .package-card.featured-package img { height: 240px; }
@@ -2884,6 +2905,20 @@
         if (cardButton.closest(".package-card")) addCartItem({ name: title, category: "Package", duration: "", price: cardButton.dataset.packagePrice || "" });
         openBooking(title);
         return;
+      }
+      const serviceCard = event.target.closest("#services .service-card");
+      if (serviceCard && !event.target.closest(".item-add, .view-more, button, a, input, select, textarea")) {
+        const fallbackButton = serviceCard.querySelector(".book-card-btn");
+        if (fallbackButton) {
+          const rect = fallbackButton.getBoundingClientRect();
+          const withinActionBand = event.clientY >= rect.top - 14 && event.clientY <= rect.bottom + 14;
+          if (withinActionBand) {
+            event.preventDefault();
+            const title = fallbackButton.dataset.service || serviceCard.querySelector("h3")?.textContent.trim() || "";
+            openBooking(title);
+            return;
+          }
+        }
       }
       const button = event.target.closest(".open-booking");
       if (!button) return;
