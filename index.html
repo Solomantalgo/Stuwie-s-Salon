@@ -700,8 +700,8 @@
     }
     .price-list span { color: var(--muted); font-size: 13px; }
     .price-list strong { color: var(--blue); white-space: nowrap; }
-    .price-list.collapsed li:nth-child(n + 5) { display: none; }
-    .price-list.subcategory-list.collapsed li:nth-child(n + 3) { display: none; }
+    .service-card:not(.expanded) .card-row-extra,
+    .service-card:not(.expanded) .subhead-extra { display: none; }
     .subhead {
       margin: 12px 0 0;
       color: var(--black);
@@ -2059,19 +2059,25 @@
       button.addEventListener("click", () => addCartItem({ name, category, duration, price }));
       row.appendChild(button);
     });
-    document.querySelectorAll(".price-list").forEach((list) => {
-      const visibleLimit = list.classList.contains("subcategory-list") ? 2 : 4;
-      if (list.children.length <= visibleLimit) return;
-      list.classList.add("collapsed");
+    document.querySelectorAll("#services .service-card").forEach((card) => {
+      const rows = Array.from(card.querySelectorAll(".price-list li"));
+      if (rows.length <= 3) return;
+      rows.slice(3).forEach((row) => row.classList.add("card-row-extra"));
+      card.querySelectorAll(".subhead").forEach((subhead) => {
+        const nextList = subhead.nextElementSibling;
+        if (nextList?.matches(".price-list") && Array.from(nextList.children).every((row) => row.classList.contains("card-row-extra"))) {
+          subhead.classList.add("subhead-extra");
+        }
+      });
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "view-more";
       toggle.textContent = "View more";
       toggle.addEventListener("click", () => {
-        const isCollapsed = list.classList.toggle("collapsed");
-        toggle.textContent = isCollapsed ? "View more" : "View less";
+        const isExpanded = card.classList.toggle("expanded");
+        toggle.textContent = isExpanded ? "View less" : "View more";
       });
-      list.after(toggle);
+      card.querySelector(".service-body")?.appendChild(toggle);
     });
     document.querySelectorAll(".service-card, .package-card").forEach((card) => {
       const title = card.querySelector("h3")?.textContent.trim();
