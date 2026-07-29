@@ -1697,7 +1697,7 @@
             <article class="package-card featured"><span class="badge">Best Value</span><img src="assets/images/bridal-luxury-package.png" alt="Bridal glow" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Bridal Packages</p><h3>Bridal Glow</h3><div class="package-meta">2 days: Facial + Massage + Manicure + Pedicure + Body Scrub</div><ul class="price-list"><li>Wedding-ready glow across two relaxed days <strong>250,000</strong></li></ul><div class="package-price">UGX 250,000</div><button class="btn btn-primary open-booking" type="button" data-service="Bridal Glow">Book This Package</button></div></article>
             <article class="package-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Bridal Packages</p><h3>Bridal Luxury</h3><div class="package-meta">3 days: Bridal Glow + Waxing + Hair Treatment</div><ul class="price-list"><li>All Bridal Glow services plus waxing and hair treatment <strong>380,000</strong></li></ul><div class="package-price">UGX 380,000</div><button class="btn btn-primary open-booking" type="button" data-service="Bridal Luxury">Book This Package</button></div></article>
             <article class="package-card"><img src="assets/images/birthday-spa-party.png" alt="Birthday spa party" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Birthday Spa Party</h3><div class="package-meta">4+ people: Massage + Facial + Pedicure + Refreshments</div><ul class="price-list"><li>Group celebration package with refreshments <strong>From 150,000/person</strong></li></ul><div class="package-price">From UGX 150,000/person</div><button class="btn btn-primary open-booking" type="button" data-service="Birthday Spa Party">Book This Package</button></div></article>
-            <article class="package-card"><img src="assets/images/corporate-spa-day.png" alt="Corporate spa day" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Corporate Spa Day</h3><div class="package-meta">5+ people: Customized packages, discounted rates</div><ul class="price-list"><li>Team wellness day shaped around your group <strong>Ask team</strong></li></ul><div class="package-price">Custom quote</div><button class="btn btn-primary open-booking" type="button" data-service="Corporate Spa Day">Plan This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/corporate-spa-day.png" alt="Corporate spa day" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Corporate Spa Day</h3><div class="package-meta">5+ people: Customized packages, discounted rates</div><ul class="price-list"><li>Team wellness day shaped around your group <strong>Custom quote</strong></li></ul><div class="package-price">Custom quote</div><button class="btn btn-primary open-booking" type="button" data-service="Corporate Spa Day">Plan This Package</button></div></article>
           </div>
         </div>
         </div>
@@ -1720,10 +1720,10 @@
           <p>Add products to your cart, then complete the order on the shop page.</p>
         </div>
         <div class="product-grid">
-          <article class="product-card reveal" data-product="Hair Products" data-price="Ask team"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><p>Salon-approved care for daily styling and maintenance.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
-          <article class="product-card reveal" data-product="Beard Oils" data-price="Ask team"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><p>Grooming oils for a clean, soft and finished beard.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
-          <article class="product-card reveal" data-product="Body Lotion" data-price="Ask team"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><p>Body care essentials for smooth, comfortable skin.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
-          <article class="product-card reveal" data-product="Perfumes" data-price="Ask team"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><p>Fresh fragrance options for gifting or daily wear.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Hair Products"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><p>Salon-approved care for daily styling and maintenance.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Beard Oils"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><p>Grooming oils for a clean, soft and finished beard.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Body Lotion"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><p>Body care essentials for smooth, comfortable skin.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Perfumes"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><p>Fresh fragrance options for gifting or daily wear.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
         </div>
         <div class="section-actions reveal"><a class="btn btn-primary" id="shopCartLink" href="shop.html">View Cart & All Products</a></div>
       </div>
@@ -2024,7 +2024,6 @@
         const items = JSON.parse(localStorage.getItem(SHOP_CART_KEY) || "[]");
         return Array.isArray(items) ? items.filter((item) => item && item.name).map((item) => ({
           name: item.name,
-          price: item.price || "Ask team",
           qty: Math.max(1, Number(item.qty) || 1)
         })) : [];
       } catch (error) {
@@ -2083,7 +2082,7 @@
       items.forEach((item) => {
         const row = document.createElement("div");
         row.className = "shop-cart-row";
-        row.innerHTML = `<div><strong>${item.name}</strong><p>${item.price}</p></div><div class="qty-controls"><button type="button" aria-label="Reduce ${item.name}">-</button><span>${item.qty}</span><button type="button" aria-label="Add ${item.name}">+</button></div>`;
+        row.innerHTML = `<div><strong>${item.name}</strong></div><div class="qty-controls"><button type="button" aria-label="Reduce ${item.name}">-</button><span>${item.qty}</span><button type="button" aria-label="Add ${item.name}">+</button></div>`;
         const [minus, plus] = row.querySelectorAll("button");
         minus.addEventListener("click", () => updateHomeShopQty(item.name, -1));
         plus.addEventListener("click", () => updateHomeShopQty(item.name, 1));
@@ -2096,7 +2095,7 @@
       event.preventDefault();
       const card = button.closest(".product-card");
       if (!card) return;
-      addProductToShopCart({ name: card.dataset.product || card.querySelector("h3").textContent.trim(), price: card.dataset.price || "Ask team" });
+      addProductToShopCart({ name: card.dataset.product || card.querySelector("h3").textContent.trim() });
     });
     updateShopCartLink();
     renderHomeShopCart();
@@ -2145,7 +2144,7 @@
     function priceLabel(value) {
       const price = String(value || "").trim();
       if (!price) return "";
-      return /^(UGX|From UGX|Custom quote|Ask team)/i.test(price) ? price : `UGX ${price}`;
+      return /^(UGX|From UGX|Custom quote|Choose amount|Member benefits)/i.test(price) ? price : `UGX ${price}`;
     }
     function addCartItem(item) {
       const key = `${item.category}|${item.name}|${item.duration}|${item.price}`;
@@ -2459,21 +2458,6 @@
       submitButton.classList.add("is-loading");
       submitButton.dataset.originalText = submitButton.textContent;
       submitButton.textContent = "Sending...";
-
-      if (BOOKING_WEB_APP_URL.includes("REPLACE_WITH")) {
-        console.info("Booking Web App URL is not configured. Replace BOOKING_WEB_APP_URL to send email and save to Google Sheets.", {
-          recipient: CLIENT_EMAIL_PLACEHOLDER,
-          booking: data,
-          html_email: htmlEmail
-        });
-        closeBooking();
-        openConfirmation(data);
-        bookingSubmitting = false;
-        submitButton.disabled = false;
-        submitButton.classList.remove("is-loading");
-        submitButton.textContent = submitButton.dataset.originalText || "Send Booking Request";
-        return;
-      }
 
       try {
         const payload = {
