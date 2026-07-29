@@ -1352,6 +1352,46 @@
       outline-offset: 3px;
     }
     textarea { resize: vertical; }
+    .location-control {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 8px;
+    }
+    .location-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .location-row .btn {
+      min-height: 44px;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .location-status {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .location-status.visible { display: flex; }
+    .location-control.gps-added .location-row { display: none; }
+    .location-control.gps-added .location-status {
+      display: flex;
+      color: #146433;
+    }
+    .location-status.checking::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,100,180,0.18);
+      border-top-color: var(--blue);
+      animation: spin 0.75s linear infinite;
+      flex: 0 0 auto;
+    }
     .form-actions {
       grid-column: 1 / -1;
       display: grid;
@@ -1709,6 +1749,7 @@
         margin-top: 14px;
         padding: 12px 14px;
       }
+      .location-row { grid-template-columns: 1fr; }
       .service-body > .book-card-btn {
         position: relative;
         z-index: 10;
@@ -2170,6 +2211,15 @@
         <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
         <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
         <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
+        <div class="location-control">
+          <label for="customerLocation">Location <span style="font-weight:700;color:var(--muted);">(optional)</span></label>
+          <div class="location-row">
+            <input id="customerLocation" name="location" placeholder="Type area / landmark, or use GPS" autocomplete="address-level2" />
+            <button class="btn btn-light use-gps" id="useGpsLocation" type="button">Use GPS</button>
+          </div>
+          <input id="customerLocationCoords" name="location_coords" type="hidden" />
+          <div class="location-status" id="locationStatus" role="status" aria-live="polite"></div>
+        </div>
         <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
         <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Massages</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Hair Services (Ladies)</option><option>Barbering Services (Gents)</option><option>Spa Packages</option><option>Royal Glow Experience</option><option>Queen's Indulgence</option><option>Ultimate Relaxation</option><option>Couples Relaxation</option><option>Couples Spa Escape</option><option>Bridal Glow</option><option>Bridal Luxury</option><option>Birthday Spa Party</option><option>Corporate Spa Day</option><option>Gift Voucher</option><option>Membership & Loyalty</option></select></div>
         <div class="subcategory-panel" id="subcategoryPanel">
@@ -2989,11 +3039,72 @@
       if (event.key === "Escape" && mapImageModal.classList.contains("open")) closeMapImageModal();
     });
 
+    function locationLink(coords) {
+      return coords ? `https://www.google.com/maps?q=${encodeURIComponent(coords)}` : "";
+    }
+    function locationValue(location, coords) {
+      if (coords) return "Location";
+      return location || "None";
+    }
+    function locationHtml(data) {
+      const link = locationLink(data.locationCoords);
+      if (link) return `<a href="${link}" target="_blank" rel="noreferrer">Location</a>`;
+      return data.location || "None";
+    }
+    function setupGpsLocation() {
+      const button = document.getElementById("useGpsLocation");
+      const input = document.getElementById("customerLocation");
+      const coordsInput = document.getElementById("customerLocationCoords");
+      const status = document.getElementById("locationStatus");
+      const control = button.closest(".location-control");
+      if (!button || !input || !coordsInput || !status || !control) return;
+      button.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          status.className = "location-status visible";
+          status.textContent = "GPS is not available on this device. You can type your area instead.";
+          return;
+        }
+        button.disabled = true;
+        status.className = "location-status visible checking";
+        status.textContent = "Checking your location...";
+        navigator.geolocation.getCurrentPosition((position) => {
+          const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
+          coordsInput.value = coords;
+          input.value = "Location";
+          control.classList.add("gps-added");
+          status.className = "location-status visible";
+          status.textContent = "Live location added.";
+          button.disabled = false;
+        }, () => {
+          status.className = "location-status visible";
+          status.textContent = "Location was not shared. You can type your area instead.";
+          button.disabled = false;
+        }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+      });
+      input.addEventListener("input", () => {
+        if (input.value.trim() !== "Location") {
+          coordsInput.value = "";
+          control.classList.remove("gps-added");
+        }
+      });
+    }
+    setupGpsLocation();
+    function resetGpsLocationState() {
+      document.querySelectorAll(".location-control.gps-added").forEach((control) => control.classList.remove("gps-added"));
+      const status = document.getElementById("locationStatus");
+      if (status) {
+        status.className = "location-status";
+        status.textContent = "";
+      }
+    }
+
     function collectBooking() {
       return {
         name: document.getElementById("customerName").value.trim(),
         phone: document.getElementById("customerPhone").value.trim(),
         email: document.getElementById("customerEmail").value.trim(),
+        location: document.getElementById("customerLocation").value.trim(),
+        locationCoords: document.getElementById("customerLocationCoords").value.trim(),
         service: document.getElementById("requestedService").value,
         items: [...bookingCart],
         total: cartTotal(),
@@ -3033,6 +3144,8 @@
       message += `*Name:* ${data.name}\n`;
       message += `*Phone:* ${data.phone}\n`;
       message += `*Email:* ${data.email}\n`;
+      message += `*Location:* ${locationValue(data.location, data.locationCoords)}\n`;
+      if (data.locationCoords) message += `${locationLink(data.locationCoords)}\n`;
       message += `*Service:* ${data.items.length ? "Multiple selected services" : data.service}\n`;
       if (data.items.length) message += `*Items:*\n${bookingItemsText(data)}\n*Estimated Total:* ${formatUgx(data.total)}\n`;
       message += `*Date:* ${data.date}\n`;
@@ -3045,6 +3158,7 @@
         ["Customer Name", data.name],
         ["Phone", data.phone],
         ["Email", data.email],
+        ["Location", locationHtml(data)],
         ["Service Requested", data.items.length ? "Multiple selected services" : data.service],
         ["Selected Items", data.items.length ? bookingItemsText(data).replace(/\n/g, "<br>") : data.service],
         ["Estimated Total", data.items.length ? formatUgx(data.total) : "Confirm after consultation"],
@@ -3080,6 +3194,8 @@
           customer_name: data.name,
           phone: data.phone,
           customer_email: data.email,
+          customer_location: locationValue(data.location, data.locationCoords),
+          customer_location_link: locationLink(data.locationCoords),
           service: data.items.length ? "Multiple selected services" : data.service,
           selected_items: bookingItemsText(data),
           estimated_total: data.items.length ? formatUgx(data.total) : "",
@@ -3097,6 +3213,7 @@
           body: JSON.stringify(payload)
         });
         form.reset();
+        resetGpsLocationState();
         clearStoredCart();
         renderCart();
         renderSelectedServices();

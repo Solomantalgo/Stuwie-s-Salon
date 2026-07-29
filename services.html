@@ -435,6 +435,46 @@
       font: inherit;
     }
     textarea { resize: vertical; }
+    .location-control {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 8px;
+    }
+    .location-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .location-row .btn {
+      min-height: 44px;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .location-status {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .location-status.visible { display: flex; }
+    .location-control.gps-added .location-row { display: none; }
+    .location-control.gps-added .location-status {
+      display: flex;
+      color: #146433;
+    }
+    .location-status.checking::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,100,180,0.18);
+      border-top-color: var(--blue);
+      animation: spin 0.75s linear infinite;
+      flex: 0 0 auto;
+    }
     .selected-services {
       border: 1px solid var(--line);
       background: var(--wash);
@@ -838,6 +878,7 @@
       }
       body.cart-active { padding-bottom: 0; }
       .booking-form { grid-template-columns: 1fr; }
+      .location-row { grid-template-columns: 1fr; }
       .field.full, .selected-services, .form-actions { grid-column: auto; }
       .fab { right: 14px; bottom: 14px; }
       .fab.open .fab-label {
@@ -961,6 +1002,15 @@
       <form class="booking-form" id="bookingForm">
         <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
         <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
+        <div class="location-control">
+          <label for="customerLocation">Location <span style="font-weight:700;color:var(--muted);">(optional)</span></label>
+          <div class="location-row">
+            <input id="customerLocation" name="location" placeholder="Type area / landmark, or use GPS" autocomplete="address-level2" />
+            <button class="btn btn-light use-gps" id="useGpsLocation" type="button">Use GPS</button>
+          </div>
+          <input id="customerLocationCoords" name="location_coords" type="hidden" />
+          <div class="location-status" id="locationStatus" role="status" aria-live="polite"></div>
+        </div>
         <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Barbering Services (Gents)</option><option>Hair Services (Ladies)</option><option>Massages</option><option>Manicure & Pedicure</option><option>Waxing</option><option>Facials</option><option>Body Scrubs</option><option>Spa Packages</option><option>Royal Glow Experience</option><option>Queen's Indulgence</option><option>Ultimate Relaxation</option><option>Couples Relaxation</option><option>Couples Spa Escape</option><option>Bridal Glow</option><option>Bridal Luxury</option><option>Birthday Spa Party</option><option>Corporate Spa Day</option><option>Gift Voucher</option><option>Membership & Loyalty</option></select></div>
         <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
         <div class="availability-dashboard">
@@ -1381,6 +1431,7 @@
       bookingModal.classList.remove("open");
       bookingModal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      resetGpsLocationState();
     }
     function getServiceRowName(row, fallback) {
       const clone = row.cloneNode(true);
@@ -1450,10 +1501,65 @@
     renderSelectedServices();
     document.getElementById("modalClose").addEventListener("click", closeBooking);
     bookingModal.addEventListener("click", (event) => { if (event.target === bookingModal) closeBooking(); });
+    function locationLink(coords) {
+      return coords ? `https://www.google.com/maps?q=${encodeURIComponent(coords)}` : "";
+    }
+    function locationValue(location, coords) {
+      if (coords) return "Location";
+      return location || "None";
+    }
+    function setupGpsLocation() {
+      const button = document.getElementById("useGpsLocation");
+      const input = document.getElementById("customerLocation");
+      const coordsInput = document.getElementById("customerLocationCoords");
+      const status = document.getElementById("locationStatus");
+      const control = button.closest(".location-control");
+      if (!button || !input || !coordsInput || !status || !control) return;
+      button.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          status.className = "location-status visible";
+          status.textContent = "GPS is not available on this device. You can type your area instead.";
+          return;
+        }
+        button.disabled = true;
+        status.className = "location-status visible checking";
+        status.textContent = "Checking your location...";
+        navigator.geolocation.getCurrentPosition((position) => {
+          const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
+          coordsInput.value = coords;
+          input.value = "Location";
+          control.classList.add("gps-added");
+          status.className = "location-status visible";
+          status.textContent = "Live location added.";
+          button.disabled = false;
+        }, () => {
+          status.className = "location-status visible";
+          status.textContent = "Location was not shared. You can type your area instead.";
+          button.disabled = false;
+        }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+      });
+      input.addEventListener("input", () => {
+        if (input.value.trim() !== "Location") {
+          coordsInput.value = "";
+          control.classList.remove("gps-added");
+        }
+      });
+    }
+    setupGpsLocation();
+    function resetGpsLocationState() {
+      document.querySelectorAll(".location-control.gps-added").forEach((control) => control.classList.remove("gps-added"));
+      const status = document.getElementById("locationStatus");
+      if (status) {
+        status.className = "location-status";
+        status.textContent = "";
+      }
+    }
     bookingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const name = document.getElementById("customerName").value.trim();
       const phone = document.getElementById("customerPhone").value.trim();
+      const location = document.getElementById("customerLocation").value.trim();
+      const locationCoords = document.getElementById("customerLocationCoords").value.trim();
       const service = document.getElementById("requestedService").value;
       const date = document.getElementById("preferredDate").value;
       const time = document.getElementById("preferredTime").value;
@@ -1465,6 +1571,8 @@
       if (!(await ensureCurrentSlotAvailable())) return;
       let message = "Hello Stuwie's Salon & Spa, I'd like to book an appointment.\n\n";
       message += `*Name:* ${name}\n*Phone:* ${phone}\n`;
+      message += `*Location:* ${locationValue(location, locationCoords)}\n`;
+      if (locationCoords) message += `${locationLink(locationCoords)}\n`;
       message += `*Service:* ${bookingCart.length ? "Multiple selected services" : service}\n`;
       if (bookingCart.length) {
         message += "*Items:*\n";

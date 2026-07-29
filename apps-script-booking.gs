@@ -35,6 +35,7 @@ const BOOKING_HEADERS = [
   'Customer Name',
   'Phone',
   'Email',
+  'Client Location',
   'Service Requested',
   'Selected Items',
   'Estimated Total',
@@ -62,11 +63,12 @@ function doPost(e) {
   try {
     setupWorkbook_();
     const data = JSON.parse(e.postData.contents || '{}');
+    const isProductOrder = String(data.type || '').toLowerCase().indexOf('product') !== -1 || String(data.service || '').toLowerCase().indexOf('product order') !== -1;
     const date = normalizeDate_(data.preferred_date);
     const time = normalizeTime_(data.preferred_time);
 
-    if (!date || !time) return json_({ ok: false, error: 'Preferred date and time are required.' });
-    if (!isSlotAvailable_(date, time)) return json_({ ok: false, error: 'That date and time is already booked or unavailable.', available: false });
+    if (!isProductOrder && (!date || !time)) return json_({ ok: false, error: 'Preferred date and time are required.' });
+    if (!isProductOrder && !isSlotAvailable_(date, time)) return json_({ ok: false, error: 'That date and time is already booked or unavailable.', available: false });
 
     const sheet = getSheet_(BOOKINGS_SHEET);
     appendBooking_(sheet, data, date, time);
@@ -139,12 +141,13 @@ function styleBookings_(sheet) {
   sheet.setColumnWidths(1, 1, 130);
   sheet.setColumnWidths(2, 1, 150);
   sheet.setColumnWidths(3, 3, 150);
-  sheet.setColumnWidth(6, 190);
-  sheet.setColumnWidth(7, 340);
-  sheet.setColumnWidths(9, 3, 120);
-  sheet.setColumnWidth(12, 120);
-  sheet.setColumnWidth(13, 260);
-  applyStatusValidation_(sheet, 12);
+  sheet.setColumnWidth(6, 180);
+  sheet.setColumnWidth(7, 190);
+  sheet.setColumnWidth(8, 340);
+  sheet.setColumnWidths(10, 3, 120);
+  sheet.setColumnWidth(13, 120);
+  sheet.setColumnWidth(14, 260);
+  applyStatusValidation_(sheet, 13);
   applyBookingConditionalFormatting_(sheet);
 }
 
@@ -188,12 +191,15 @@ function styleDashboard_(sheet) {
 }
 
 function appendBooking_(sheet, data, date, time) {
+  const locationLabel = data.customer_location || 'None';
+  const locationLink = data.customer_location_link || '';
   const row = [
     'STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss'),
     new Date(),
     data.customer_name || '',
-    data.phone || '',
-    data.customer_email || '',
+    data.phone || data.customer_phone || '',
+    data.customer_email || data.customer_email_address || '',
+    locationLink ? '=HYPERLINK("' + locationLink + '","Location")' : locationLabel,
     data.service || '',
     data.selected_items || '',
     data.estimated_total || '',
@@ -214,9 +220,9 @@ function appendBooking_(sheet, data, date, time) {
     .setBorder(true, true, true, true, true, true, BRAND.grey, SpreadsheetApp.BorderStyle.SOLID)
     .setBackground(lastRow % 2 === 0 ? '#ffffff' : '#f6fbff');
   sheet.getRange(lastRow, 2).setNumberFormat('yyyy-mm-dd hh:mm');
-  sheet.getRange(lastRow, 9).setNumberFormat('yyyy-mm-dd');
-  sheet.getRange(lastRow, 10).setNumberFormat('@');
-  sheet.getRange(lastRow, 12).setFontWeight('bold').setBackground(BRAND.lightBlue);
+  sheet.getRange(lastRow, 10).setNumberFormat('yyyy-mm-dd');
+  sheet.getRange(lastRow, 11).setNumberFormat('@');
+  sheet.getRange(lastRow, 13).setFontWeight('bold').setBackground(BRAND.lightBlue);
 }
 
 function getAvailabilityPayload_() {
@@ -227,9 +233,9 @@ function getAvailabilityPayload_() {
   const blockedSlots = [];
 
   bookings.slice(1).forEach((row) => {
-    const date = normalizeDate_(row[8]);
-    const time = normalizeTime_(row[9]);
-    const status = normalizeStatus_(row[11]);
+    const date = normalizeDate_(row[9]);
+    const time = normalizeTime_(row[10]);
+    const status = normalizeStatus_(row[12]);
     if (date && time && ACTIVE_BOOKING_STATUSES.indexOf(status) !== -1) bookedSlots.push({ date, time });
   });
 
@@ -288,9 +294,9 @@ function applyAvailabilityValidation_(sheet, col) {
 function applyBookingConditionalFormatting_(sheet) {
   const range = sheet.getRange(2, 1, Math.max(999, sheet.getMaxRows() - 1), BOOKING_HEADERS.length);
   const rules = [
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$L2="New"').setBackground(BRAND.lightBlue).setRanges([range]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$L2="Confirmed"').setBackground(BRAND.green).setRanges([range]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($L2="Cancelled",$L2="Free")').setBackground(BRAND.red).setRanges([range]).build()
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="New"').setBackground(BRAND.lightBlue).setRanges([range]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="Confirmed"').setBackground(BRAND.green).setRanges([range]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($M2="Cancelled",$M2="Free")').setBackground(BRAND.red).setRanges([range]).build()
   ];
   sheet.setConditionalFormatRules(rules);
 }
@@ -317,13 +323,17 @@ function sendBookingEmail_(data) {
 }
 
 function fallbackEmail_(data) {
-  const callUrl = customerCallUrl_(data.phone);
+  const phone = data.phone || data.customer_phone || '';
+  const email = data.customer_email || '';
+  const location = data.customer_location_link ? '<a href="' + escape_(data.customer_location_link) + '">Location</a>' : escape_(data.customer_location || 'None');
+  const callUrl = customerCallUrl_(phone);
   return [
     '<h2>New Stuwie booking request</h2>',
     '<p><strong>Name:</strong> ' + escape_(data.customer_name) + '</p>',
-    '<p><strong>Phone:</strong> ' + escape_(data.phone) + '</p>',
+    '<p><strong>Phone:</strong> ' + escape_(phone) + '</p>',
     '<p><a href="' + callUrl + '" style="display:inline-block;background:#000;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">&#9742; Call Customer</a></p>',
-    '<p><strong>Email:</strong> ' + escape_(data.customer_email) + '</p>',
+    '<p><strong>Email:</strong> ' + escape_(email) + '</p>',
+    '<p><strong>Location:</strong> ' + location + '</p>',
     '<p><strong>Items:</strong><br>' + escape_(data.selected_items).replace(/\n/g, '<br>') + '</p>',
     '<p><strong>Date/Time:</strong> ' + escape_(data.preferred_date) + ' ' + escape_(data.preferred_time) + '</p>',
     '<p><strong>Notes:</strong> ' + escape_(data.notes) + '</p>'

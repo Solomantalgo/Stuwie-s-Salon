@@ -354,6 +354,46 @@
       font: inherit;
     }
     textarea { resize: vertical; }
+    .location-control {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 8px;
+    }
+    .location-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .location-row .btn {
+      min-height: 44px;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .location-status {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .location-status.visible { display: flex; }
+    .location-control.gps-added .location-row { display: none; }
+    .location-control.gps-added .location-status {
+      display: flex;
+      color: #146433;
+    }
+    .location-status.checking::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,100,180,0.18);
+      border-top-color: var(--blue);
+      animation: spin 0.75s linear infinite;
+      flex: 0 0 auto;
+    }
     .order-summary {
       border: 1px solid var(--line);
       background: var(--wash);
@@ -478,6 +518,7 @@
       .product-grid { grid-template-columns: 1fr; }
       .product-card img { height: 210px; }
       .order-form { grid-template-columns: 1fr; }
+      .location-row { grid-template-columns: 1fr; }
       .field.full, .order-summary, .form-actions { grid-column: auto; }
       .shop-cart {
         left: 12px;
@@ -590,6 +631,15 @@
         <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
         <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
         <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
+        <div class="location-control">
+          <label for="customerLocation">Location <span style="font-weight:700;color:var(--muted);">(optional)</span></label>
+          <div class="location-row">
+            <input id="customerLocation" name="location" placeholder="Type area / landmark, or use GPS" autocomplete="address-level2" />
+            <button class="btn btn-light use-gps" id="useGpsLocation" type="button">Use GPS</button>
+          </div>
+          <input id="customerLocationCoords" name="location_coords" type="hidden" />
+          <div class="location-status" id="locationStatus" role="status" aria-live="polite"></div>
+        </div>
         <div class="field"><label for="fulfillment">Pickup / Delivery</label><select id="fulfillment" name="fulfillment"><option>Pickup at salon</option><option>Delivery</option></select></div>
         <div class="field delivery-location" id="deliveryLocationField"><label for="deliveryLocation">Delivery Location</label><input id="deliveryLocation" name="delivery_location" placeholder="Area, landmark or address" /></div>
         <div class="order-summary"><strong>Selected products</strong><ul id="orderSummaryList"></ul></div>
@@ -728,9 +778,69 @@
     function orderItemsText() {
       return shopCart.map((item, index) => `${index + 1}. ${item.qty} x ${item.name}`).join("\n");
     }
+    function locationLink(coords) {
+      return coords ? `https://www.google.com/maps?q=${encodeURIComponent(coords)}` : "";
+    }
+    function locationValue(location, coords) {
+      if (coords) return "Location";
+      return location || "None";
+    }
+    function locationHtml(data) {
+      const link = locationLink(data.locationCoords);
+      if (link) return `<a href="${link}" target="_blank" rel="noreferrer">Location</a>`;
+      return data.location || "None";
+    }
+    function setupGpsLocation() {
+      const button = document.getElementById("useGpsLocation");
+      const input = document.getElementById("customerLocation");
+      const coordsInput = document.getElementById("customerLocationCoords");
+      const status = document.getElementById("locationStatus");
+      const control = button.closest(".location-control");
+      if (!button || !input || !coordsInput || !status || !control) return;
+      button.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          status.className = "location-status visible";
+          status.textContent = "GPS is not available on this device. You can type your area instead.";
+          return;
+        }
+        button.disabled = true;
+        status.className = "location-status visible checking";
+        status.textContent = "Checking your location...";
+        navigator.geolocation.getCurrentPosition((position) => {
+          const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
+          coordsInput.value = coords;
+          input.value = "Location";
+          control.classList.add("gps-added");
+          status.className = "location-status visible";
+          status.textContent = "Live location added.";
+          button.disabled = false;
+        }, () => {
+          status.className = "location-status visible";
+          status.textContent = "Location was not shared. You can type your area instead.";
+          button.disabled = false;
+        }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+      });
+      input.addEventListener("input", () => {
+        if (input.value.trim() !== "Location") {
+          coordsInput.value = "";
+          control.classList.remove("gps-added");
+        }
+      });
+    }
+    setupGpsLocation();
+    function resetGpsLocationState() {
+      document.querySelectorAll(".location-control.gps-added").forEach((control) => control.classList.remove("gps-added"));
+      const status = document.getElementById("locationStatus");
+      if (status) {
+        status.className = "location-status";
+        status.textContent = "";
+      }
+    }
     function shopOrderUrl(data) {
       let message = "Hello Stuwie's Salon & Spa, I'd like to place a product order.\n\n";
       message += `*Name:* ${data.name}\n*Phone:* ${data.phone}\n*Email:* ${data.email}\n`;
+      message += `*Location:* ${locationValue(data.location, data.locationCoords)}\n`;
+      if (data.locationCoords) message += `${locationLink(data.locationCoords)}\n`;
       message += `*Fulfillment:* ${data.fulfillment}\n`;
       if (data.deliveryLocation) message += `*Delivery Location:* ${data.deliveryLocation}\n`;
       message += "*Products:*\n" + orderItemsText() + "\n";
@@ -748,6 +858,7 @@
         ["Customer", data.name],
         ["Phone", data.phone],
         ["Email", data.email],
+        ["Location", locationHtml(data)],
         ["Fulfillment", data.fulfillment],
         ["Delivery Location", data.deliveryLocation || "N/A"],
         ["Products", orderItemsText().replace(/\n/g, "<br>")],
@@ -783,6 +894,8 @@
         name: document.getElementById("customerName").value.trim(),
         phone: document.getElementById("customerPhone").value.trim(),
         email: document.getElementById("customerEmail").value.trim(),
+        location: document.getElementById("customerLocation").value.trim(),
+        locationCoords: document.getElementById("customerLocationCoords").value.trim(),
         fulfillment: document.getElementById("fulfillment").value,
         deliveryLocation: document.getElementById("deliveryLocation").value.trim(),
         notes: document.getElementById("orderNotes").value.trim()
@@ -808,6 +921,8 @@
         customer_name: data.name,
         customer_phone: data.phone,
         customer_email: data.email,
+        customer_location: locationValue(data.location, data.locationCoords),
+        customer_location_link: locationLink(data.locationCoords),
         service: "Product order",
         selected_items: orderItemsText(),
         preferred_date: "",
@@ -831,6 +946,7 @@
       renderShopCart();
       closeOrder();
       event.target.reset();
+      resetGpsLocationState();
       document.getElementById("deliveryLocationField").classList.remove("visible");
       submitButton.disabled = false;
       submitButton.textContent = "Send Order Request";
