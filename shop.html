@@ -189,16 +189,166 @@
       gap: 10px;
     }
     .product-body h3 { margin: 0; font-size: 20px; line-height: 1.15; }
+    .product-body p { margin: 0; color: var(--muted); font-size: 14px; }
     .product-price { display: none; }
     .product-card .btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
       min-height: 36px;
       padding: 8px 11px;
       font-size: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+      width: fit-content;
+      justify-self: end;
     }
+    .shop-cart {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 35;
+      width: min(420px, calc(100% - 40px));
+      max-height: calc(100vh - 40px);
+      background: rgba(0, 13, 28, 0.96);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.32);
+      padding: 16px;
+      display: none;
+      gap: 14px;
+      backdrop-filter: blur(14px);
+    }
+    .shop-cart.visible.open { display: grid; }
+    .shop-cart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .shop-cart-head strong { font-size: 17px; }
+    .icon-btn {
+      border: 0;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+    .shop-cart-items {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+      max-height: 48vh;
+      padding-right: 2px;
+    }
+    .shop-cart-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.08);
+    }
+    .shop-cart-row p { margin: 2px 0 0; color: rgba(255,255,255,0.68); font-size: 12px; }
+    .qty-controls { display: inline-flex; align-items: center; gap: 8px; }
+    .qty-controls button {
+      border: 1px solid rgba(255,255,255,0.18);
+      background: transparent;
+      color: #fff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .cart-toggle {
+      position: fixed;
+      right: 16px;
+      bottom: 86px;
+      z-index: 36;
+      display: none;
+      border: 0;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .cart-toggle.visible { display: inline-flex; align-items: center; justify-content: center; }
+    .cart-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 60;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      padding: 11px 16px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.28);
+      font-weight: 850;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .cart-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+    .order-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.62);
+      z-index: 45;
+    }
+    .order-modal.open { display: grid; }
+    .order-panel {
+      width: min(720px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.32);
+    }
+    .order-head {
+      background: var(--blue);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .order-head h2 { margin: 0; }
+    .order-form {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .field.full, .order-summary, .form-actions { grid-column: 1 / -1; }
+    label { display: block; font-weight: 850; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 44px;
+      background: white;
+      font: inherit;
+    }
+    textarea { resize: vertical; }
+    .order-summary {
+      border: 1px solid var(--line);
+      background: var(--wash);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .order-summary ul { margin: 8px 0 0; padding-left: 18px; }
+    .delivery-location { display: none; }
+    .delivery-location.visible { display: block; }
     .route-strip {
       background: #000;
       color: white;
@@ -296,6 +446,14 @@
       .shop-hero { padding: 82px 16px 58px; }
       .product-grid { grid-template-columns: 1fr; }
       .product-card img { height: 210px; }
+      .order-form { grid-template-columns: 1fr; }
+      .field.full, .order-summary, .form-actions { grid-column: auto; }
+      .shop-cart {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+      }
       .fab { right: 14px; bottom: 14px; }
       .fab.open .fab-label {
         opacity: 1;
@@ -310,12 +468,11 @@
       <a class="brand-mark" href="index.html#top"><img src="assets/Stuwie LogoClare_page-0001.jpg" alt="" aria-hidden="true" />Stuwie's <span>Salon & Spa</span></a>
       <div class="nav-links">
         <a href="shop.html#catalogue">Order</a>
-        <a href="services.html">Services</a>
-        <a href="shop.html">Shop</a>
         <a href="index.html#offers">Offers</a>
+        <a href="shop.html">Shop</a>
         <a href="index.html#contact">Contact</a>
       </div>
-      <a class="btn btn-primary" href="services.html">Services</a>
+      <button class="btn btn-primary order-now" type="button">Order Now</button>
     </nav>
   </header>
 
@@ -335,14 +492,14 @@
           <p>Prices will be added after the client confirms the final product list and sizes.</p>
         </div>
         <div class="product-grid">
-          <article class="product-card"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/shampoo.png" alt="Shampoos" loading="lazy" decoding="async" /><div class="product-body"><h3>Shampoos</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Shampoos"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/conditioners.png" alt="Conditioners" loading="lazy" decoding="async" /><div class="product-body"><h3>Conditioners</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Conditioners"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/HairFood.png" alt="Hair food" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Food</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Food"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card"><img src="assets/Products/hairProducts.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Gift Vouchers"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card" data-product="Hair Products" data-price="Ask team"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><p>Salon-approved care for daily styling and maintenance.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Beard Oils" data-price="Ask team"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><p>Grooming oils for a clean, soft and finished beard.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Shampoos" data-price="Ask team"><img src="assets/Products/shampoo.png" alt="Shampoos" loading="lazy" decoding="async" /><div class="product-body"><h3>Shampoos</h3><p>Ask the team for the best fit for your hair type.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Conditioners" data-price="Ask team"><img src="assets/Products/conditioners.png" alt="Conditioners" loading="lazy" decoding="async" /><div class="product-body"><h3>Conditioners</h3><p>Moisture and care products for softer, manageable hair.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Hair Food" data-price="Ask team"><img src="assets/Products/HairFood.png" alt="Hair food" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Food</h3><p>Everyday nourishment for healthy-looking hair.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Body Lotion" data-price="Ask team"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><p>Body care essentials for smooth, comfortable skin.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Perfumes" data-price="Ask team"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><p>Fresh fragrance options for gifting or daily wear.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card" data-product="Gift Vouchers" data-price="Ask team"><img src="assets/Products/gift-vouchers.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="product-body"><h3>Gift Vouchers</h3><p>Perfect for every occasion.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
         </div>
       </div>
     </section>
@@ -369,6 +526,41 @@
     <button class="btn btn-primary fab-toggle" id="fabToggle" type="button" aria-expanded="false" aria-label="Open quick actions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>
   </div>
 
+  <aside class="shop-cart" id="shopCart" aria-live="polite">
+    <div class="shop-cart-head">
+      <strong>Product cart</strong>
+      <button class="icon-btn" id="shopCartClose" type="button" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-meta" id="shopCartMeta"></div>
+    <div class="shop-cart-items" id="shopCartItems"></div>
+    <button class="btn btn-primary" id="shopCheckout" type="button">Checkout Order</button>
+  </aside>
+
+  <button class="cart-toggle" id="shopCartToggle" type="button" aria-expanded="false">Cart 0</button>
+  <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
+
+  <div class="order-modal" id="orderModal" aria-hidden="true">
+    <div class="order-panel" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+      <div class="order-head">
+        <div>
+          <p class="eyebrow" style="color:white;margin-bottom:5px;">Product Order</p>
+          <h2 id="orderTitle">Complete Your Order Request</h2>
+        </div>
+        <button class="icon-btn" id="orderClose" type="button" aria-label="Close order form">&times;</button>
+      </div>
+      <form class="order-form" id="orderForm">
+        <div class="field"><label for="customerName">Customer Name</label><input id="customerName" name="name" required autocomplete="name" /></div>
+        <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
+        <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
+        <div class="field"><label for="fulfillment">Pickup / Delivery</label><select id="fulfillment" name="fulfillment"><option>Pickup at salon</option><option>Delivery</option></select></div>
+        <div class="field delivery-location" id="deliveryLocationField"><label for="deliveryLocation">Delivery Location</label><input id="deliveryLocation" name="delivery_location" placeholder="Area, landmark or address" /></div>
+        <div class="order-summary"><strong>Selected products</strong><ul id="orderSummaryList"></ul></div>
+        <div class="field full"><label for="orderNotes">Notes</label><textarea id="orderNotes" name="notes" rows="4" placeholder="Preferred brand, size, scent, quantity details or delivery notes"></textarea></div>
+        <div class="form-actions"><button class="btn btn-primary" id="sendOrderRequest" type="submit">Send Order Request</button></div>
+      </form>
+    </div>
+  </div>
+
   <footer>
     <strong>Stuwie's Salon & Spa</strong>
     <p>No Place You'd Rather Be</p>
@@ -377,13 +569,231 @@
 
   <script>
     const SALON_WHATSAPP = "256706081927";
-    document.querySelectorAll(".product-order").forEach((link) => {
-      const product = link.dataset.product;
-      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Please confirm availability.`;
-      link.href = `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
-      link.target = "_blank";
-      link.rel = "noreferrer";
+    const SALON_EMAIL = "stuwiessalonandspa@gmail.com";
+    const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa";
+    const ORDER_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKb63CyNeW5w65Aglh6sK1ZtrdFZbQXHyeE9Cf8HmEKGZOBNyGECqGJy5GudF3lN6T/exec";
+    const SHOP_CART_KEY = "stuwiesShopCart";
+    let shopCart = loadShopCart();
+
+    function loadShopCart() {
+      try {
+        const items = JSON.parse(localStorage.getItem(SHOP_CART_KEY) || "[]");
+        return Array.isArray(items) ? items.filter((item) => item && item.name).map((item) => ({
+          name: item.name,
+          price: item.price || "Ask team",
+          qty: Math.max(1, Number(item.qty) || 1)
+        })) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+    function saveShopCart() {
+      try {
+        localStorage.setItem(SHOP_CART_KEY, JSON.stringify(shopCart));
+      } catch (error) {}
+    }
+    function clearShopCart() {
+      shopCart = [];
+      try {
+        localStorage.removeItem(SHOP_CART_KEY);
+      } catch (error) {}
+    }
+    function showCartToast(message) {
+      const toast = document.getElementById("cartToast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(showCartToast.timeout);
+      showCartToast.timeout = window.setTimeout(() => toast.classList.remove("visible"), 1800);
+    }
+    function addProduct(product) {
+      const existing = shopCart.find((item) => item.name === product.name);
+      if (existing) {
+        existing.qty += 1;
+        showCartToast(`${product.name} quantity updated`);
+      } else {
+        shopCart.push({ ...product, qty: 1 });
+        showCartToast(`${product.name} added`);
+      }
+      saveShopCart();
+      renderShopCart();
+    }
+    function updateQty(name, delta) {
+      const item = shopCart.find((product) => product.name === name);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) shopCart = shopCart.filter((product) => product.name !== name);
+      saveShopCart();
+      renderShopCart();
+      renderOrderSummary();
+    }
+    function cartCount() {
+      return shopCart.reduce((sum, item) => sum + item.qty, 0);
+    }
+    function renderShopCart() {
+      const cart = document.getElementById("shopCart");
+      const toggle = document.getElementById("shopCartToggle");
+      const items = document.getElementById("shopCartItems");
+      const meta = document.getElementById("shopCartMeta");
+      const count = cartCount();
+      cart.classList.toggle("visible", count > 0);
+      if (!count) cart.classList.remove("open");
+      toggle.classList.toggle("visible", count > 0);
+      toggle.textContent = `Cart ${count}`;
+      toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
+      meta.textContent = count ? `${count} product${count === 1 ? "" : "s"} selected - final pricing confirmed by team` : "No products selected";
+      items.innerHTML = "";
+      shopCart.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "shop-cart-row";
+        row.innerHTML = `<div><strong>${item.name}</strong><p>${item.price}</p></div><div class="qty-controls"><button type="button" aria-label="Reduce ${item.name}">-</button><span>${item.qty}</span><button type="button" aria-label="Add ${item.name}">+</button></div>`;
+        const [minus, plus] = row.querySelectorAll("button");
+        minus.addEventListener("click", () => updateQty(item.name, -1));
+        plus.addEventListener("click", () => updateQty(item.name, 1));
+        items.appendChild(row);
+      });
+    }
+    function renderOrderSummary() {
+      const list = document.getElementById("orderSummaryList");
+      list.innerHTML = "";
+      shopCart.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.qty} x ${item.name} - ${item.price}`;
+        list.appendChild(li);
+      });
+    }
+    function openCart() {
+      if (!shopCart.length) {
+        document.getElementById("catalogue").scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      document.getElementById("shopCart").classList.add("open");
+      renderShopCart();
+    }
+    function closeCart() {
+      document.getElementById("shopCart").classList.remove("open");
+      renderShopCart();
+    }
+    function openOrder() {
+      if (!shopCart.length) {
+        showCartToast("Add a product first");
+        return;
+      }
+      renderOrderSummary();
+      document.getElementById("orderModal").classList.add("open");
+      document.getElementById("orderModal").setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeOrder() {
+      document.getElementById("orderModal").classList.remove("open");
+      document.getElementById("orderModal").setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    function orderItemsText() {
+      return shopCart.map((item, index) => `${index + 1}. ${item.qty} x ${item.name} - ${item.price}`).join("\n");
+    }
+    function shopOrderUrl(data) {
+      let message = "Hello Stuwie's Salon & Spa, I'd like to place a product order.\n\n";
+      message += `*Name:* ${data.name}\n*Phone:* ${data.phone}\n*Email:* ${data.email}\n`;
+      message += `*Fulfillment:* ${data.fulfillment}\n`;
+      if (data.deliveryLocation) message += `*Delivery Location:* ${data.deliveryLocation}\n`;
+      message += "*Products:*\n" + orderItemsText() + "\n";
+      message += "*Pricing:* Please confirm availability, sizes and final price.\n";
+      if (data.notes) message += `*Notes:* ${data.notes}\n`;
+      return `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
+    }
+    function buildOrderHtmlEmail(data) {
+      const rows = [
+        ["Customer", data.name],
+        ["Phone", data.phone],
+        ["Email", data.email],
+        ["Fulfillment", data.fulfillment],
+        ["Delivery Location", data.deliveryLocation || "N/A"],
+        ["Products", orderItemsText().replace(/\n/g, "<br>")],
+        ["Notes", data.notes || "N/A"]
+      ].map(([label, value]) => `<tr><th style="text-align:left;padding:12px;border:1px solid #d7e6f2;background:#f5f9fc;width:42%;">${label}</th><td style="padding:12px;border:1px solid #d7e6f2;">${value}</td></tr>`).join("");
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:#141414;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:#0064b4;color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">New product order request</p></td></tr><tr><td style="padding:24px;"><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rows}</table></td></tr><tr><td style="background:#000;color:#ffffff;padding:16px 24px;font-size:13px;">Ordered via website - ${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+    }
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".product-order");
+      if (!button) return;
+      event.preventDefault();
+      const card = button.closest(".product-card");
+      if (!card) return;
+      addProduct({ name: card.dataset.product || card.querySelector("h3").textContent.trim(), price: card.dataset.price || "Ask team" });
     });
+    document.querySelectorAll(".order-now").forEach((button) => button.addEventListener("click", openCart));
+    document.getElementById("shopCartToggle").addEventListener("click", () => {
+      document.getElementById("shopCart").classList.toggle("open");
+      renderShopCart();
+    });
+    document.getElementById("shopCartClose").addEventListener("click", closeCart);
+    document.getElementById("shopCheckout").addEventListener("click", openOrder);
+    document.getElementById("orderClose").addEventListener("click", closeOrder);
+    document.getElementById("orderModal").addEventListener("click", (event) => { if (event.target.id === "orderModal") closeOrder(); });
+    document.getElementById("fulfillment").addEventListener("change", (event) => {
+      document.getElementById("deliveryLocationField").classList.toggle("visible", event.target.value === "Delivery");
+    });
+    document.getElementById("orderForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submitButton = document.getElementById("sendOrderRequest");
+      const data = {
+        name: document.getElementById("customerName").value.trim(),
+        phone: document.getElementById("customerPhone").value.trim(),
+        email: document.getElementById("customerEmail").value.trim(),
+        fulfillment: document.getElementById("fulfillment").value,
+        deliveryLocation: document.getElementById("deliveryLocation").value.trim(),
+        notes: document.getElementById("orderNotes").value.trim()
+      };
+      if (!data.name || !data.phone || !data.email || !shopCart.length) {
+        alert("Please enter your name, phone, email and at least one product.");
+        return;
+      }
+      if (data.fulfillment === "Delivery" && !data.deliveryLocation) {
+        alert("Please enter the delivery location.");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+      const htmlEmail = buildOrderHtmlEmail(data);
+      const payload = {
+        submitted_at: new Date().toISOString(),
+        type: "Product order",
+        customer_name: data.name,
+        customer_phone: data.phone,
+        customer_email: data.email,
+        service: "Product order",
+        selected_items: orderItemsText(),
+        preferred_date: "",
+        preferred_time: "",
+        notes: `${data.fulfillment}${data.deliveryLocation ? ` - ${data.deliveryLocation}` : ""}${data.notes ? `\n${data.notes}` : ""}`,
+        html_email: htmlEmail,
+        raw_items: shopCart
+      };
+      try {
+        await fetch(ORDER_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.info("Order email notification could not be sent.", error);
+      }
+      window.open(shopOrderUrl(data), "_blank");
+      clearShopCart();
+      renderShopCart();
+      closeOrder();
+      event.target.reset();
+      document.getElementById("deliveryLocationField").classList.remove("visible");
+      submitButton.disabled = false;
+      submitButton.textContent = "Send Order Request";
+    });
+    renderShopCart();
     document.getElementById("fabToggle").addEventListener("click", () => {
       const fab = document.getElementById("fab");
       const isOpen = fab.classList.toggle("open");

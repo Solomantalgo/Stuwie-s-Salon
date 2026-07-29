@@ -566,10 +566,13 @@
     }
     .item-add:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
     .booking-cart {
-      position: sticky;
-      bottom: 0;
-      z-index: 12;
-      margin-top: 24px;
+      position: fixed;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      z-index: 35;
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
       background: rgba(0, 13, 28, 0.94);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.12);
@@ -582,7 +585,8 @@
       justify-content: space-between;
       backdrop-filter: blur(14px);
     }
-    .booking-cart.visible { display: flex; }
+    .booking-cart.visible.open { display: flex; }
+    body.cart-active.cart-open { padding-bottom: 112px; }
     .cart-items {
       display: flex;
       flex-wrap: wrap;
@@ -624,6 +628,7 @@
       font-weight: 900;
       cursor: pointer;
     }
+    .cart-toggle.visible { display: inline-flex; align-items: center; justify-content: center; }
     .selected-services {
       grid-column: 1 / -1;
       border: 1px solid var(--line);
@@ -798,16 +803,84 @@
       gap: 10px;
     }
     .product-body h3 { margin: 0; font-size: 19px; line-height: 1.15; }
+    .product-body p { margin: 0; color: var(--muted); font-size: 14px; }
     .product-price { display: none; }
     .product-card .btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
       min-height: 36px;
       padding: 8px 11px;
       font-size: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+      width: fit-content;
+      justify-self: end;
     }
+    .shop-cart {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 37;
+      width: min(420px, calc(100% - 40px));
+      max-height: calc(100vh - 40px);
+      background: rgba(0, 13, 28, 0.96);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.32);
+      padding: 16px;
+      display: none;
+      gap: 14px;
+      backdrop-filter: blur(14px);
+    }
+    .shop-cart.visible.open { display: grid; }
+    .shop-cart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .shop-cart-items {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+      max-height: 48vh;
+      padding-right: 2px;
+    }
+    .shop-cart-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.08);
+    }
+    .shop-cart-row p { margin: 2px 0 0; color: rgba(255,255,255,0.68); font-size: 12px; }
+    .qty-controls { display: inline-flex; align-items: center; gap: 8px; }
+    .qty-controls button, .icon-btn {
+      border: 1px solid rgba(255,255,255,0.18);
+      background: transparent;
+      color: #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .icon-btn { font-size: 20px; line-height: 1; }
+    .shop-cart-toggle {
+      position: fixed;
+      right: 16px;
+      bottom: 140px;
+      z-index: 38;
+      display: none;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .shop-cart-toggle.visible { display: inline-flex; align-items: center; justify-content: center; }
     .section-actions {
       margin-top: 22px;
       display: flex;
@@ -1631,15 +1704,15 @@
       <div class="section-inner">
         <div class="section-head reveal">
           <div><p class="eyebrow">Featured Products</p><h2>Take the salon care home</h2></div>
-          <p>Order hair, beard, skin and gift items directly on WhatsApp.</p>
+          <p>Add products to your cart, then complete the order on the shop page.</p>
         </div>
         <div class="product-grid">
-          <article class="product-card reveal"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Hair Products"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Beard Oils"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Body Lotion"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
-          <article class="product-card reveal"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><a class="btn btn-whatsapp product-order" href="#" data-product="Perfumes"><span class="wa-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 11.8a8.4 8.4 0 0 1-12.3 7.4L4 20.3l1.1-4.1A8.4 8.4 0 1 1 20.5 11.8Z"/></svg></span>Order Now</a></div></article>
+          <article class="product-card reveal" data-product="Hair Products" data-price="Ask team"><img src="assets/Products/hairProducts.png" alt="Hair products" loading="lazy" decoding="async" /><div class="product-body"><h3>Hair Products</h3><p>Salon-approved care for daily styling and maintenance.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Beard Oils" data-price="Ask team"><img src="assets/Products/Beardoil.png" alt="Beard oils" loading="lazy" decoding="async" /><div class="product-body"><h3>Beard Oils</h3><p>Grooming oils for a clean, soft and finished beard.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Body Lotion" data-price="Ask team"><img src="assets/Products/BodyLotion.png" alt="Body lotion" loading="lazy" decoding="async" /><div class="product-body"><h3>Body Lotion</h3><p>Body care essentials for smooth, comfortable skin.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
+          <article class="product-card reveal" data-product="Perfumes" data-price="Ask team"><img src="assets/Products/Perfumes.png" alt="Perfumes" loading="lazy" decoding="async" /><div class="product-body"><h3>Perfumes</h3><p>Fresh fragrance options for gifting or daily wear.</p><button class="btn btn-primary product-order" type="button">Add to Cart</button></div></article>
         </div>
-        <div class="section-actions reveal"><a class="btn btn-primary" href="shop.html">View All Products</a></div>
+        <div class="section-actions reveal"><a class="btn btn-primary" id="shopCartLink" href="shop.html">View Cart & All Products</a></div>
       </div>
     </section>
 
@@ -1816,6 +1889,16 @@
   </footer>
   <!-- Website by Solomantalgo: https://solomantalgo.com -->
   <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
+  <aside class="shop-cart" id="homeShopCart" aria-live="polite">
+    <div class="shop-cart-head">
+      <strong>Product cart</strong>
+      <button class="icon-btn" id="homeShopCartClose" type="button" aria-label="Close product cart">&times;</button>
+    </div>
+    <div class="cart-meta" id="homeShopCartMeta"></div>
+    <div class="shop-cart-items" id="homeShopCartItems"></div>
+    <a class="btn btn-primary" href="shop.html">Checkout on Shop Page</a>
+  </aside>
+  <button class="shop-cart-toggle" id="homeShopCartToggle" type="button" aria-expanded="false">Shop Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
   <div class="image-modal" id="mapImageModal" aria-hidden="true">
     <div class="image-modal-panel" role="dialog" aria-modal="true" aria-labelledby="mapImageTitle">
@@ -1839,7 +1922,31 @@
     const form = document.getElementById("bookingForm");
     const confirmationModal = document.getElementById("confirmationModal");
     let lastSubmittedBooking = null;
-    let bookingCart = [];
+    const CART_STORAGE_KEY = "stuwiesBookingCart";
+    function loadStoredCart() {
+      try {
+        const items = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+        return Array.isArray(items) ? items.filter((item) => item && item.name && item.price).map((item) => ({
+          ...item,
+          duration: item.duration || "",
+          key: item.key || `${item.category}|${item.name}|${item.duration || ""}|${item.price}`
+        })) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+    function saveCart() {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(bookingCart));
+      } catch (error) {}
+    }
+    function clearStoredCart() {
+      bookingCart = [];
+      try {
+        localStorage.removeItem(CART_STORAGE_KEY);
+      } catch (error) {}
+    }
+    let bookingCart = loadStoredCart();
     let bookingSubmitting = false;
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("preferredDate").min = today;
@@ -1898,12 +2005,95 @@
     }
     document.getElementById("modalClose").addEventListener("click", closeBooking);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeBooking(); });
-    document.querySelectorAll(".product-order").forEach((link) => {
-      const product = link.dataset.product;
-      const message = `Hello Stuwie's Salon & Spa, I'd like to order ${product}. Please confirm availability.`;
-      link.href = `https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`;
-      link.target = "_blank";
-      link.rel = "noreferrer";
+    const SHOP_CART_KEY = "stuwiesShopCart";
+    function loadShopCart() {
+      try {
+        const items = JSON.parse(localStorage.getItem(SHOP_CART_KEY) || "[]");
+        return Array.isArray(items) ? items.filter((item) => item && item.name).map((item) => ({
+          name: item.name,
+          price: item.price || "Ask team",
+          qty: Math.max(1, Number(item.qty) || 1)
+        })) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+    function saveShopCart(items) {
+      try {
+        localStorage.setItem(SHOP_CART_KEY, JSON.stringify(items));
+      } catch (error) {}
+    }
+    function shopCartCount(items = loadShopCart()) {
+      return items.reduce((sum, item) => sum + item.qty, 0);
+    }
+    function addProductToShopCart(product) {
+      const items = loadShopCart();
+      const existing = items.find((item) => item.name === product.name);
+      if (existing) existing.qty += 1;
+      else items.push({ ...product, qty: 1 });
+      saveShopCart(items);
+      updateShopCartLink();
+      renderHomeShopCart();
+      showCartToast(existing ? `${product.name} quantity updated` : `${product.name} added to shop cart`);
+    }
+    function updateHomeShopQty(name, delta) {
+      let items = loadShopCart();
+      const item = items.find((product) => product.name === name);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) items = items.filter((product) => product.name !== name);
+      saveShopCart(items);
+      updateShopCartLink();
+      renderHomeShopCart();
+    }
+    function updateShopCartLink() {
+      const link = document.getElementById("shopCartLink");
+      if (!link) return;
+      const count = shopCartCount();
+      link.textContent = count ? `View Cart (${count}) & All Products` : "View Cart & All Products";
+    }
+    function renderHomeShopCart() {
+      const cart = document.getElementById("homeShopCart");
+      const toggle = document.getElementById("homeShopCartToggle");
+      const list = document.getElementById("homeShopCartItems");
+      const meta = document.getElementById("homeShopCartMeta");
+      if (!cart || !toggle || !list || !meta) return;
+      const items = loadShopCart();
+      const count = shopCartCount(items);
+      cart.classList.toggle("visible", count > 0);
+      if (!count) cart.classList.remove("open");
+      toggle.classList.toggle("visible", count > 0);
+      toggle.textContent = `Shop Cart ${count}`;
+      toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
+      meta.textContent = count ? `${count} product${count === 1 ? "" : "s"} selected - complete checkout on shop page` : "No products selected";
+      list.innerHTML = "";
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "shop-cart-row";
+        row.innerHTML = `<div><strong>${item.name}</strong><p>${item.price}</p></div><div class="qty-controls"><button type="button" aria-label="Reduce ${item.name}">-</button><span>${item.qty}</span><button type="button" aria-label="Add ${item.name}">+</button></div>`;
+        const [minus, plus] = row.querySelectorAll("button");
+        minus.addEventListener("click", () => updateHomeShopQty(item.name, -1));
+        plus.addEventListener("click", () => updateHomeShopQty(item.name, 1));
+        list.appendChild(row);
+      });
+    }
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".product-order");
+      if (!button) return;
+      event.preventDefault();
+      const card = button.closest(".product-card");
+      if (!card) return;
+      addProductToShopCart({ name: card.dataset.product || card.querySelector("h3").textContent.trim(), price: card.dataset.price || "Ask team" });
+    });
+    updateShopCartLink();
+    renderHomeShopCart();
+    document.getElementById("homeShopCartToggle")?.addEventListener("click", () => {
+      document.getElementById("homeShopCart").classList.toggle("open");
+      renderHomeShopCart();
+    });
+    document.getElementById("homeShopCartClose")?.addEventListener("click", () => {
+      document.getElementById("homeShopCart").classList.remove("open");
+      renderHomeShopCart();
     });
     const offerPop = document.getElementById("offerPop");
     const todayDay = new Date().getDay();
@@ -1939,6 +2129,11 @@
     function formatUgx(value) {
       return `UGX ${Number(value || 0).toLocaleString("en-US")}`;
     }
+    function priceLabel(value) {
+      const price = String(value || "").trim();
+      if (!price) return "";
+      return /^(UGX|From UGX|Custom quote|Ask team)/i.test(price) ? price : `UGX ${price}`;
+    }
     function addCartItem(item) {
       const key = `${item.category}|${item.name}|${item.duration}|${item.price}`;
       if (!bookingCart.some((existing) => existing.key === key)) {
@@ -1947,6 +2142,7 @@
       } else {
         showCartToast(`${item.name} is already selected`);
       }
+      saveCart();
       renderCart();
       renderSelectedServices();
       renderSubcategoryOptions(document.getElementById("requestedService").value);
@@ -1960,6 +2156,7 @@
     }
     function removeCartItem(key) {
       bookingCart = bookingCart.filter((item) => item.key !== key);
+      saveCart();
       renderCart();
       renderSelectedServices();
       renderSubcategoryOptions(document.getElementById("requestedService").value);
@@ -1978,6 +2175,7 @@
       toggle.textContent = `Cart ${bookingCart.length}`;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
       document.body.classList.toggle("cart-active", bookingCart.length > 0);
+      document.body.classList.toggle("cart-open", bookingCart.length > 0 && cart.classList.contains("open"));
       items.innerHTML = "";
       bookingCart.forEach((item) => {
         const chip = document.createElement("span");
@@ -1995,13 +2193,13 @@
       list.innerHTML = "";
       bookingCart.forEach((item) => {
         const li = document.createElement("li");
-        li.textContent = `${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`;
+        li.textContent = `${item.name}${item.duration ? ` - ${item.duration}` : ""} - ${priceLabel(item.price)}`;
         list.appendChild(li);
       });
     }
     function bookingItemsText(data) {
       if (!data.items.length) return data.service;
-      return data.items.map((item, index) => `${index + 1}. ${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`).join("\n");
+      return data.items.map((item, index) => `${index + 1}. ${item.name}${item.duration ? ` - ${item.duration}` : ""} - ${priceLabel(item.price)}`).join("\n");
     }
     function serviceCatalog() {
       const catalog = {};
@@ -2035,7 +2233,7 @@
           if (input.checked) addCartItem(item);
           else removeCartItem(key);
         });
-        label.append(input, document.createTextNode(`${item.name}${item.duration ? ` - ${item.duration}` : ""} - UGX ${item.price}`));
+        label.append(input, document.createTextNode(`${item.name}${item.duration ? ` - ${item.duration}` : ""} - ${priceLabel(item.price)}`));
         options.appendChild(label);
       });
     }
@@ -2056,7 +2254,11 @@
       button.type = "button";
       button.className = "item-add";
       button.textContent = "Add";
-      button.addEventListener("click", () => addCartItem({ name, category, duration, price }));
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        addCartItem({ name, category, duration, price });
+      });
       row.appendChild(button);
     });
     document.querySelectorAll("#services .service-card").forEach((card) => {
@@ -2106,9 +2308,11 @@
     document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
     document.getElementById("cartToggle").addEventListener("click", () => {
       const cart = document.getElementById("bookingCart");
-      const isOpen = cart.classList.toggle("open");
-      document.getElementById("cartToggle").setAttribute("aria-expanded", String(isOpen));
+      cart.classList.toggle("open");
+      renderCart();
     });
+    renderCart();
+    renderSelectedServices();
     document.getElementById("requestedService").addEventListener("change", (event) => {
       renderSubcategoryOptions(event.target.value);
     });
@@ -2282,7 +2486,7 @@
           body: JSON.stringify(payload)
         });
         form.reset();
-        bookingCart = [];
+        clearStoredCart();
         renderCart();
         renderSelectedServices();
         renderSubcategoryOptions("");

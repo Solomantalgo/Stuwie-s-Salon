@@ -292,10 +292,13 @@
     }
     .item-add:hover { background: var(--blue); color: #fff; }
     .booking-cart {
-      position: sticky;
-      bottom: 0;
-      z-index: 12;
-      margin-top: 24px;
+      position: fixed;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      z-index: 35;
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
       background: rgba(0, 13, 28, 0.94);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.12);
@@ -308,7 +311,8 @@
       justify-content: space-between;
       backdrop-filter: blur(14px);
     }
-    .booking-cart.visible { display: flex; }
+    .booking-cart.visible.open { display: flex; }
+    body.cart-active.cart-open { padding-bottom: 112px; }
     .cart-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .cart-chip {
       display: inline-flex;
@@ -338,6 +342,7 @@
       font-weight: 900;
       cursor: pointer;
     }
+    .cart-toggle.visible { display: inline-flex; align-items: center; justify-content: center; }
     .cart-toast {
       position: fixed;
       left: 50%;
@@ -737,7 +742,31 @@
     const SALON_WHATSAPP = "256706081927";
     const bookingModal = document.getElementById("bookingModal");
     const bookingForm = document.getElementById("bookingForm");
-    let bookingCart = [];
+    const CART_STORAGE_KEY = "stuwiesBookingCart";
+    function loadStoredCart() {
+      try {
+        const items = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+        return Array.isArray(items) ? items.filter((item) => item && item.name && item.price).map((item) => ({
+          ...item,
+          duration: item.duration || "",
+          key: item.key || `${item.category}|${item.name}|${item.duration || ""}|${item.price}`
+        })) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+    function saveCart() {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(bookingCart));
+      } catch (error) {}
+    }
+    function clearStoredCart() {
+      bookingCart = [];
+      try {
+        localStorage.removeItem(CART_STORAGE_KEY);
+      } catch (error) {}
+    }
+    let bookingCart = loadStoredCart();
     document.getElementById("preferredDate").min = new Date().toISOString().split("T")[0];
 
     function parsePrice(value) {
@@ -747,6 +776,11 @@
     }
     function formatUgx(value) {
       return `UGX ${Number(value || 0).toLocaleString("en-US")}`;
+    }
+    function priceLabel(value) {
+      const price = String(value || "").trim();
+      if (!price) return "";
+      return /^(UGX|From UGX|Custom quote|Ask team)/i.test(price) ? price : `UGX ${price}`;
     }
     function cartTotal() {
       return bookingCart.reduce((sum, item) => sum + parsePrice(item.price), 0);
@@ -759,18 +793,20 @@
       showCartToast.timeout = window.setTimeout(() => toast.classList.remove("visible"), 1800);
     }
     function addCartItem(item) {
-      const key = `${item.category}|${item.name}|${item.price}`;
+      const key = `${item.category}|${item.name}|${item.duration || ""}|${item.price}`;
       if (!bookingCart.some((existing) => existing.key === key)) {
         bookingCart.push({ ...item, key });
         showCartToast(`${item.name} added`);
       } else {
         showCartToast(`${item.name} is already selected`);
       }
+      saveCart();
       renderCart();
       renderSelectedServices();
     }
     function removeCartItem(key) {
       bookingCart = bookingCart.filter((item) => item.key !== key);
+      saveCart();
       renderCart();
       renderSelectedServices();
     }
@@ -785,6 +821,7 @@
       toggle.textContent = `Cart ${bookingCart.length}`;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
       document.body.classList.toggle("cart-active", bookingCart.length > 0);
+      document.body.classList.toggle("cart-open", bookingCart.length > 0 && cart.classList.contains("open"));
       items.innerHTML = "";
       bookingCart.forEach((item) => {
         const chip = document.createElement("span");
@@ -802,7 +839,7 @@
       list.innerHTML = "";
       bookingCart.forEach((item) => {
         const li = document.createElement("li");
-        li.textContent = `${item.category}: ${item.name} - UGX ${item.price}`;
+        li.textContent = `${item.category}: ${item.name} - ${priceLabel(item.price)}`;
         list.appendChild(li);
       });
     }
@@ -838,7 +875,11 @@
       button.type = "button";
       button.className = "item-add";
       button.textContent = "Add";
-      button.addEventListener("click", () => addCartItem({ category, name, price }));
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        addCartItem({ category, name, price });
+      });
       row.appendChild(button);
     });
     document.querySelectorAll(".service-card").forEach((card) => {
@@ -870,9 +911,11 @@
     document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
     document.getElementById("cartToggle").addEventListener("click", () => {
       const cart = document.getElementById("bookingCart");
-      const isOpen = cart.classList.toggle("open");
-      document.getElementById("cartToggle").setAttribute("aria-expanded", String(isOpen));
+      cart.classList.toggle("open");
+      renderCart();
     });
+    renderCart();
+    renderSelectedServices();
     document.getElementById("modalClose").addEventListener("click", closeBooking);
     bookingModal.addEventListener("click", (event) => { if (event.target === bookingModal) closeBooking(); });
     bookingForm.addEventListener("submit", (event) => {
@@ -892,12 +935,15 @@
       message += `*Service:* ${bookingCart.length ? "Multiple selected services" : service}\n`;
       if (bookingCart.length) {
         message += "*Items:*\n";
-        message += bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - UGX ${item.price}`).join("\n");
+        message += bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - ${priceLabel(item.price)}`).join("\n");
         message += `\n*Estimated Total:* ${formatUgx(cartTotal())}\n`;
       }
       message += `*Date:* ${date}\n*Time:* ${time}\n`;
       if (notes) message += `*Notes:* ${notes}\n`;
       window.open(`https://wa.me/${SALON_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank");
+      clearStoredCart();
+      renderCart();
+      renderSelectedServices();
       closeBooking();
     });
 
