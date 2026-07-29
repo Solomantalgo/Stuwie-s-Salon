@@ -182,7 +182,7 @@
       height: 100%;
       transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
     }
-    .service-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: rgba(0, 100, 180, 0.34); }
+    .service-card:hover { box-shadow: var(--shadow); border-color: rgba(0, 100, 180, 0.34); }
     .service-card img { width: 100%; height: 220px; object-fit: cover; }
     .service-fallback {
       height: 220px;
@@ -283,13 +283,19 @@
       background: #fff;
       color: var(--blue);
       border-radius: 999px;
-      padding: 5px 9px;
-      min-height: 28px;
-      font-size: 11px;
+      padding: 8px 14px;
+      min-width: 52px;
+      min-height: 40px;
+      font-size: 12px;
       font-weight: 900;
       cursor: pointer;
       justify-self: end;
+      align-self: center;
+      touch-action: manipulation;
+      position: relative;
+      z-index: 2;
     }
+    .item-add:focus-visible { outline: 3px solid rgba(0,159,227,0.35); outline-offset: 2px; }
     .item-add:hover { background: var(--blue); color: #fff; }
     .booking-cart {
       position: fixed;
@@ -513,6 +519,23 @@
       .service-tabs { grid-template-columns: 1fr 1fr; }
       .service-tab { padding: 9px 10px; font-size: 13px; }
       .service-card img { height: 210px; }
+      .price-list li {
+        grid-template-columns: minmax(0, 1fr) minmax(58px, auto);
+        gap: 6px 12px;
+      }
+      .price-list li span,
+      .price-list li strong {
+        grid-row: 2;
+      }
+      .price-list li span { grid-column: 1; }
+      .price-list li strong { grid-column: 1; justify-self: start; }
+      .price-list li .item-add {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        min-height: 44px;
+        min-width: 58px;
+        padding: 9px 14px;
+      }
       .cart-toggle.visible {
         display: inline-flex;
         align-items: center;
@@ -875,12 +898,21 @@
       button.type = "button";
       button.className = "item-add";
       button.textContent = "Add";
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        addCartItem({ category, name, price });
-      });
+      button.dataset.category = category;
+      button.dataset.name = name;
+      button.dataset.price = price;
       row.appendChild(button);
+    });
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".item-add");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      addCartItem({
+        category: button.dataset.category || "Service",
+        name: button.dataset.name || "",
+        price: button.dataset.price || ""
+      });
     });
     document.querySelectorAll(".service-card").forEach((card) => {
       const rows = Array.from(card.querySelectorAll(".price-list li"));
