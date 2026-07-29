@@ -10,8 +10,8 @@
   Public website reads only safe availability data. Customer details stay private.
 */
 
-const SALON_EMAIL = 'kmantalgosolo@gmail.com';
-const SHEET_ID = '11ef_KyjslER3On5KrjcwLQI7fWvrcrajhH1sXDeyu-8';
+const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
+const SHEET_ID = '1Z7TYosoYPI3vsHqv3ftm2Z6C1Rvlyge81fRiD1Q1Sl0';
 const BOOKINGS_SHEET = 'Bookings';
 const AVAILABILITY_SHEET = 'Availability';
 const DASHBOARD_SHEET = 'Dashboard';
