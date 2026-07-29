@@ -22,13 +22,17 @@
       --radius: 8px;
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
     body {
       margin: 0;
       font-family: Inter, "Segoe UI", Arial, sans-serif;
       color: var(--ink);
       background: var(--wash);
       line-height: 1.55;
+      overflow-x: hidden;
     }
     img { max-width: 100%; display: block; }
     a { color: inherit; }
