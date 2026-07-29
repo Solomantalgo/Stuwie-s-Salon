@@ -1064,35 +1064,15 @@
       border-radius: var(--radius);
       background: #fff;
       box-shadow: 0 18px 44px rgba(0,0,0,0.06);
-      padding: 18px 18px 42px;
+      padding: 18px;
       min-height: 260px;
       max-width: 100%;
       overflow-x: hidden;
-    }
-    .reviews-shell::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 38px;
-      z-index: 4;
-      background: #fff;
-      border-radius: 0 0 var(--radius) var(--radius);
-      pointer-events: auto;
     }
     .reviews-shell iframe,
     .reviews-shell [class*="elfsight"] {
       max-width: 100% !important;
       overflow-x: hidden !important;
-    }
-    .reviews-shell a[href*="elfsight.com"],
-    .reviews-shell [class*="badge"],
-    .reviews-shell [class*="watermark"],
-    .reviews-shell [class*="branding"] {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
     }
 
     .gallery-grid { grid-template-columns: repeat(4, 1fr); }
@@ -1404,6 +1384,161 @@
       background: #fff1f1;
       color: #8a1f1f;
     }
+    .availability-dashboard {
+      grid-column: 1 / -1;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+    }
+    .availability-dashboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .availability-dashboard-head strong { color: var(--black); }
+    .availability-dashboard-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .availability-dashboard .btn {
+      min-height: 36px;
+      padding: 8px 12px;
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+    .availability-grid {
+      display: none;
+      gap: 10px;
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .availability-grid.visible { display: grid; }
+    .availability-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px dashed rgba(0,100,180,0.24);
+      border-radius: var(--radius);
+      background: var(--wash);
+      color: var(--blue);
+      font-weight: 900;
+      padding: 14px;
+      font-size: 13px;
+    }
+    .availability-loading::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid rgba(0,100,180,0.18);
+      border-top-color: var(--blue);
+      animation: spin 0.75s linear infinite;
+      flex: 0 0 auto;
+    }
+    .availability-month {
+      border: 1px solid rgba(0,100,180,0.14);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+    .availability-month-toggle {
+      width: 100%;
+      border: 0;
+      background: var(--wash);
+      color: var(--black);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: left;
+    }
+    .availability-month-toggle span:last-child {
+      color: var(--blue);
+      font-size: 12px;
+    }
+    .availability-month-weeks {
+      display: none;
+      gap: 10px;
+      padding: 10px;
+    }
+    .availability-month.open .availability-month-weeks { display: grid; }
+    .availability-week {
+      border: 1px solid rgba(0,100,180,0.12);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+    .availability-week-toggle {
+      width: 100%;
+      border: 0;
+      background: #fff;
+      color: var(--black);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: left;
+    }
+    .availability-week-toggle span:last-child {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .availability-week-days {
+      display: none;
+      gap: 8px;
+      padding: 0 10px 10px;
+    }
+    .availability-week.open .availability-week-days { display: grid; }
+    .availability-day {
+      border: 1px solid rgba(0,100,180,0.14);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--wash);
+    }
+    .availability-day h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+    .availability-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .availability-slot {
+      border: 1px solid rgba(0,100,180,0.18);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue);
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .availability-slot.blocked,
+    .availability-slot.closed {
+      color: #8a1f1f;
+      background: #fff1f1;
+      border-color: rgba(177,53,53,0.24);
+      cursor: not-allowed;
+      opacity: 0.74;
+    }
+    .availability-slot.selected {
+      background: var(--blue);
+      color: #fff;
+    }
 
     .fab {
       position: fixed;
@@ -1530,12 +1665,6 @@
         flex: 0 0 auto;
         padding: 10px 12px;
       }
-      .reviews-shell {
-        padding-bottom: 50px;
-      }
-      .reviews-shell::after {
-        height: 48px;
-      }
       section { padding: 56px 16px; }
       .hero-inner { width: calc(100% - 32px); padding: 92px 0 52px; gap: 32px; }
       .logo-panel { max-width: 170px; }
@@ -1553,17 +1682,17 @@
       #trust { margin-top: 0; padding-top: 20px; }
       .package-card.featured-package img { height: 240px; }
       .price-list li {
-        grid-template-columns: minmax(0, 1fr) minmax(58px, auto);
+        grid-template-columns: minmax(0, 1fr) minmax(76px, auto) minmax(58px, auto);
         gap: 6px 12px;
       }
       .price-list li span,
       .price-list li strong {
         grid-row: 2;
       }
-      .price-list li span { grid-column: 1; }
-      .price-list li strong { grid-column: 1; justify-self: start; }
+      .price-list li span { grid-column: 1; min-width: 0; }
+      .price-list li strong { grid-column: 2; justify-self: end; align-self: center; }
       .price-list li .item-add {
-        grid-column: 2;
+        grid-column: 3;
         grid-row: 1 / span 2;
         min-height: 44px;
         min-width: 58px;
@@ -2013,6 +2142,13 @@
           <strong>Choose specific options</strong>
           <div class="subcategory-options" id="subcategoryOptions"></div>
         </div>
+        <div class="availability-dashboard">
+          <div class="availability-dashboard-head">
+            <div><strong>Check availability</strong><p>View the next few days before choosing your preferred time.</p></div>
+            <button class="btn btn-light" id="availabilityDashboardToggle" type="button">View Times</button>
+          </div>
+          <div class="availability-grid" id="availabilityGrid"></div>
+        </div>
         <div class="field"><label for="preferredDate">Preferred Date</label><input id="preferredDate" name="date" type="date" required /></div>
         <div class="field"><label for="preferredTime">Preferred Time</label><input id="preferredTime" name="time" type="time" required /></div>
         <div class="availability-message" id="availabilityMessage" role="status" aria-live="polite"></div>
@@ -2082,6 +2218,8 @@
     const confirmationModal = document.getElementById("confirmationModal");
     let lastSubmittedBooking = null;
     let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
+    let lastAvailabilityKey = "";
+    let availabilityRequest = null;
     const CART_STORAGE_KEY = "stuwiesBookingCart";
     function loadStoredCart() {
       try {
@@ -2114,6 +2252,11 @@
     function availabilityUrl() {
       return `${BOOKING_WEB_APP_URL}?action=availability&callback=__stuwiesAvailability`;
     }
+    function currentAvailabilityKey() {
+      const date = document.getElementById("preferredDate").value;
+      const time = document.getElementById("preferredTime").value;
+      return date && time ? `${date}|${time}` : "";
+    }
     function setAvailabilityChecking() {
       const message = document.getElementById("availabilityMessage");
       const date = document.getElementById("preferredDate").value;
@@ -2128,12 +2271,18 @@
       message.className = "availability-message visible blocked";
       message.textContent = "Availability could not be checked right now. Please try again or contact the salon.";
     }
-    function loadBookingAvailability() {
-      return new Promise((resolve) => {
+    function loadBookingAvailability(force = false) {
+      const requestedKey = currentAvailabilityKey();
+      if (!force && requestedKey && requestedKey === lastAvailabilityKey) {
+        return Promise.resolve(bookingAvailability);
+      }
+      if (availabilityRequest) return availabilityRequest;
+      lastAvailabilityKey = "";
+      availabilityRequest = new Promise((resolve) => {
         const date = document.getElementById("preferredDate").value;
         const time = document.getElementById("preferredTime").value;
-        if (!date || !time) {
-          updateAvailabilityMessage();
+        if (!force && (!date || !time)) {
+          availabilityRequest = null;
           resolve(bookingAvailability);
           return;
         }
@@ -2142,7 +2291,9 @@
         if (previous) previous.remove();
         window.__stuwiesAvailability = (payload) => {
           bookingAvailability = payload && payload.ok ? payload : { booked_slots: [], blocked_slots: [], closed_days: [] };
-          updateAvailabilityMessage();
+          lastAvailabilityKey = currentAvailabilityKey();
+          renderAvailabilityDashboard();
+          availabilityRequest = null;
           resolve(bookingAvailability);
         };
         const script = document.createElement("script");
@@ -2151,10 +2302,12 @@
         script.async = true;
         script.onerror = () => {
           setAvailabilityCheckFailed();
-          resolve(bookingAvailability);
+          availabilityRequest = null;
+          resolve(null);
         };
         document.body.appendChild(script);
       });
+      return availabilityRequest;
     }
     function isDateClosed(date) {
       return Boolean(date && bookingAvailability.closed_days && bookingAvailability.closed_days.includes(date));
@@ -2163,6 +2316,100 @@
       if (!date || !time) return false;
       const allSlots = (bookingAvailability.booked_slots || []).concat(bookingAvailability.blocked_slots || []);
       return allSlots.some((slot) => slot.date === date && slot.time === time);
+    }
+    function availabilitySlots() {
+      return ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00"];
+    }
+    function availabilityMonthLabel(date) {
+      return date.toLocaleDateString("en-UG", { month: "long", year: "numeric" });
+    }
+    function formatAvailabilityDate(date) {
+      return date.toLocaleDateString("en-UG", { weekday: "short", month: "short", day: "numeric" });
+    }
+    function dateInputValue(date) {
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return localDate.toISOString().split("T")[0];
+    }
+    function setAvailabilityDashboardLoading() {
+      const grid = document.getElementById("availabilityGrid");
+      if (!grid) return;
+      grid.innerHTML = `<div class="availability-loading">Loading the next 6 months of available times...</div>`;
+    }
+    function closeAvailabilityDashboard() {
+      const grid = document.getElementById("availabilityGrid");
+      const button = document.getElementById("availabilityDashboardToggle");
+      if (!grid || !button) return;
+      grid.classList.remove("visible");
+      button.textContent = "View Times";
+    }
+    function closeAvailabilityDashboardIfComplete() {
+      const date = document.getElementById("preferredDate").value;
+      const time = document.getElementById("preferredTime").value;
+      if (date && time) closeAvailabilityDashboard();
+    }
+    function renderAvailabilityDashboard() {
+      const grid = document.getElementById("availabilityGrid");
+      if (!grid) return;
+      const selectedDate = document.getElementById("preferredDate").value;
+      const selectedTime = document.getElementById("preferredTime").value;
+      const openMonths = Array.from(grid.querySelectorAll(".availability-month.open")).map((month) => month.dataset.month);
+      grid.innerHTML = "";
+      const months = new Map();
+      const start = new Date();
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 6);
+      for (let day = new Date(start); day < end; day.setDate(day.getDate() + 1)) {
+        const date = new Date(day);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        if (!months.has(monthKey)) months.set(monthKey, { label: availabilityMonthLabel(date), days: [] });
+        months.get(monthKey).days.push(date);
+      }
+      Array.from(months.entries()).forEach(([monthKey, month], index) => {
+        const monthWrap = document.createElement("div");
+        monthWrap.className = `availability-month ${index === 0 || openMonths.includes(monthKey) ? "open" : ""}`;
+        monthWrap.dataset.month = monthKey;
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "availability-month-toggle";
+        toggle.innerHTML = `<span>${month.label}</span><span>${month.days.length} days</span>`;
+        toggle.addEventListener("click", () => monthWrap.classList.toggle("open"));
+        const daysWrap = document.createElement("div");
+        daysWrap.className = "availability-month-days";
+        month.days.forEach((monthDay) => {
+        const day = new Date();
+        day.setTime(monthDay.getTime());
+        const dateValue = dateInputValue(day);
+        const closed = isDateClosed(dateValue);
+        const wrap = document.createElement("div");
+        wrap.className = "availability-day";
+        wrap.innerHTML = `<h4>${formatAvailabilityDate(day)}</h4><div class="availability-slots"></div>`;
+        const slots = wrap.querySelector(".availability-slots");
+        availabilitySlots().forEach((time) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "availability-slot";
+          chip.textContent = time;
+          if (closed || isSlotBlocked(dateValue, time)) {
+            chip.classList.add(closed ? "closed" : "blocked");
+            chip.disabled = true;
+            chip.title = closed ? "Closed" : "Booked";
+          } else {
+            chip.addEventListener("click", () => {
+              document.getElementById("preferredDate").value = dateValue;
+              document.getElementById("preferredTime").value = time;
+              closeAvailabilityDashboard();
+              loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
+            });
+          }
+          if (dateValue === selectedDate && time === selectedTime) chip.classList.add("selected");
+          slots.appendChild(chip);
+        });
+        daysWrap.appendChild(wrap);
+        });
+        monthWrap.appendChild(toggle);
+        monthWrap.appendChild(daysWrap);
+        grid.appendChild(monthWrap);
+      });
     }
     function updateAvailabilityMessage() {
       const message = document.getElementById("availabilityMessage");
@@ -2197,10 +2444,25 @@
       return true;
     }
     function checkAvailabilityWhenReady() {
-      loadBookingAvailability().then(updateAvailabilityMessage);
+      closeAvailabilityDashboardIfComplete();
+      loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
+    }
+    function ensureCurrentSlotAvailable() {
+      if (currentAvailabilityKey() && currentAvailabilityKey() === lastAvailabilityKey) return Promise.resolve(updateAvailabilityMessage());
+      return loadBookingAvailability().then((payload) => payload ? updateAvailabilityMessage() : false);
     }
     document.getElementById("preferredDate").addEventListener("change", checkAvailabilityWhenReady);
     document.getElementById("preferredTime").addEventListener("change", checkAvailabilityWhenReady);
+    document.getElementById("availabilityDashboardToggle").addEventListener("click", () => {
+      const grid = document.getElementById("availabilityGrid");
+      const button = document.getElementById("availabilityDashboardToggle");
+      const visible = grid.classList.toggle("visible");
+      button.textContent = visible ? "Refresh Times" : "View Times";
+      if (visible) {
+        setAvailabilityDashboardLoading();
+        loadBookingAvailability(true).then((payload) => { if (payload) renderAvailabilityDashboard(); });
+      }
+    });
 
     function updateHeaderState() {
       header.classList.toggle("scrolled", window.scrollY > 40);
@@ -2602,16 +2864,6 @@
       const isOpen = fab.classList.toggle("open");
       document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
     });
-    function hideElfsightBranding() {
-      document.querySelectorAll('#reviews a[href*="elfsight.com"], #reviews [class*="badge"], #reviews [class*="watermark"], #reviews [class*="branding"]').forEach((element) => {
-        element.style.setProperty("display", "none", "important");
-        element.style.setProperty("visibility", "hidden", "important");
-        element.style.setProperty("pointer-events", "none", "important");
-      });
-    }
-    hideElfsightBranding();
-    window.setTimeout(hideElfsightBranding, 1200);
-    window.setTimeout(hideElfsightBranding, 3000);
     document.getElementById("mapEnable").addEventListener("click", () => {
       const mapCard = document.querySelector(".map-card");
       const button = document.getElementById("mapEnable");
@@ -2714,8 +2966,7 @@
       if (bookingSubmitting) return;
       const data = collectBooking();
       if (!validateBooking(data)) return;
-      await loadBookingAvailability();
-      if (!updateAvailabilityMessage()) return;
+      if (!(await ensureCurrentSlotAvailable())) return;
       const htmlEmail = buildHtmlEmail(data);
       const submitButton = document.getElementById("sendBookingRequest");
       bookingSubmitting = true;
