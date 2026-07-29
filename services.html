@@ -1134,6 +1134,13 @@
       const time = document.getElementById("preferredTime").value;
       if (date && time) closeAvailabilityDashboard();
     }
+    function scrollAvailabilitySectionToTop(section) {
+      const grid = document.getElementById("availabilityGrid");
+      if (!grid || !section) return;
+      window.requestAnimationFrame(() => {
+        grid.scrollTo({ top: Math.max(0, section.offsetTop - grid.offsetTop), behavior: "smooth" });
+      });
+    }
     function renderAvailabilityDashboard() {
       const grid = document.getElementById("availabilityGrid");
       if (!grid) return;
@@ -1167,7 +1174,10 @@
         toggle.addEventListener("click", () => {
           const willOpen = !monthWrap.classList.contains("open");
           grid.querySelectorAll(".availability-month.open").forEach((item) => item.classList.remove("open"));
-          if (willOpen) monthWrap.classList.add("open");
+          if (willOpen) {
+            monthWrap.classList.add("open");
+            scrollAvailabilitySectionToTop(monthWrap);
+          }
         });
         const weeksWrap = document.createElement("div");
         weeksWrap.className = "availability-month-weeks";
@@ -1182,7 +1192,10 @@
           weekToggle.addEventListener("click", () => {
             const willOpen = !weekWrap.classList.contains("open");
             monthWrap.querySelectorAll(".availability-week.open").forEach((item) => item.classList.remove("open"));
-            if (willOpen) weekWrap.classList.add("open");
+            if (willOpen) {
+              weekWrap.classList.add("open");
+              scrollAvailabilitySectionToTop(weekWrap);
+            }
           });
           const weekDaysWrap = document.createElement("div");
           weekDaysWrap.className = "availability-week-days";
