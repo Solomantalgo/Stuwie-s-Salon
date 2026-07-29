@@ -526,19 +526,24 @@
     }
     .service-panels.all-mode .service-grid { display: contents; }
     .service-card img {
-      height: 230px;
+      height: 200px;
       width: 100%;
       object-fit: cover;
       transition: transform 0.55s ease, filter 0.55s ease;
     }
     .service-card:hover img { transform: scale(1.06); filter: saturate(1.08) contrast(1.03); }
-    .service-body { padding: 20px; display: flex; flex-direction: column; }
+    .service-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .service-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
     .book-card-btn {
       width: fit-content;
-      margin-top: 16px;
-      min-height: 40px;
-      padding: 8px 13px;
-      font-size: 13px;
+      margin-top: 12px;
+      min-height: 36px;
+      padding: 7px 12px;
+      font-size: 12px;
       align-self: flex-end;
     }
     .price-list li {
@@ -680,22 +685,90 @@
       transform: translate(-50%, 0);
     }
     .price-list {
-      margin: 14px 0 0;
+      margin: 10px 0 0;
       padding: 0;
       list-style: none;
       display: grid;
-      gap: 9px;
+      gap: 7px;
     }
     .price-list li {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto auto auto;
-      gap: 12px;
-      padding-bottom: 9px;
+      gap: 8px;
+      padding-bottom: 7px;
       border-bottom: 1px dashed rgba(0,100,180,0.22);
     }
     .price-list span { color: var(--muted); font-size: 13px; }
     .price-list strong { color: var(--blue); white-space: nowrap; }
+    .price-list.collapsed li:nth-child(n + 5) { display: none; }
+    .price-list.subcategory-list.collapsed li:nth-child(n + 3) { display: none; }
+    .subhead {
+      margin: 12px 0 0;
+      color: var(--black);
+      font-size: 13px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .view-more {
+      width: fit-content;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 7px 11px;
+      min-height: 32px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      margin: 8px 0 0;
+    }
+    .view-more:hover { background: var(--blue); color: #fff; }
     .package-price { color: var(--warm); }
+    #services .package-intro {
+      grid-column: 1 / -1;
+      border-radius: var(--radius);
+      background: #000;
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    #services .package-intro h3 { margin: 0 0 6px; font-size: clamp(26px, 4vw, 42px); }
+    #services .package-intro p { margin: 0; color: rgba(255,255,255,0.72); max-width: 720px; }
+    #services .package-card {
+      position: relative;
+      background: white;
+      border: 1px solid rgba(0,100,180,0.24);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.08);
+    }
+    #services .package-card.featured { grid-column: span 2; }
+    #services .package-card img { height: 250px; width: 100%; object-fit: cover; }
+    #services .package-body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
+    #services .package-body h3 { margin: 0 0 8px; font-size: 26px; }
+    #services .package-meta { color: var(--muted); font-weight: 850; margin-bottom: 14px; }
+    #services .package-card p { color: var(--muted); }
+    #services .package-price { color: var(--blue); font-size: 26px; font-weight: 950; margin-top: auto; }
+    #services .package-card .btn { width: 100%; justify-content: center; margin-top: 16px; }
+    #services .badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 1;
+      border-radius: 999px;
+      background: var(--warm);
+      color: #000;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
 
     #featured-products { background: var(--paper); }
     .product-grid {
@@ -1246,6 +1319,8 @@
       .service-grid, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
       .service-panels.all-mode { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: repeat(2, 1fr); }
+      #services .package-card.featured { grid-column: span 2; }
+      #services .package-intro { align-items: flex-start; flex-direction: column; }
       .package-grid { grid-template-columns: 1fr 1fr; }
       .package-card.featured-package { grid-column: 1 / -1; grid-row: auto; }
       .package-card.featured-package img { height: 300px; }
@@ -1260,6 +1335,8 @@
       .logo-panel img { height: 135px; }
       .trust-grid, .service-grid, .package-grid, .team-grid, .gallery-grid, .booking-form, .form-actions { grid-template-columns: 1fr; }
       .service-panels.all-mode { grid-template-columns: 1fr; }
+      #services .package-card.featured { grid-column: span 1; }
+      #services .package-card img { height: 210px; }
       .quick-book-grid, .product-grid, .offer-grid { grid-template-columns: 1fr; }
       .hero-proof { grid-template-columns: 1fr 1fr; }
       .field.full, .form-actions, .form-note { grid-column: auto; }
@@ -1470,12 +1547,16 @@
           <p>Pick the care you need, then send one clear booking request with your preferred date and time.</p>
         </div>
         <div class="quick-book-grid">
-          <article class="quick-book-card reveal"><img src="assets/images/Barbering (Gents).png" alt="Barbering service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Barbering</h3><button class="mini-book-btn open-booking" data-service="Barbering (Gents)" type="button">Book</button></div></article>
-          <article class="quick-book-card reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Ladies Hair</h3><button class="mini-book-btn open-booking" data-service="Hair Services (Ladies)" type="button">Book</button></div></article>
-          <article class="quick-book-card reveal"><img src="assets/images/nail-enhancements.png" alt="Nail service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Nails</h3><button class="mini-book-btn open-booking" data-service="Nail Enhancements" type="button">Book</button></div></article>
-          <article class="quick-book-card reveal"><img src="assets/images/Massages.png" alt="Spa and massage service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Spa & Massage</h3><button class="mini-book-btn open-booking" data-service="Massages" type="button">Book</button></div></article>
-          <article class="quick-book-card reveal"><img src="assets/images/hero.webp" alt="Steam and sauna service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Steam & Sauna</h3><button class="mini-book-btn open-booking" data-service="Targeted Care" type="button">Book</button></div></article>
-          <article class="quick-book-card reveal"><img src="assets/images/Team.png" alt="Kids salon service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Kids Services</h3><button class="mini-book-btn open-booking" data-service="Kids Services" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Facials.png" alt="Facial treatment" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Facials</h3><button class="mini-book-btn open-booking" data-service="Facials" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Body Scrubs</h3><button class="mini-book-btn open-booking" data-service="Body Scrubs" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Massages.png" alt="Massage therapy" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Massages</h3><button class="mini-book-btn open-booking" data-service="Massages" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/waxing.png" alt="Waxing service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Waxing</h3><button class="mini-book-btn open-booking" data-service="Waxing" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Manicure & Pedicure</h3><button class="mini-book-btn open-booking" data-service="Manicure & Pedicure" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Hair Services (Ladies)</h3><button class="mini-book-btn open-booking" data-service="Hair Services (Ladies)" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Barbering (Gents).png" alt="Barbering service" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Barbering Services (Gents)</h3><button class="mini-book-btn open-booking" data-service="Barbering Services (Gents)" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/royal-glow-package.png" alt="Spa packages" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Spa Packages</h3><button class="mini-book-btn open-booking" data-service="Spa Packages" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/hero2.png" alt="Gift vouchers" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Gift Vouchers</h3><button class="mini-book-btn open-booking" data-service="Gift Voucher" type="button">Book</button></div></article>
+          <article class="quick-book-card reveal"><img src="assets/images/Team.png" alt="Membership and loyalty" loading="lazy" decoding="async" /><div class="quick-book-body"><h3>Membership & Loyalty</h3><button class="mini-book-btn open-booking" data-service="Membership & Loyalty" type="button">Ask</button></div></article>
         </div>
       </div>
     </section>
@@ -1498,36 +1579,39 @@
         <div class="service-panels all-mode" id="servicePanels">
         <div class="service-panel all-visible" id="panel-face">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <span>30 mins</span><strong>40,000</strong></li><li>Classic Deep Cleansing <span>60 mins</span><strong>65,000</strong></li><li>Hydrating Facial <span>60 mins</span><strong>75,000</strong></li><li>Gold Facial Luxury <span>90 mins</span><strong>120,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list"><li>Brown Sugar Scrub <span>45 mins</span><strong>65,000</strong></li><li>Coffee Body Scrub <span>60 mins</span><strong>75,000</strong></li><li>Turmeric Glow Scrub <span>60 mins</span><strong>80,000</strong></li><li>Coconut & Vanilla Scrub <span>60 mins</span><strong>95,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Spa combo" /><div class="service-body"><h3>Signature Combos</h3><ul class="price-list"><li>Body Scrub + Swedish Massage <span>90 mins</span><strong>130,000</strong></li><li>Body Scrub + Steam + Massage <span>120 mins</span><strong>160,000</strong></li><li>Couples Body Scrub <span>60 mins each</span><strong>140,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" /><div class="service-body"><h3>Facials</h3><ul class="price-list"><li>Express Facial <span>30 min</span><strong>40,000</strong></li><li>Classic Deep Cleansing Facial <span>60 min</span><strong>65,000</strong></li><li>Hydrating Facial <span>60 min</span><strong>75,000</strong></li><li>Brightening / Glow Facial <span>60 min</span><strong>85,000</strong></li><li>Acne Control Facial <span>75 min</span><strong>90,000</strong></li><li>Anti-Aging Facial <span>75-90 min</span><strong>110,000</strong></li><li>Vitamin C Facial <span>60 min</span><strong>90,000</strong></li><li>Gold Facial (Luxury) <span>90 min</span><strong>120,000</strong></li><li>Men's Executive Facial <span>60 min</span><strong>70,000</strong></li><li>Teen Facial <span>45 min</span><strong>55,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" /><div class="service-body"><h3>Body Scrubs</h3><ul class="price-list subcategory-list"><li>Brown Sugar Scrub <span>45 min</span><strong>65,000</strong></li><li>Coffee Body Scrub <span>60 min</span><strong>75,000</strong></li><li>Turmeric Glow Scrub <span>60 min</span><strong>80,000</strong></li><li>Charcoal Detox Scrub <span>60 min</span><strong>90,000</strong></li><li>Coconut & Vanilla Scrub <span>60 min</span><strong>95,000</strong></li></ul><div class="subhead">Signature Combos</div><ul class="price-list subcategory-list"><li>Body Scrub + Swedish Massage <span>90 min</span><strong>130,000</strong></li><li>Body Scrub + Steam + Massage <span>120 min</span><strong>160,000</strong></li><li>Body Scrub + Facial <span>120 min</span><strong>150,000</strong></li><li>Body Scrub + Bikini Wax <span></span><strong>125,000</strong></li><li>Couples Body Scrub <span>60 min each</span><strong>140,000</strong></li></ul></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-massage">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <span>60 / 90 mins</span><strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <span>60 / 90 mins</span><strong>80,000 / 110,000</strong></li><li>Prenatal Massage <span>60 mins</span><strong>80,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/hero.webp" alt="Relaxing spa room" /><div class="service-body"><h3>Targeted Care</h3><ul class="price-list"><li>Back, Neck & Shoulder <span>30 mins</span><strong>45,000</strong></li><li>Foot Reflexology <span>45 mins</span><strong>50,000</strong></li><li>Hot Stone Massage <span>75 mins</span><strong>110,000</strong></li><li>Massage Add-ons <span>Oil / Cupping</span><strong>20,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" /><div class="service-body"><h3>Massages</h3><ul class="price-list"><li>Swedish Massage <span>60 / 90 min</span><strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong></li><li>Hot Stone Massage <span>75 min</span><strong>110,000</strong></li><li>Back, Neck & Shoulder Massage <span>30 min</span><strong>45,000</strong></li><li>Foot Reflexology <span>45 min</span><strong>50,000</strong></li><li>Prenatal Massage <span>60 min</span><strong>80,000</strong></li></ul><div class="subhead">Massage Add-ons</div><ul class="price-list subcategory-list"><li>Hot Oil / Aromatherapy Oil / Cupping <span>Add-on</span><strong>20,000</strong></li></ul></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-beauty">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows / Upper Lip <span>from</span><strong>10,000</strong></li><li>Underarms <span></span><strong>15,000</strong></li><li>Bikini Line <span></span><strong>25,000</strong></li><li>Full Legs / Brazilian <span></span><strong>60,000 / 50,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list"><li>Manicure <span></span><strong>30,000</strong></li><li>Pedicure <span></span><strong>40,000</strong></li><li>Deluxe Manicure <span></span><strong>45,000</strong></li><li>Deluxe Pedicure <span></span><strong>60,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/nail-enhancements.png" alt="Nail enhancements" /><div class="service-body"><h3>Nail Enhancements</h3><ul class="price-list"><li>Gel Polish Hands <span></span><strong>40,000</strong></li><li>Gel Polish Feet <span></span><strong>50,000</strong></li><li>Nail Extensions Acrylic <span>From</span><strong>70,000</strong></li><li>Nail Art <span>Per nail</span><strong>2,000+</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" /><div class="service-body"><h3>Waxing</h3><ul class="price-list"><li>Eyebrows <span></span><strong>15,000</strong></li><li>Upper Lip <span></span><strong>10,000</strong></li><li>Chin <span></span><strong>10,000</strong></li><li>Underarms <span></span><strong>15,000</strong></li><li>Half Arms <span></span><strong>25,000</strong></li><li>Full Arms <span></span><strong>35,000</strong></li><li>Bikini Line <span></span><strong>25,000</strong></li><li>Brazilian <span></span><strong>50,000</strong></li><li>Hollywood <span></span><strong>60,000</strong></li><li>Half Legs <span></span><strong>40,000</strong></li><li>Full Legs <span></span><strong>60,000</strong></li><li>Back <span></span><strong>40,000</strong></li><li>Chest <span></span><strong>40,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" /><div class="service-body"><h3>Manicure & Pedicure</h3><ul class="price-list subcategory-list"><li>Manicure <span></span><strong>30,000</strong></li><li>Pedicure <span></span><strong>40,000</strong></li><li>Deluxe Manicure (paraffin wax) <span></span><strong>45,000</strong></li><li>Deluxe Pedicure (scrub + paraffin wax) <span></span><strong>60,000</strong></li></ul><div class="subhead">Nail Enhancements</div><ul class="price-list subcategory-list"><li>Gel Polish (Hands) <span></span><strong>40,000</strong></li><li>Gel Polish (Feet) <span></span><strong>50,000</strong></li><li>Nail Extensions (Acrylic) <span></span><strong>From 70,000</strong></li><li>Nail Art (Per Nail) <span></span><strong>2,000+</strong></li></ul></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-hair">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" /><div class="service-body"><h3>Hair Services (Ladies)</h3><ul class="price-list"><li>Wash & Blow Dry <span></span><strong>25,000</strong></li><li>Wash, Blow Dry & Style <span></span><strong>35,000</strong></li><li>Braids / Weave On <span>From</span><strong>30,000</strong></li><li>Dreadlocks / Faux Locs <span>From</span><strong>80,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" /><div class="service-body"><h3>Barbering (Gents)</h3><ul class="price-list"><li>Hair Cut <span></span><strong>10,000</strong></li><li>Skin Fade <span></span><strong>15,000</strong></li><li>Beard Shaping <span></span><strong>15,000</strong></li><li>Hair Cut + Shave + Beard Trim <span></span><strong>25,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" /><div class="service-body"><h3>Hair Services (Ladies)</h3><ul class="price-list"><li>Wash & Blow Dry <span></span><strong>25,000</strong></li><li>Wash, Blow Dry & Style <span></span><strong>35,000</strong></li><li>Braids (Short) <span></span><strong>From 30,000</strong></li><li>Braids (Medium) <span></span><strong>From 50,000</strong></li><li>Braids (Long) <span></span><strong>From 70,000</strong></li><li>Weave On (Short) <span></span><strong>From 60,000</strong></li><li>Weave On (Long) <span></span><strong>From 100,000</strong></li><li>Treatment / Deep Conditioning <span></span><strong>25,000</strong></li><li>Hair Colour <span></span><strong>From 60,000</strong></li><li>Hair Relaxing <span></span><strong>From 60,000</strong></li><li>Dreadlocks / Faux Locs <span></span><strong>From 80,000</strong></li><li>Hair Cut & Style <span></span><strong>25,000</strong></li></ul></div></article>
+            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" /><div class="service-body"><h3>Barbering Services (Gents)</h3><ul class="price-list"><li>Hair Cut <span></span><strong>10,000</strong></li><li>Skin Fade <span></span><strong>15,000</strong></li><li>Shave <span></span><strong>10,000</strong></li><li>Beard Trim <span></span><strong>10,000</strong></li><li>Beard Shaping <span></span><strong>15,000</strong></li><li>Hot Towel Shave <span></span><strong>20,000</strong></li><li>Hair Cut + Shave + Beard Trim <span></span><strong>25,000</strong></li><li>Kids Hair Cut (Under 12) <span></span><strong>8,000</strong></li></ul></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-packages">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" loading="lazy" decoding="async" /><div class="service-body"><h3>Royal Glow Experience</h3><ul class="price-list"><li>Scrub + Massage + Facial <span>2.5 hours</span><strong>180,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" loading="lazy" decoding="async" /><div class="service-body"><h3>Couples Spa Escape</h3><ul class="price-list"><li>Scrub + Massage + Facial <span>2.5 hours each</span><strong>300,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Bridal Luxury</h3><ul class="price-list"><li>Facial, massage, manicure, pedicure, waxing and hair treatment <span></span><strong>380,000</strong></li></ul></div></article>
-            <article class="service-card"><img src="assets/images/vip-group-package.png" alt="Group package" loading="lazy" decoding="async" /><div class="service-body"><h3>VIP & Group</h3><ul class="price-list"><li>Birthday spa party for 4+ people, refreshments included <span></span><strong>From 150,000 pp</strong></li></ul></div></article>
+            <div class="package-intro"><div><p class="eyebrow" style="color:var(--warm);margin-bottom:6px;">Spa Packages</p><h3>Feel Good. Look Great. Be Your Best.</h3><p>High-value Stuwie's experiences combine treatments into relaxed, occasion-ready bookings for individuals, couples, brides and groups.</p></div><button class="btn btn-light open-booking" type="button" data-service="Spa Packages">Plan My Package</button></div>
+            <article class="package-card featured"><span class="badge">Most Popular</span><img src="assets/images/royal-glow-package.png" alt="Royal glow experience" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Stuwie's Signature Packages</p><h3>Royal Glow Experience</h3><div class="package-meta">Scrub + Massage + Facial | 2.5 hrs</div><ul class="price-list"><li>Body scrub, relaxing massage and facial glow care <strong>180,000</strong></li></ul><div class="package-price">UGX 180,000</div><button class="btn btn-primary open-booking" type="button" data-service="Royal Glow Experience">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/queens-indulgence-package.png" alt="Queen's indulgence" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Stuwie's Signature Packages</p><h3>Queen's Indulgence</h3><div class="package-meta">Scrub + Steam + Massage + Facial | 3 hrs</div><ul class="price-list"><li>Full glow ritual with steam and facial finish <strong>220,000</strong></li></ul><div class="package-price">UGX 220,000</div><button class="btn btn-primary open-booking" type="button" data-service="Queen's Indulgence">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/ultimate-relaxation-package.png" alt="Ultimate relaxation" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Stuwie's Signature Packages</p><h3>Ultimate Relaxation</h3><div class="package-meta">Massage + Facial + Pedicure | 2.5 hrs</div><ul class="price-list"><li>Body relief, skin refresh and polished feet <strong>170,000</strong></li></ul><div class="package-price">UGX 170,000</div><button class="btn btn-primary open-booking" type="button" data-service="Ultimate Relaxation">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/Spa Packages  Couples.png" alt="Couples relaxation" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Couples Packages</p><h3>Couples Relaxation</h3><div class="package-meta">Massage 60 min each + Scrub 30 min each</div><ul class="price-list"><li>A shared reset for two <strong>200,000</strong></li></ul><div class="package-price">UGX 200,000</div><button class="btn btn-primary open-booking" type="button" data-service="Couples Relaxation">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/Spa Packages  Couples.png" alt="Couples spa package" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Couples Packages</p><h3>Couples Spa Escape</h3><div class="package-meta">Scrub + Massage + Facial | 2.5 hrs each</div><ul class="price-list"><li>Complete glow and relaxation for two <strong>300,000</strong></li></ul><div class="package-price">UGX 300,000</div><button class="btn btn-primary open-booking" type="button" data-service="Couples Spa Escape">Book This Package</button></div></article>
+            <article class="package-card featured"><span class="badge">Best Value</span><img src="assets/images/bridal-luxury-package.png" alt="Bridal glow" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Bridal Packages</p><h3>Bridal Glow</h3><div class="package-meta">2 days: Facial + Massage + Manicure + Pedicure + Body Scrub</div><ul class="price-list"><li>Wedding-ready glow across two relaxed days <strong>250,000</strong></li></ul><div class="package-price">UGX 250,000</div><button class="btn btn-primary open-booking" type="button" data-service="Bridal Glow">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal beauty treatment" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Bridal Packages</p><h3>Bridal Luxury</h3><div class="package-meta">3 days: Bridal Glow + Waxing + Hair Treatment</div><ul class="price-list"><li>All Bridal Glow services plus waxing and hair treatment <strong>380,000</strong></li></ul><div class="package-price">UGX 380,000</div><button class="btn btn-primary open-booking" type="button" data-service="Bridal Luxury">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/birthday-spa-party.png" alt="Birthday spa party" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Birthday Spa Party</h3><div class="package-meta">4+ people: Massage + Facial + Pedicure + Refreshments</div><ul class="price-list"><li>Group celebration package with refreshments <strong>From 150,000/person</strong></li></ul><div class="package-price">From UGX 150,000/person</div><button class="btn btn-primary open-booking" type="button" data-service="Birthday Spa Party">Book This Package</button></div></article>
+            <article class="package-card"><img src="assets/images/corporate-spa-day.png" alt="Corporate spa day" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Corporate Spa Day</h3><div class="package-meta">5+ people: Customized packages, discounted rates</div><ul class="price-list"><li>Team wellness day shaped around your group <strong>Ask team</strong></li></ul><div class="package-price">Custom quote</div><button class="btn btn-primary open-booking" type="button" data-service="Corporate Spa Day">Plan This Package</button></div></article>
           </div>
         </div>
         </div>
@@ -1694,7 +1778,7 @@
         <div class="field"><label for="customerPhone">Phone / WhatsApp</label><input id="customerPhone" name="phone" type="tel" placeholder="+256 700 123 456" required autocomplete="tel" /></div>
         <div class="field full"><label for="customerEmail">Email</label><input id="customerEmail" name="email" type="email" placeholder="you@example.com" required autocomplete="email" /></div>
         <div class="selected-services" id="selectedServices"><strong>Selected services</strong><ul id="selectedServicesList"></ul></div>
-        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Signature Combos</option><option>Massages</option><option>Targeted Care</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Nail Enhancements</option><option>Hair Services (Ladies)</option><option>Barbering (Gents)</option><option>Steam & Sauna</option><option>Kids Services</option><option>Royal Glow Experience</option><option>Couples Spa Escape</option><option>Bridal Luxury</option><option>VIP & Group</option><option>Gift Voucher</option></select></div>
+        <div class="field full"><label for="requestedService">Service Requested</label><select id="requestedService" name="service"><option value="">Select a service</option><option>Facials</option><option>Body Scrubs</option><option>Massages</option><option>Waxing</option><option>Manicure & Pedicure</option><option>Hair Services (Ladies)</option><option>Barbering Services (Gents)</option><option>Spa Packages</option><option>Royal Glow Experience</option><option>Queen's Indulgence</option><option>Ultimate Relaxation</option><option>Couples Relaxation</option><option>Couples Spa Escape</option><option>Bridal Glow</option><option>Bridal Luxury</option><option>Birthday Spa Party</option><option>Corporate Spa Day</option><option>Gift Voucher</option><option>Membership & Loyalty</option></select></div>
         <div class="subcategory-panel" id="subcategoryPanel">
           <strong>Choose specific options</strong>
           <div class="subcategory-options" id="subcategoryOptions"></div>
@@ -1812,7 +1896,6 @@
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
     }
-    document.querySelectorAll(".open-booking").forEach((button) => button.addEventListener("click", () => openBooking(button.dataset.service || "")));
     document.getElementById("modalClose").addEventListener("click", closeBooking);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeBooking(); });
     document.querySelectorAll(".product-order").forEach((link) => {
@@ -1976,21 +2059,43 @@
       button.addEventListener("click", () => addCartItem({ name, category, duration, price }));
       row.appendChild(button);
     });
+    document.querySelectorAll(".price-list").forEach((list) => {
+      const visibleLimit = list.classList.contains("subcategory-list") ? 2 : 4;
+      if (list.children.length <= visibleLimit) return;
+      list.classList.add("collapsed");
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "view-more";
+      toggle.textContent = "View more";
+      toggle.addEventListener("click", () => {
+        const isCollapsed = list.classList.toggle("collapsed");
+        toggle.textContent = isCollapsed ? "View more" : "View less";
+      });
+      list.after(toggle);
+    });
     document.querySelectorAll(".service-card, .package-card").forEach((card) => {
       const title = card.querySelector("h3")?.textContent.trim();
       const body = card.querySelector(".service-body, .package-body");
-      if (!title || !body || body.querySelector(".book-card-btn")) return;
+      if (!title || !body || body.querySelector(".book-card-btn, .open-booking")) return;
       const price = card.querySelector(".package-price")?.textContent.trim() || "";
       const button = document.createElement("button");
       button.type = "button";
       button.className = "btn btn-primary book-card-btn";
       button.dataset.service = title;
       button.textContent = "Book";
-      button.addEventListener("click", () => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
         if (card.classList.contains("package-card")) addCartItem({ name: title, category: "Package", duration: "", price });
         openBooking(title);
       });
       body.appendChild(button);
+    });
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest(".open-booking");
+      if (!button) return;
+      event.preventDefault();
+      openBooking(button.dataset.service || "");
     });
     document.getElementById("cartCheckout").addEventListener("click", () => openBooking());
     document.getElementById("cartToggle").addEventListener("click", () => {
