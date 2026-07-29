@@ -38,7 +38,16 @@
       color: var(--ink);
       background: var(--paper);
       line-height: 1.55;
+      width: 100%;
+      max-width: 100%;
       overflow-x: hidden;
+    }
+    body > * {
+      max-width: 100%;
+    }
+    main, section, header, footer {
+      max-width: 100%;
+      overflow-x: clip;
     }
     img { max-width: 100%; display: block; }
     a { color: inherit; }
@@ -77,6 +86,7 @@
       font-weight: 800;
       color: white;
       transition: transform 0.25s ease, color 0.25s ease;
+      min-width: 0;
     }
     .brand-mark:hover { transform: translateY(-1px); color: var(--blue); }
     .brand-mark img {
@@ -1058,6 +1068,11 @@
       max-width: 100%;
       overflow-x: hidden;
     }
+    .reviews-shell iframe,
+    .reviews-shell [class*="elfsight"] {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
 
     .gallery-grid { grid-template-columns: repeat(4, 1fr); }
     .gallery-item {
@@ -1436,6 +1451,23 @@
       .trust-card { border-right: 0; border-bottom: 1px solid var(--line); }
     }
     @media (max-width: 640px) {
+      .nav {
+        width: 100%;
+        min-width: 0;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .brand-mark {
+        flex: 1 1 auto;
+        max-width: calc(100% - 112px);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .brand-mark span { display: none; }
+      .nav > .btn {
+        flex: 0 0 auto;
+        padding: 10px 12px;
+      }
       section { padding: 56px 16px; }
       .hero-inner { width: calc(100% - 32px); padding: 92px 0 52px; gap: 32px; }
       .logo-panel { max-width: 170px; }

@@ -31,7 +31,16 @@
       color: var(--ink);
       background: var(--wash);
       line-height: 1.55;
+      width: 100%;
+      max-width: 100%;
       overflow-x: hidden;
+    }
+    body > * {
+      max-width: 100%;
+    }
+    main, section, header, footer {
+      max-width: 100%;
+      overflow-x: clip;
     }
     img { max-width: 100%; display: block; }
     a { color: inherit; }
@@ -58,6 +67,7 @@
       text-decoration: none;
       color: white;
       font-weight: 800;
+      min-width: 0;
     }
     .brand-mark img {
       width: 38px;
@@ -514,6 +524,23 @@
       .section-head p { margin-top: 10px; }
     }
     @media (max-width: 620px) {
+      .nav {
+        width: 100%;
+        min-width: 0;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .brand-mark {
+        flex: 1 1 auto;
+        max-width: calc(100% - 112px);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .brand-mark span { display: none; }
+      .nav > .btn {
+        flex: 0 0 auto;
+        padding: 10px 12px;
+      }
       section { padding: 54px 16px; }
       .services-hero { padding: 82px 16px 58px; }
       .service-grid { grid-template-columns: 1fr; }
