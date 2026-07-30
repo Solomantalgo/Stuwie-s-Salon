@@ -10,7 +10,7 @@
   Public website reads only safe availability data. Customer details stay private.
 */
 
-const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
+const SALON_EMAIL = 'kmantalgosolo@gmail.com';
 const SHEET_ID = '1Z7TYosoYPI3vsHqv3ftm2Z6C1Rvlyge81fRiD1Q1Sl0';
 const BOOKINGS_SHEET = 'Bookings';
 const AVAILABILITY_SHEET = 'Availability';
@@ -55,13 +55,16 @@ const AVAILABILITY_HEADERS = [
   'Updated At'
 ];
 
-const ACTIVE_BOOKING_STATUSES = ['new', 'booked', 'confirmed'];
+const ACTIVE_BOOKING_STATUSES = ['new', 'pending', 'booked', 'confirmed', 'paid'];
+const AUTO_PENDING_AFTER_MINUTES = 1;
+const AUTO_CANCEL_AFTER_MINUTES = 60;
 const BLOCKING_AVAILABILITY_STATUSES = ['blocked', 'closed', 'not available'];
-const FREE_STATUSES = ['free', 'cancelled', 'completed', 'open'];
+const FREE_STATUSES = ['free', 'cancelled', 'completed', 'open', 'reschedule'];
 
 function doPost(e) {
   try {
     setupWorkbook_();
+    updateBookingAging_();
     const data = JSON.parse(e.postData.contents || '{}');
     const isProductOrder = String(data.type || '').toLowerCase().indexOf('product') !== -1 || String(data.service || '').toLowerCase().indexOf('product order') !== -1;
     const date = normalizeDate_(data.preferred_date);
@@ -71,9 +74,10 @@ function doPost(e) {
     if (!isProductOrder && !isSlotAvailable_(date, time)) return json_({ ok: false, error: 'That date and time is already booked or unavailable.', available: false });
 
     const sheet = getSheet_(BOOKINGS_SHEET);
-    appendBooking_(sheet, data, date, time);
+    const bookingId = appendBooking_(sheet, data, date, time);
+    data.booking_id = bookingId;
     sendBookingEmail_(data);
-    return json_({ ok: true, available: true });
+    return json_({ ok: true, available: true, booking_id: bookingId });
   } catch (error) {
     return json_({ ok: false, error: String(error) });
   }
@@ -82,12 +86,15 @@ function doPost(e) {
 function doGet(e) {
   try {
     setupWorkbook_();
+    updateBookingAging_();
     const params = (e && e.parameter) || {};
     const action = params.action || 'status';
     let payload;
 
     if (action === 'availability') {
       payload = getAvailabilityPayload_();
+    } else if (action === 'booking_action') {
+      payload = handleBookingAction_(params);
     } else if (action === 'setup') {
       payload = setupWorkbook_();
     } else {
@@ -173,8 +180,10 @@ function styleDashboard_(sheet) {
   sheet.clear();
   const rows = [
     ['Area', 'How to Use'],
-    ['Booking statuses that block a slot', 'New, Booked, Confirmed'],
-    ['Statuses that free a booked slot', 'Cancelled, Completed, Free'],
+    ['Booking statuses that block a slot', 'New, Pending, Booked, Confirmed, Paid'],
+    ['Automatic booking aging', 'New becomes Pending after 1 minute. Pending/New becomes Cancelled after 1 hour if staff does not confirm or mark paid.'],
+    ['Manual staff actions', 'Use the buttons in the booking email, or edit the Status column directly. Confirmed/Paid keeps the slot. Cancelled/Completed/Free releases it.'],
+    ['Statuses that free a booked slot', 'Cancelled, Completed, Free, Reschedule'],
     ['Block a full day', 'Go to Availability and add Date + Time = all_day + Status = closed'],
     ['Block one time slot', 'Go to Availability and add Date + Time, then Status = blocked'],
     ['Reopen a slot', 'Change the booking status to Cancelled/Completed/Free, or add Availability status = free']
@@ -191,10 +200,11 @@ function styleDashboard_(sheet) {
 }
 
 function appendBooking_(sheet, data, date, time) {
+  const bookingId = 'STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss');
   const locationLabel = data.customer_location || 'None';
   const locationLink = data.customer_location_link || '';
   const row = [
-    'STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss'),
+    bookingId,
     new Date(),
     data.customer_name || '',
     data.phone || data.customer_phone || '',
@@ -223,6 +233,7 @@ function appendBooking_(sheet, data, date, time) {
   sheet.getRange(lastRow, 10).setNumberFormat('yyyy-mm-dd');
   sheet.getRange(lastRow, 11).setNumberFormat('@');
   sheet.getRange(lastRow, 13).setFontWeight('bold').setBackground(BRAND.lightBlue);
+  return bookingId;
 }
 
 function getAvailabilityPayload_() {
@@ -259,6 +270,96 @@ function isSlotAvailable_(date, time) {
   return !slotTaken;
 }
 
+function handleBookingAction_(params) {
+  const bookingId = String(params.id || '').trim();
+  const status = displayStatus_(params.status || '');
+  if (!bookingId) return { ok: false, error: 'Booking ID is required.' };
+  if (!status) return { ok: false, error: 'A valid status is required.' };
+
+  const sheet = getSheet_(BOOKINGS_SHEET);
+  const values = sheet.getDataRange().getValues();
+  for (let i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim() === bookingId) {
+      const rowNumber = i + 1;
+      sheet.getRange(rowNumber, 13).setValue(status);
+      sheet.getRange(rowNumber, 14).setValue(appendNote_(values[i][13], 'Staff action: ' + status + ' at ' + new Date()));
+      return {
+        ok: true,
+        booking_id: bookingId,
+        status: status,
+        message: 'Booking ' + bookingId + ' updated to ' + status + '.'
+      };
+    }
+  }
+  return { ok: false, error: 'Booking was not found.', booking_id: bookingId };
+}
+
+function updateBookingAging_() {
+  const sheet = getSheet_(BOOKINGS_SHEET);
+  if (!sheet || sheet.getLastRow() < 2) return;
+
+  const range = sheet.getRange(2, 1, sheet.getLastRow() - 1, BOOKING_HEADERS.length);
+  const values = range.getValues();
+  const now = new Date().getTime();
+  let changed = false;
+
+  values.forEach(function(row) {
+    const createdAt = row[1];
+    const status = normalizeStatus_(row[12]);
+    if (status !== 'new' && status !== 'pending') return;
+    if (Object.prototype.toString.call(createdAt) !== '[object Date]') return;
+
+    const ageMinutes = (now - createdAt.getTime()) / 60000;
+    if (ageMinutes >= AUTO_CANCEL_AFTER_MINUTES) {
+      row[12] = 'Cancelled';
+      row[13] = appendNote_(row[13], 'Auto-cancelled after 1 hour with no staff confirmation.');
+      changed = true;
+    } else if (status === 'new' && ageMinutes >= AUTO_PENDING_AFTER_MINUTES) {
+      row[12] = 'Pending';
+      row[13] = appendNote_(row[13], 'Auto-moved to Pending after 1 minute.');
+      changed = true;
+    }
+  });
+
+  if (changed) range.setValues(values);
+}
+
+function runBookingAging() {
+  setupWorkbook_();
+  updateBookingAging_();
+}
+
+function installBookingAgingTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'runBookingAging') ScriptApp.deleteTrigger(trigger);
+  });
+  ScriptApp.newTrigger('runBookingAging')
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+}
+
+function displayStatus_(value) {
+  const status = normalizeStatus_(value);
+  const statuses = {
+    new: 'New',
+    pending: 'Pending',
+    booked: 'Booked',
+    confirmed: 'Confirmed',
+    paid: 'Paid',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+    reschedule: 'Reschedule',
+    free: 'Free'
+  };
+  return statuses[status] || '';
+}
+
+function appendNote_(existing, note) {
+  const current = String(existing || '').trim();
+  return current ? current + '\n' + note : note;
+}
+
 function getSheet_(name) {
   return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
 }
@@ -277,7 +378,7 @@ function styleHeader_(sheet, headerCount) {
 
 function applyStatusValidation_(sheet, col) {
   const rule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['New', 'Booked', 'Confirmed', 'Completed', 'Cancelled', 'Free'], true)
+    .requireValueInList(['New', 'Pending', 'Booked', 'Confirmed', 'Paid', 'Completed', 'Cancelled', 'Reschedule', 'Free'], true)
     .setAllowInvalid(false)
     .build();
   sheet.getRange(2, col, Math.max(999, sheet.getMaxRows() - 1), 1).setDataValidation(rule);
@@ -295,8 +396,9 @@ function applyBookingConditionalFormatting_(sheet) {
   const range = sheet.getRange(2, 1, Math.max(999, sheet.getMaxRows() - 1), BOOKING_HEADERS.length);
   const rules = [
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="New"').setBackground(BRAND.lightBlue).setRanges([range]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="Confirmed"').setBackground(BRAND.green).setRanges([range]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($M2="Cancelled",$M2="Free")').setBackground(BRAND.red).setRanges([range]).build()
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="Pending"').setBackground(BRAND.softWarm).setRanges([range]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($M2="Confirmed",$M2="Paid")').setBackground(BRAND.green).setRanges([range]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($M2="Cancelled",$M2="Free",$M2="Reschedule")').setBackground(BRAND.red).setRanges([range]).build()
   ];
   sheet.setConditionalFormatRules(rules);
 }
@@ -316,10 +418,43 @@ function sendBookingEmail_(data) {
   MailApp.sendEmail({
     to: SALON_EMAIL,
     subject: data.subject || 'New Stuwie booking request',
-    htmlBody: htmlBody + '<p style="font-family:Arial,sans-serif;font-size:12px;color:#666;margin-top:18px;">Saved to Google Sheet: <a href="' + ss.getUrl() + '">Open bookings sheet</a></p>',
+    htmlBody: htmlBody + staffActionHtml_(data) + '<p style="font-family:Arial,sans-serif;font-size:12px;color:#666;margin-top:18px;">Saved to Google Sheet: <a href="' + ss.getUrl() + '">Open bookings sheet</a></p>',
     replyTo: data.customer_email || undefined,
     name: "Stuwie's Website Bookings"
   });
+}
+
+function staffActionHtml_(data) {
+  const bookingId = data.booking_id || '';
+  const phone = data.phone || data.customer_phone || '';
+  const whatsappUrl = customerWhatsappDepositUrl_(phone, data);
+  const buttons = [
+    ['Confirm', actionUrl_(bookingId, 'Confirmed'), BRAND.blue],
+    ['Cancel', actionUrl_(bookingId, 'Cancelled'), '#b42318'],
+    ['Mark Paid', actionUrl_(bookingId, 'Paid'), '#147d3f'],
+    ['Reschedule', actionUrl_(bookingId, 'Reschedule'), BRAND.warm],
+    ['WhatsApp 50% Deposit', whatsappUrl, '#25d366']
+  ].map(function(button) {
+    return '<a href="' + button[1] + '" style="display:inline-block;margin:6px 6px 0 0;background:' + button[2] + ';color:#ffffff;text-decoration:none;padding:12px 14px;border-radius:6px;font-weight:bold;font-family:Arial,sans-serif;font-size:13px;">' + button[0] + '</a>';
+  }).join('');
+  return '<div style="font-family:Arial,sans-serif;margin-top:22px;padding:16px;border:1px solid #d7e6f2;background:#f5f9fc;"><h3 style="margin:0 0 8px;color:#0064b4;">Staff Actions</h3><p style="margin:0 0 8px;color:#333;">New requests become Pending after 1 minute and Cancelled after 1 hour unless confirmed or marked paid.</p>' + buttons + '</div>';
+}
+
+function actionUrl_(bookingId, status) {
+  const base = ScriptApp.getService().getUrl();
+  return base + '?action=booking_action&id=' + encodeURIComponent(bookingId) + '&status=' + encodeURIComponent(status);
+}
+
+function customerWhatsappDepositUrl_(phone, data) {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.indexOf('0') === 0) digits = '256' + digits.slice(1);
+  const service = data.service || 'your service';
+  const date = data.preferred_date || '';
+  const time = data.preferred_time || '';
+  let message = 'Hi ' + (data.customer_name || '') + ', thank you for booking with Stuwie\'s Salon & Spa. To confirm your ' + service + ' appointment';
+  if (date || time) message += ' on ' + date + (time ? ' at ' + time : '');
+  message += ', please send a 50% deposit. Your slot will be confirmed once payment is received.';
+  return digits ? 'https://wa.me/' + digits + '?text=' + encodeURIComponent(message) : '#';
 }
 
 function fallbackEmail_(data) {

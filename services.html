@@ -1051,7 +1051,7 @@
 
   <script>
     const SALON_WHATSAPP = "256706081927";
-    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzXvYI3IWf1BIVWSUBgcAYVY4TXMNuk-kCjzcnEbpUp5c2e5b94UlVXKCaZ5kr7UldM/exec";
+    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4YD9xsWDIfkNtUYl501zl9MgWScCdwRmgSVoOWzlI91ScEeW_Ho1F3-fqqiimX4G/exec";
     const bookingModal = document.getElementById("bookingModal");
     const bookingForm = document.getElementById("bookingForm");
     let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
@@ -1569,6 +1569,34 @@
         return;
       }
       if (!(await ensureCurrentSlotAvailable())) return;
+      const selectedItems = bookingCart.length
+        ? bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - ${priceLabel(item.price)}`).join("\n")
+        : service;
+      const payload = {
+        submitted_at: new Date().toISOString(),
+        type: "Appointment booking",
+        customer_name: name,
+        customer_phone: phone,
+        customer_location: locationValue(location, locationCoords),
+        customer_location_link: locationLink(locationCoords),
+        service: bookingCart.length ? "Multiple selected services" : service,
+        selected_items: selectedItems,
+        estimated_total: bookingCart.length ? formatUgx(cartTotal()) : "",
+        preferred_date: date,
+        preferred_time: time,
+        notes: notes,
+        raw_items: bookingCart
+      };
+      try {
+        await fetch(BOOKING_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.info("Booking email notification could not be sent.", error);
+      }
       let message = "Hello Stuwie's Salon & Spa, I'd like to book an appointment.\n\n";
       message += `*Name:* ${name}\n*Phone:* ${phone}\n`;
       message += `*Location:* ${locationValue(location, locationCoords)}\n`;
@@ -1576,7 +1604,7 @@
       message += `*Service:* ${bookingCart.length ? "Multiple selected services" : service}\n`;
       if (bookingCart.length) {
         message += "*Items:*\n";
-        message += bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - ${priceLabel(item.price)}`).join("\n");
+        message += selectedItems;
         message += `\n*Estimated Total:* ${formatUgx(cartTotal())}\n`;
       }
       message += `*Date:* ${date}\n*Time:* ${time}\n`;
