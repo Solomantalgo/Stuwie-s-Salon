@@ -1059,6 +1059,7 @@
     const bookingForm = document.getElementById("bookingForm");
     let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
     let lastAvailabilityKey = "";
+    let dashboardSelectedAvailabilityKey = "";
     let availabilityRequest = null;
     const CART_STORAGE_KEY = "stuwiesBookingCart";
     function loadStoredCart() {
@@ -1274,8 +1275,9 @@
                 chip.addEventListener("click", () => {
                   document.getElementById("preferredDate").value = dateValue;
                   document.getElementById("preferredTime").value = time;
+                  dashboardSelectedAvailabilityKey = `${dateValue}|${time}`;
                   closeAvailabilityDashboard();
-                  loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
+                  updateAvailabilityMessage();
                 });
               }
               if (dateValue === selectedDate && time === selectedTime) chip.classList.add("selected");
@@ -1325,10 +1327,12 @@
       return true;
     }
     function checkAvailabilityWhenReady() {
+      dashboardSelectedAvailabilityKey = "";
       closeAvailabilityDashboardIfComplete();
       loadBookingAvailability().then((payload) => { if (payload) updateAvailabilityMessage(); });
     }
     function ensureCurrentSlotAvailable() {
+      if (currentAvailabilityKey() && currentAvailabilityKey() === dashboardSelectedAvailabilityKey) return Promise.resolve(updateAvailabilityMessage());
       if (currentAvailabilityKey() && currentAvailabilityKey() === lastAvailabilityKey) return Promise.resolve(updateAvailabilityMessage());
       return loadBookingAvailability().then((payload) => payload ? updateAvailabilityMessage() : false);
     }
@@ -1552,7 +1556,7 @@
         const bg = index % 2 === 0 ? "#e9f5ff" : "#f1f1f1";
         return `<tr><th style="text-align:left;padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};width:42%;">${label}</th><td style="padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};">${value}</td></tr>`;
       }).join("");
-      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table><p style="margin:24px 0 0;"><a href="${customerCallUrl(data.phone)}" style="display:inline-block;background:${BRAND.black};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 8px 10px 0;">&#9742; Call Customer</a><a href="${customerConfirmUrl(data)}" style="display:inline-block;background:${BRAND.blue};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 0 10px 0;">Reply to Confirm Booking</a></p></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
     }
     function setupGpsLocation() {
       const button = document.getElementById("useGpsLocation");

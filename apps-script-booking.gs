@@ -10,7 +10,7 @@
   Public website reads only safe availability data. Customer details stay private.
 */
 
-const SALON_EMAIL = 'kmantalgosolo@gmail.com';
+const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
 const SHEET_ID = '1Z7TYosoYPI3vsHqv3ftm2Z6C1Rvlyge81fRiD1Q1Sl0';
 const BOOKINGS_SHEET = 'Bookings';
 const AVAILABILITY_SHEET = 'Availability';
@@ -462,24 +462,16 @@ function fallbackEmail_(data) {
   const phone = data.phone || data.customer_phone || '';
   const email = data.customer_email || '';
   const location = data.customer_location_link ? '<a href="' + escape_(data.customer_location_link) + '">Location</a>' : escape_(data.customer_location || 'None');
-  const callUrl = customerCallUrl_(phone);
   return [
     '<h2>New Stuwie booking request</h2>',
     '<p><strong>Name:</strong> ' + escape_(data.customer_name) + '</p>',
     '<p><strong>Phone:</strong> ' + escape_(phone) + '</p>',
-    '<p><a href="' + callUrl + '" style="display:inline-block;background:#000;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">&#9742; Call Customer</a></p>',
     '<p><strong>Email:</strong> ' + escape_(email) + '</p>',
     '<p><strong>Location:</strong> ' + location + '</p>',
     '<p><strong>Items:</strong><br>' + escape_(data.selected_items).replace(/\n/g, '<br>') + '</p>',
     '<p><strong>Date/Time:</strong> ' + escape_(data.preferred_date) + ' ' + escape_(data.preferred_time) + '</p>',
     '<p><strong>Notes:</strong> ' + escape_(data.notes) + '</p>'
   ].join('');
-}
-
-function customerCallUrl_(phone) {
-  let digits = String(phone || '').replace(/\D/g, '');
-  if (digits.indexOf('0') === 0) digits = '256' + digits.slice(1);
-  return digits ? 'tel:+' + digits : '#';
 }
 
 function normalizeDate_(value) {
