@@ -2289,10 +2289,11 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script>
     const SALON_WHATSAPP = "256706081927";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
-    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4YD9xsWDIfkNtUYl501zl9MgWScCdwRmgSVoOWzlI91ScEeW_Ho1F3-fqqiimX4G/exec";
+    const BOOKING_WEB_APP_URL = window.STUWIES_CONFIG.webAppUrl;
     const CLIENT_EMAIL_PLACEHOLDER = "stuwiessalonandspa@gmail.com";
     const BRAND = { blue: "#0064b4", brightBlue: "#009fe3", grey: "#dcdcdc", black: "#000000" };
     const header = document.querySelector(".site-header");
@@ -3132,7 +3133,7 @@
     function customerConfirmUrl(data) {
       const digits = digitsOnlyPhone(data.phone);
       const serviceSummary = data.items.length === 1 ? data.items[0].name : (data.items.length > 1 ? `${data.items.length} selected services` : data.service);
-      const message = `Hi ${data.name}, confirming your ${serviceSummary} appointment on ${data.date} at ${data.time} at Stuwie's Salon & Spa.`;
+      const message = `Hi ${data.name}, thank you for booking with Stuwie's Salon & Spa. To confirm your ${serviceSummary} appointment on ${data.date} at ${data.time}, please send a 50% deposit. Your slot will be confirmed once payment is received.`;
       return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
     }
     function customerCallUrl(data) {

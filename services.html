@@ -1049,9 +1049,12 @@
   <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
 
+  <script src="config.js"></script>
   <script>
     const SALON_WHATSAPP = "256706081927";
-    const BOOKING_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4YD9xsWDIfkNtUYl501zl9MgWScCdwRmgSVoOWzlI91ScEeW_Ho1F3-fqqiimX4G/exec";
+    const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
+    const BRAND = { blue: "#0064b4", grey: "#dcdcdc", black: "#000000" };
+    const BOOKING_WEB_APP_URL = window.STUWIES_CONFIG.webAppUrl;
     const bookingModal = document.getElementById("bookingModal");
     const bookingForm = document.getElementById("bookingForm");
     let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
@@ -1508,6 +1511,49 @@
       if (coords) return "Location";
       return location || "None";
     }
+    function locationHtml(location, coords) {
+      const link = locationLink(coords);
+      if (link) return `<a href="${link}" target="_blank" rel="noreferrer">Location</a>`;
+      return location || "None";
+    }
+    function digitsOnlyPhone(phone) {
+      let digits = String(phone || "").replace(/\D/g, "");
+      if (digits.startsWith("0")) digits = `256${digits.slice(1)}`;
+      return digits;
+    }
+    function customerCallUrl(phone) {
+      const digits = digitsOnlyPhone(phone);
+      return digits ? `tel:+${digits}` : "#";
+    }
+    function selectedItemsText() {
+      if (!bookingCart.length) return "";
+      return bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - ${priceLabel(item.price)}`).join("\n");
+    }
+    function customerConfirmUrl(data) {
+      const digits = digitsOnlyPhone(data.phone);
+      const serviceSummary = bookingCart.length === 1 ? bookingCart[0].name : (bookingCart.length > 1 ? `${bookingCart.length} selected services` : data.service);
+      const message = `Hi ${data.name}, thank you for booking with Stuwie's Salon & Spa. To confirm your ${serviceSummary} appointment on ${data.date} at ${data.time}, please send a 50% deposit. Your slot will be confirmed once payment is received.`;
+      return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(message)}` : "#";
+    }
+    function buildBookingHtmlEmail(data) {
+      const selectedItems = bookingCart.length ? selectedItemsText().replace(/\n/g, "<br>") : data.service;
+      const rows = [
+        ["Customer Name", data.name],
+        ["Phone", data.phone],
+        ["Location", locationHtml(data.location, data.locationCoords)],
+        ["Service Requested", bookingCart.length ? "Multiple selected services" : data.service],
+        ["Selected Items", selectedItems],
+        ["Estimated Total", bookingCart.length ? formatUgx(cartTotal()) : "Confirm after consultation"],
+        ["Preferred Date", data.date],
+        ["Preferred Time", data.time],
+        ["Notes", data.notes || "None provided"]
+      ];
+      const rowHtml = rows.map(([label, value], index) => {
+        const bg = index % 2 === 0 ? "#e9f5ff" : "#f1f1f1";
+        return `<tr><th style="text-align:left;padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};width:42%;">${label}</th><td style="padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};">${value}</td></tr>`;
+      }).join("");
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table><p style="margin:24px 0 0;"><a href="${customerCallUrl(data.phone)}" style="display:inline-block;background:${BRAND.black};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 8px 10px 0;">&#9742; Call Customer</a><a href="${customerConfirmUrl(data)}" style="display:inline-block;background:${BRAND.blue};color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 0 10px 0;">Reply to Confirm Booking</a></p></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+    }
     function setupGpsLocation() {
       const button = document.getElementById("useGpsLocation");
       const input = document.getElementById("customerLocation");
@@ -1569,9 +1615,8 @@
         return;
       }
       if (!(await ensureCurrentSlotAvailable())) return;
-      const selectedItems = bookingCart.length
-        ? bookingCart.map((item, index) => `${index + 1}. ${item.category}: ${item.name} - ${priceLabel(item.price)}`).join("\n")
-        : service;
+      const selectedItems = bookingCart.length ? selectedItemsText() : service;
+      const htmlEmail = buildBookingHtmlEmail({ name, phone, location, locationCoords, service, date, time, notes });
       const payload = {
         submitted_at: new Date().toISOString(),
         type: "Appointment booking",
@@ -1585,6 +1630,7 @@
         preferred_date: date,
         preferred_time: time,
         notes: notes,
+        html_email: htmlEmail,
         raw_items: bookingCart
       };
       try {

@@ -15,6 +15,7 @@ const SHEET_ID = '1Z7TYosoYPI3vsHqv3ftm2Z6C1Rvlyge81fRiD1Q1Sl0';
 const BOOKINGS_SHEET = 'Bookings';
 const AVAILABILITY_SHEET = 'Availability';
 const DASHBOARD_SHEET = 'Dashboard';
+const CONFIRM_PAGE_URL = 'http://stuwies-salon.vercel.app/confirm.html';
 
 const BRAND = {
   blue: '#0064b4',
@@ -426,18 +427,8 @@ function sendBookingEmail_(data) {
 
 function staffActionHtml_(data) {
   const bookingId = data.booking_id || '';
-  const phone = data.phone || data.customer_phone || '';
-  const whatsappUrl = customerWhatsappDepositUrl_(phone, data);
-  const buttons = [
-    ['Confirm', actionUrl_(bookingId, 'Confirmed'), BRAND.blue],
-    ['Cancel', actionUrl_(bookingId, 'Cancelled'), '#b42318'],
-    ['Mark Paid', actionUrl_(bookingId, 'Paid'), '#147d3f'],
-    ['Reschedule', actionUrl_(bookingId, 'Reschedule'), BRAND.warm],
-    ['WhatsApp 50% Deposit', whatsappUrl, '#25d366']
-  ].map(function(button) {
-    return '<a href="' + button[1] + '" style="display:inline-block;margin:6px 6px 0 0;background:' + button[2] + ';color:#ffffff;text-decoration:none;padding:12px 14px;border-radius:6px;font-weight:bold;font-family:Arial,sans-serif;font-size:13px;">' + button[0] + '</a>';
-  }).join('');
-  return '<div style="font-family:Arial,sans-serif;margin-top:22px;padding:16px;border:1px solid #d7e6f2;background:#f5f9fc;"><h3 style="margin:0 0 8px;color:#0064b4;">Staff Actions</h3><p style="margin:0 0 8px;color:#333;">New requests become Pending after 1 minute and Cancelled after 1 hour unless confirmed or marked paid.</p>' + buttons + '</div>';
+  const manageUrl = manageBookingUrl_(bookingId, data);
+  return '<div style="font-family:Arial,sans-serif;margin-top:22px;padding:16px;border:1px solid #d7e6f2;background:#f5f9fc;"><h3 style="margin:0 0 8px;color:#0064b4;">Staff Actions</h3><p style="margin:0 0 8px;color:#333;">New requests become Pending after 1 minute and Cancelled after 1 hour unless confirmed or marked paid.</p><a href="' + manageUrl + '" style="display:inline-block;margin:6px 6px 0 0;background:#0064b4;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;font-family:Arial,sans-serif;font-size:13px;">Manage Booking</a></div>';
 }
 
 function actionUrl_(bookingId, status) {
@@ -445,16 +436,26 @@ function actionUrl_(bookingId, status) {
   return base + '?action=booking_action&id=' + encodeURIComponent(bookingId) + '&status=' + encodeURIComponent(status);
 }
 
-function customerWhatsappDepositUrl_(phone, data) {
-  let digits = String(phone || '').replace(/\D/g, '');
-  if (digits.indexOf('0') === 0) digits = '256' + digits.slice(1);
-  const service = data.service || 'your service';
-  const date = data.preferred_date || '';
-  const time = data.preferred_time || '';
-  let message = 'Hi ' + (data.customer_name || '') + ', thank you for booking with Stuwie\'s Salon & Spa. To confirm your ' + service + ' appointment';
-  if (date || time) message += ' on ' + date + (time ? ' at ' + time : '');
-  message += ', please send a 50% deposit. Your slot will be confirmed once payment is received.';
-  return digits ? 'https://wa.me/' + digits + '?text=' + encodeURIComponent(message) : '#';
+function manageBookingUrl_(bookingId, data) {
+  const params = {
+    id: bookingId,
+    app: ScriptApp.getService().getUrl(),
+    name: data.customer_name || '',
+    phone: data.phone || data.customer_phone || '',
+    email: data.customer_email || '',
+    service: data.service || '',
+    items: data.selected_items || '',
+    total: data.estimated_total || '',
+    date: data.preferred_date || '',
+    time: data.preferred_time || '',
+    location: data.customer_location || '',
+    location_url: data.customer_location_link || '',
+    notes: data.notes || ''
+  };
+  const query = Object.keys(params)
+    .map(function(key) { return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]); })
+    .join('&');
+  return CONFIRM_PAGE_URL + '?' + query;
 }
 
 function fallbackEmail_(data) {

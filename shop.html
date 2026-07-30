@@ -655,11 +655,12 @@
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
 
+  <script src="config.js"></script>
   <script>
     const SALON_WHATSAPP = "256706081927";
     const SALON_EMAIL = "stuwiessalonandspa@gmail.com";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa";
-    const ORDER_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4YD9xsWDIfkNtUYl501zl9MgWScCdwRmgSVoOWzlI91ScEeW_Ho1F3-fqqiimX4G/exec";
+    const ORDER_WEB_APP_URL = window.STUWIES_CONFIG.webAppUrl;
     const SHOP_CART_KEY = "stuwiesShopCart";
     let shopCart = loadShopCart();
 
