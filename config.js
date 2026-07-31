@@ -1,4 +1,4 @@
 window.STUWIES_CONFIG = {
-  webAppUrl: "https://script.google.com/macros/s/AKfycbzjdMsPQXkoWX3-BXnDyPCUqWHlddIaum4iWjn-I6XUjHi_3rBC-c80t7fqYAah9bVS/exec",
+  webAppUrl: "https://script.google.com/macros/s/AKfycbxWzNJaHxmiTWEeFEmUt9OrhnyF-q30RZcZoKLGq_6B2RsPIo_Z36D9LdPVwhy0A4TO/exec",
   confirmPageUrl: "http://stuwies-salon.vercel.app/confirm.html"
 };
