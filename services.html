@@ -311,6 +311,24 @@
     }
     .item-add:focus-visible { outline: 3px solid rgba(0,159,227,0.35); outline-offset: 2px; }
     .item-add:hover { background: var(--blue); color: #fff; }
+    .item-add {
+      min-width: 48px;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .item-add:disabled {
+      cursor: not-allowed;
+      opacity: 1;
+      background: #d8dde3;
+      border-color: #c4cbd3;
+      color: #66717d;
+      box-shadow: none;
+    }
     .booking-cart {
       position: fixed;
       left: 20px;
@@ -352,7 +370,7 @@
       right: 14px;
       bottom: 84px;
       z-index: 36;
-      display: none;
+      display: inline-flex;
       border: 0;
       border-radius: 999px;
       background: #000;
@@ -929,25 +947,25 @@
         <div class="service-panels all-mode" id="servicePanels">
         <div class="service-panel all-visible" id="panel-hair">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" loading="lazy" decoding="async" /><div class="service-body"><h3>Barbering Services (Gents)</h3><p class="service-note">Sharp grooming for looking good, feeling great and stepping out at your best.</p><ul class="price-list"><li>Hair Cut <strong>10,000</strong></li><li>Skin Fade <strong>15,000</strong></li><li>Shave <strong>10,000</strong></li><li>Beard Trim <strong>10,000</strong></li><li>Beard Shaping <strong>15,000</strong></li><li>Hot Towel Shave <strong>20,000</strong></li><li>Hair Cut + Shave + Beard Trim <strong>25,000</strong></li><li>Kids Hair Cut (Under 12) <strong>8,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Barbering Services (Gents)">Book This Service</button></div></article>
-            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="service-body"><h3>Hair Services (Ladies)</h3><p class="service-note">Everyday polish, protective styling and treatments that help you feel good and look great.</p><ul class="price-list"><li>Wash & Blow Dry <strong>25,000</strong></li><li>Wash, Blow Dry & Style <strong>35,000</strong></li><li>Braids (Short) <strong>From 30,000</strong></li><li>Braids (Medium) <strong>From 50,000</strong></li><li>Braids (Long) <strong>From 70,000</strong></li><li>Weave On (Short) <strong>From 60,000</strong></li><li>Weave On (Long) <strong>From 100,000</strong></li><li>Treatment / Deep Conditioning <strong>25,000</strong></li><li>Hair Colour <strong>From 60,000</strong></li><li>Hair Relaxing <strong>From 60,000</strong></li><li>Dreadlocks / Faux Locs <strong>From 80,000</strong></li><li>Hair Cut & Style <strong>25,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Hair Services (Ladies)">Book This Service</button></div></article>
+            <article class="service-card"><img src="assets/images/Barbering (Gents).png" alt="Gents barbering" loading="lazy" decoding="async" /><div class="service-body"><h3>Barbering Services (Gents)</h3><p class="service-note">Sharp grooming for looking good, feeling great and stepping out at your best.</p><ul class="price-list"><li>Hair Cut <strong>10,000</strong><button class="item-add" type="button" data-name="Hair Cut" data-category="Barbering Services (Gents)" data-duration="" data-price="10,000">Add</button></li><li>Skin Fade <strong>15,000</strong><button class="item-add" type="button" data-name="Skin Fade" data-category="Barbering Services (Gents)" data-duration="" data-price="15,000">Add</button></li><li>Shave <strong>10,000</strong><button class="item-add" type="button" data-name="Shave" data-category="Barbering Services (Gents)" data-duration="" data-price="10,000">Add</button></li><li>Beard Trim <strong>10,000</strong><button class="item-add" type="button" data-name="Beard Trim" data-category="Barbering Services (Gents)" data-duration="" data-price="10,000">Add</button></li><li>Beard Shaping <strong>15,000</strong><button class="item-add" type="button" data-name="Beard Shaping" data-category="Barbering Services (Gents)" data-duration="" data-price="15,000">Add</button></li><li>Hot Towel Shave <strong>20,000</strong><button class="item-add" type="button" data-name="Hot Towel Shave" data-category="Barbering Services (Gents)" data-duration="" data-price="20,000">Add</button></li><li>Hair Cut + Shave + Beard Trim <strong>25,000</strong><button class="item-add" type="button" data-name="Hair Cut + Shave + Beard Trim" data-category="Barbering Services (Gents)" data-duration="" data-price="25,000">Add</button></li><li>Kids Hair Cut (Under 12) <strong>8,000</strong><button class="item-add" type="button" data-name="Kids Hair Cut (Under 12)" data-category="Barbering Services (Gents)" data-duration="" data-price="8,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Barbering Services (Gents)">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
+            <article class="service-card"><img src="assets/images/Hair Services (Ladies).png" alt="Ladies hair service" loading="lazy" decoding="async" /><div class="service-body"><h3>Hair Services (Ladies)</h3><p class="service-note">Everyday polish, protective styling and treatments that help you feel good and look great.</p><ul class="price-list"><li>Wash & Blow Dry <strong>25,000</strong><button class="item-add" type="button" data-name="Wash &amp; Blow Dry" data-category="Hair Services (Ladies)" data-duration="" data-price="25,000">Add</button></li><li>Wash, Blow Dry & Style <strong>35,000</strong><button class="item-add" type="button" data-name="Wash, Blow Dry &amp; Style" data-category="Hair Services (Ladies)" data-duration="" data-price="35,000">Add</button></li><li>Braids (Short) <strong>From 30,000</strong><button class="item-add" type="button" data-name="Braids (Short)" data-category="Hair Services (Ladies)" data-duration="" data-price="From 30,000">Add</button></li><li>Braids (Medium) <strong>From 50,000</strong><button class="item-add" type="button" data-name="Braids (Medium)" data-category="Hair Services (Ladies)" data-duration="" data-price="From 50,000">Add</button></li><li>Braids (Long) <strong>From 70,000</strong><button class="item-add" type="button" data-name="Braids (Long)" data-category="Hair Services (Ladies)" data-duration="" data-price="From 70,000">Add</button></li><li>Weave On (Short) <strong>From 60,000</strong><button class="item-add" type="button" data-name="Weave On (Short)" data-category="Hair Services (Ladies)" data-duration="" data-price="From 60,000">Add</button></li><li>Weave On (Long) <strong>From 100,000</strong><button class="item-add" type="button" data-name="Weave On (Long)" data-category="Hair Services (Ladies)" data-duration="" data-price="From 100,000">Add</button></li><li>Treatment / Deep Conditioning <strong>25,000</strong><button class="item-add" type="button" data-name="Treatment / Deep Conditioning" data-category="Hair Services (Ladies)" data-duration="" data-price="25,000">Add</button></li><li>Hair Colour <strong>From 60,000</strong><button class="item-add" type="button" data-name="Hair Colour" data-category="Hair Services (Ladies)" data-duration="" data-price="From 60,000">Add</button></li><li>Hair Relaxing <strong>From 60,000</strong><button class="item-add" type="button" data-name="Hair Relaxing" data-category="Hair Services (Ladies)" data-duration="" data-price="From 60,000">Add</button></li><li>Dreadlocks / Faux Locs <strong>From 80,000</strong><button class="item-add" type="button" data-name="Dreadlocks / Faux Locs" data-category="Hair Services (Ladies)" data-duration="" data-price="From 80,000">Add</button></li><li>Hair Cut & Style <strong>25,000</strong><button class="item-add" type="button" data-name="Hair Cut &amp; Style" data-category="Hair Services (Ladies)" data-duration="" data-price="25,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Hair Services (Ladies)">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-spa">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" loading="lazy" decoding="async" /><div class="service-body"><h3>Massages</h3><p class="service-note">Restore your body with calming, focused and therapeutic care.</p><ul class="price-list"><li>Swedish Massage <span>60 / 90 min</span><strong>70,000 / 100,000</strong></li><li>Deep Tissue Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong></li><li>Aromatherapy Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong></li><li>Hot Stone Massage <span>75 min</span><strong>110,000</strong></li><li>Back, Neck & Shoulder Massage <span>30 min</span><strong>45,000</strong></li><li>Foot Reflexology <span>45 min</span><strong>50,000</strong></li><li>Prenatal Massage <span>60 min</span><strong>80,000</strong></li></ul><div class="subhead">Massage Add-ons</div><ul class="price-list"><li>Hot Oil / Aromatherapy Oil / Cupping <strong>20,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Massages">Book This Service</button></div></article>
+            <article class="service-card"><img src="assets/images/Massages.png" alt="Massage therapy" loading="lazy" decoding="async" /><div class="service-body"><h3>Massages</h3><p class="service-note">Restore your body with calming, focused and therapeutic care.</p><ul class="price-list"><li>Swedish Massage <span>60 / 90 min</span><strong>70,000 / 100,000</strong><button class="item-add" type="button" data-name="Swedish Massage" data-category="Massages" data-duration="60 / 90 min" data-price="70,000 / 100,000">Add</button></li><li>Deep Tissue Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong><button class="item-add" type="button" data-name="Deep Tissue Massage" data-category="Massages" data-duration="60 / 90 min" data-price="80,000 / 110,000">Add</button></li><li>Aromatherapy Massage <span>60 / 90 min</span><strong>80,000 / 110,000</strong><button class="item-add" type="button" data-name="Aromatherapy Massage" data-category="Massages" data-duration="60 / 90 min" data-price="80,000 / 110,000">Add</button></li><li>Hot Stone Massage <span>75 min</span><strong>110,000</strong><button class="item-add" type="button" data-name="Hot Stone Massage" data-category="Massages" data-duration="75 min" data-price="110,000">Add</button></li><li>Back, Neck & Shoulder Massage <span>30 min</span><strong>45,000</strong><button class="item-add" type="button" data-name="Back, Neck &amp; Shoulder Massage" data-category="Massages" data-duration="30 min" data-price="45,000">Add</button></li><li>Foot Reflexology <span>45 min</span><strong>50,000</strong><button class="item-add" type="button" data-name="Foot Reflexology" data-category="Massages" data-duration="45 min" data-price="50,000">Add</button></li><li>Prenatal Massage <span>60 min</span><strong>80,000</strong><button class="item-add" type="button" data-name="Prenatal Massage" data-category="Massages" data-duration="60 min" data-price="80,000">Add</button></li></ul><div class="subhead">Massage Add-ons</div><ul class="price-list"><li>Hot Oil / Aromatherapy Oil / Cupping <strong>20,000</strong><button class="item-add" type="button" data-name="Hot Oil / Aromatherapy Oil / Cupping" data-category="Massages" data-duration="" data-price="20,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Massages">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-beauty">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" loading="lazy" decoding="async" /><div class="service-body"><h3>Manicure & Pedicure</h3><p class="service-note">Clean, polished nail care for hands and feet that feel fresh and look beautiful.</p><ul class="price-list"><li>Manicure <strong>30,000</strong></li><li>Pedicure <strong>40,000</strong></li><li>Deluxe Manicure (paraffin wax) <strong>45,000</strong></li><li>Deluxe Pedicure (scrub + paraffin wax) <strong>60,000</strong></li></ul><div class="subhead">Nail Enhancements</div><ul class="price-list"><li>Gel Polish (Hands) <strong>40,000</strong></li><li>Gel Polish (Feet) <strong>50,000</strong></li><li>Nail Extensions (Acrylic) <strong>From 70,000</strong></li><li>Nail Art (Per Nail) <strong>2,000+</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Manicure & Pedicure">Book This Service</button></div></article>
-            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" loading="lazy" decoding="async" /><div class="service-body"><h3>Waxing</h3><p class="service-note">Smooth, confident grooming with careful finishing and clear menu pricing.</p><ul class="price-list"><li>Eyebrows <strong>15,000</strong></li><li>Upper Lip <strong>10,000</strong></li><li>Chin <strong>10,000</strong></li><li>Underarms <strong>15,000</strong></li><li>Half Arms <strong>25,000</strong></li><li>Full Arms <strong>35,000</strong></li><li>Bikini Line <strong>25,000</strong></li><li>Brazilian <strong>50,000</strong></li><li>Hollywood <strong>60,000</strong></li><li>Half Legs <strong>40,000</strong></li><li>Full Legs <strong>60,000</strong></li><li>Back <strong>40,000</strong></li><li>Chest <strong>40,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Waxing">Book This Service</button></div></article>
+            <article class="service-card"><img src="assets/images/Manicure & Pedicure.png" alt="Manicure and pedicure" loading="lazy" decoding="async" /><div class="service-body"><h3>Manicure & Pedicure</h3><p class="service-note">Clean, polished nail care for hands and feet that feel fresh and look beautiful.</p><ul class="price-list"><li>Manicure <strong>30,000</strong><button class="item-add" type="button" data-name="Manicure" data-category="Manicure &amp; Pedicure" data-duration="" data-price="30,000">Add</button></li><li>Pedicure <strong>40,000</strong><button class="item-add" type="button" data-name="Pedicure" data-category="Manicure &amp; Pedicure" data-duration="" data-price="40,000">Add</button></li><li>Deluxe Manicure (paraffin wax) <strong>45,000</strong><button class="item-add" type="button" data-name="Deluxe Manicure (paraffin wax)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="45,000">Add</button></li><li>Deluxe Pedicure (scrub + paraffin wax) <strong>60,000</strong><button class="item-add" type="button" data-name="Deluxe Pedicure (scrub + paraffin wax)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="60,000">Add</button></li></ul><div class="subhead">Nail Enhancements</div><ul class="price-list"><li>Gel Polish (Hands) <strong>40,000</strong><button class="item-add" type="button" data-name="Gel Polish (Hands)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="40,000">Add</button></li><li>Gel Polish (Feet) <strong>50,000</strong><button class="item-add" type="button" data-name="Gel Polish (Feet)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="50,000">Add</button></li><li>Nail Extensions (Acrylic) <strong>From 70,000</strong><button class="item-add" type="button" data-name="Nail Extensions (Acrylic)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="From 70,000">Add</button></li><li>Nail Art (Per Nail) <strong>2,000+</strong><button class="item-add" type="button" data-name="Nail Art (Per Nail)" data-category="Manicure &amp; Pedicure" data-duration="" data-price="2,000+">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Manicure & Pedicure">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
+            <article class="service-card"><img src="assets/images/waxing.png" alt="Waxing service" loading="lazy" decoding="async" /><div class="service-body"><h3>Waxing</h3><p class="service-note">Smooth, confident grooming with careful finishing and clear menu pricing.</p><ul class="price-list"><li>Eyebrows <strong>15,000</strong><button class="item-add" type="button" data-name="Eyebrows" data-category="Waxing" data-duration="" data-price="15,000">Add</button></li><li>Upper Lip <strong>10,000</strong><button class="item-add" type="button" data-name="Upper Lip" data-category="Waxing" data-duration="" data-price="10,000">Add</button></li><li>Chin <strong>10,000</strong><button class="item-add" type="button" data-name="Chin" data-category="Waxing" data-duration="" data-price="10,000">Add</button></li><li>Underarms <strong>15,000</strong><button class="item-add" type="button" data-name="Underarms" data-category="Waxing" data-duration="" data-price="15,000">Add</button></li><li>Half Arms <strong>25,000</strong><button class="item-add" type="button" data-name="Half Arms" data-category="Waxing" data-duration="" data-price="25,000">Add</button></li><li>Full Arms <strong>35,000</strong><button class="item-add" type="button" data-name="Full Arms" data-category="Waxing" data-duration="" data-price="35,000">Add</button></li><li>Bikini Line <strong>25,000</strong><button class="item-add" type="button" data-name="Bikini Line" data-category="Waxing" data-duration="" data-price="25,000">Add</button></li><li>Brazilian <strong>50,000</strong><button class="item-add" type="button" data-name="Brazilian" data-category="Waxing" data-duration="" data-price="50,000">Add</button></li><li>Hollywood <strong>60,000</strong><button class="item-add" type="button" data-name="Hollywood" data-category="Waxing" data-duration="" data-price="60,000">Add</button></li><li>Half Legs <strong>40,000</strong><button class="item-add" type="button" data-name="Half Legs" data-category="Waxing" data-duration="" data-price="40,000">Add</button></li><li>Full Legs <strong>60,000</strong><button class="item-add" type="button" data-name="Full Legs" data-category="Waxing" data-duration="" data-price="60,000">Add</button></li><li>Back <strong>40,000</strong><button class="item-add" type="button" data-name="Back" data-category="Waxing" data-duration="" data-price="40,000">Add</button></li><li>Chest <strong>40,000</strong><button class="item-add" type="button" data-name="Chest" data-category="Waxing" data-duration="" data-price="40,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Waxing">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-face">
           <div class="service-grid">
-            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Facials</h3><p class="service-note">Skin care for every glow goal, from express freshness to luxury radiance.</p><ul class="price-list"><li>Express Facial <span>30 min</span><strong>40,000</strong></li><li>Classic Deep Cleansing Facial <span>60 min</span><strong>65,000</strong></li><li>Hydrating Facial <span>60 min</span><strong>75,000</strong></li><li>Brightening / Glow Facial <span>60 min</span><strong>85,000</strong></li><li>Acne Control Facial <span>75 min</span><strong>90,000</strong></li><li>Anti-Aging Facial <span>75-90 min</span><strong>110,000</strong></li><li>Vitamin C Facial <span>60 min</span><strong>90,000</strong></li><li>Gold Facial (Luxury) <span>90 min</span><strong>120,000</strong></li><li>Men's Executive Facial <span>60 min</span><strong>70,000</strong></li><li>Teen Facial <span>45 min</span><strong>55,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Facials">Book This Service</button></div></article>
-            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Body Scrubs</h3><p class="service-note">Exfoliating treatments that leave skin soft, bright and ready to live beautifully.</p><ul class="price-list"><li>Brown Sugar Scrub <span>45 min</span><strong>65,000</strong></li><li>Coffee Body Scrub <span>60 min</span><strong>75,000</strong></li><li>Turmeric Glow Scrub <span>60 min</span><strong>80,000</strong></li><li>Charcoal Detox Scrub <span>60 min</span><strong>90,000</strong></li><li>Coconut & Vanilla Scrub <span>60 min</span><strong>95,000</strong></li></ul><div class="subhead">Signature Combos</div><ul class="price-list"><li>Body Scrub + Swedish Massage <span>90 min</span><strong>130,000</strong></li><li>Body Scrub + Steam + Massage <span>120 min</span><strong>160,000</strong></li><li>Body Scrub + Facial <span>120 min</span><strong>150,000</strong></li><li>Body Scrub + Bikini Wax <strong>125,000</strong></li><li>Couples Body Scrub <span>60 min each</span><strong>140,000</strong></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Body Scrubs">Book This Service</button></div></article>
+            <article class="service-card"><img src="assets/images/Facials.png" alt="Facial treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Facials</h3><p class="service-note">Skin care for every glow goal, from express freshness to luxury radiance.</p><ul class="price-list"><li>Express Facial <span>30 min</span><strong>40,000</strong><button class="item-add" type="button" data-name="Express Facial" data-category="Facials" data-duration="30 min" data-price="40,000">Add</button></li><li>Classic Deep Cleansing Facial <span>60 min</span><strong>65,000</strong><button class="item-add" type="button" data-name="Classic Deep Cleansing Facial" data-category="Facials" data-duration="60 min" data-price="65,000">Add</button></li><li>Hydrating Facial <span>60 min</span><strong>75,000</strong><button class="item-add" type="button" data-name="Hydrating Facial" data-category="Facials" data-duration="60 min" data-price="75,000">Add</button></li><li>Brightening / Glow Facial <span>60 min</span><strong>85,000</strong><button class="item-add" type="button" data-name="Brightening / Glow Facial" data-category="Facials" data-duration="60 min" data-price="85,000">Add</button></li><li>Acne Control Facial <span>75 min</span><strong>90,000</strong><button class="item-add" type="button" data-name="Acne Control Facial" data-category="Facials" data-duration="75 min" data-price="90,000">Add</button></li><li>Anti-Aging Facial <span>75-90 min</span><strong>110,000</strong><button class="item-add" type="button" data-name="Anti-Aging Facial" data-category="Facials" data-duration="75-90 min" data-price="110,000">Add</button></li><li>Vitamin C Facial <span>60 min</span><strong>90,000</strong><button class="item-add" type="button" data-name="Vitamin C Facial" data-category="Facials" data-duration="60 min" data-price="90,000">Add</button></li><li>Gold Facial (Luxury) <span>90 min</span><strong>120,000</strong><button class="item-add" type="button" data-name="Gold Facial (Luxury)" data-category="Facials" data-duration="90 min" data-price="120,000">Add</button></li><li>Men's Executive Facial <span>60 min</span><strong>70,000</strong><button class="item-add" type="button" data-name="Men's Executive Facial" data-category="Facials" data-duration="60 min" data-price="70,000">Add</button></li><li>Teen Facial <span>45 min</span><strong>55,000</strong><button class="item-add" type="button" data-name="Teen Facial" data-category="Facials" data-duration="45 min" data-price="55,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Facials">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
+            <article class="service-card"><img src="assets/images/BodyScrab.png" alt="Body scrub treatment" loading="lazy" decoding="async" /><div class="service-body"><h3>Body Scrubs</h3><p class="service-note">Exfoliating treatments that leave skin soft, bright and ready to live beautifully.</p><ul class="price-list"><li>Brown Sugar Scrub <span>45 min</span><strong>65,000</strong><button class="item-add" type="button" data-name="Brown Sugar Scrub" data-category="Body Scrubs" data-duration="45 min" data-price="65,000">Add</button></li><li>Coffee Body Scrub <span>60 min</span><strong>75,000</strong><button class="item-add" type="button" data-name="Coffee Body Scrub" data-category="Body Scrubs" data-duration="60 min" data-price="75,000">Add</button></li><li>Turmeric Glow Scrub <span>60 min</span><strong>80,000</strong><button class="item-add" type="button" data-name="Turmeric Glow Scrub" data-category="Body Scrubs" data-duration="60 min" data-price="80,000">Add</button></li><li>Charcoal Detox Scrub <span>60 min</span><strong>90,000</strong><button class="item-add" type="button" data-name="Charcoal Detox Scrub" data-category="Body Scrubs" data-duration="60 min" data-price="90,000">Add</button></li><li>Coconut & Vanilla Scrub <span>60 min</span><strong>95,000</strong><button class="item-add" type="button" data-name="Coconut &amp; Vanilla Scrub" data-category="Body Scrubs" data-duration="60 min" data-price="95,000">Add</button></li></ul><div class="subhead">Signature Combos</div><ul class="price-list"><li>Body Scrub + Swedish Massage <span>90 min</span><strong>130,000</strong><button class="item-add" type="button" data-name="Body Scrub + Swedish Massage" data-category="Body Scrubs" data-duration="90 min" data-price="130,000">Add</button></li><li>Body Scrub + Steam + Massage <span>120 min</span><strong>160,000</strong><button class="item-add" type="button" data-name="Body Scrub + Steam + Massage" data-category="Body Scrubs" data-duration="120 min" data-price="160,000">Add</button></li><li>Body Scrub + Facial <span>120 min</span><strong>150,000</strong><button class="item-add" type="button" data-name="Body Scrub + Facial" data-category="Body Scrubs" data-duration="120 min" data-price="150,000">Add</button></li><li>Body Scrub + Bikini Wax <strong>125,000</strong><button class="item-add" type="button" data-name="Body Scrub + Bikini Wax" data-category="Body Scrubs" data-duration="" data-price="125,000">Add</button></li><li>Couples Body Scrub <span>60 min each</span><strong>140,000</strong><button class="item-add" type="button" data-name="Couples Body Scrub" data-category="Body Scrubs" data-duration="60 min each" data-price="140,000">Add</button></li></ul><button class="btn btn-primary open-booking" type="button" data-service="Body Scrubs">Book This Service</button><button class="view-more" type="button">View more</button></div></article>
           </div>
         </div>
         <div class="service-panel all-visible" id="panel-packages">
@@ -962,8 +980,8 @@
             <article class="package-card"><img src="assets/images/bridal-luxury-package.png" alt="Bridal luxury package" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">Bridal Packages</p><h3>Bridal Luxury</h3><div class="package-meta">3 days: Bridal Glow + Waxing + Hair Treatment</div><ul class="price-list"><li>All Bridal Glow services plus waxing and hair treatment <strong>380,000</strong></li></ul><div class="package-price">UGX 380,000</div><button class="btn btn-primary open-booking" type="button" data-service="Bridal Luxury">Book This Package</button></div></article>
             <article class="package-card"><img src="assets/images/birthday-spa-party.png" alt="Birthday spa party" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Birthday Spa Party</h3><div class="package-meta">4+ people: Massage + Facial + Pedicure + Refreshments</div><ul class="price-list"><li>Group celebration package with refreshments <strong>From 150,000/person</strong></li></ul><div class="package-price">From UGX 150,000/person</div><button class="btn btn-primary open-booking" type="button" data-service="Birthday Spa Party">Book This Package</button></div></article>
             <article class="package-card"><img src="assets/images/corporate-spa-day.png" alt="Corporate spa day" loading="lazy" decoding="async" /><div class="package-body"><p class="subhead">VIP & Group Packages</p><h3>Corporate Spa Day</h3><div class="package-meta">5+ people: Customized packages, discounted rates</div><ul class="price-list"><li>Team wellness day shaped around your group <strong>Custom quote</strong></li></ul><div class="package-price">Custom quote</div><button class="btn btn-primary open-booking" type="button" data-service="Corporate Spa Day">Plan This Package</button></div></article>
-            <article class="service-card"><div class="service-fallback" aria-hidden="true">GV</div><div class="service-body"><h3>Gift Vouchers</h3><p class="service-note">Perfect for every occasion when someone deserves to look good, feel great and live beautifully.</p><ul class="price-list"><li>Gift Voucher <strong>Choose amount</strong></li></ul><a class="btn btn-primary" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20ask%20about%20gift%20vouchers." target="_blank" rel="noreferrer">Ask</a></div></article>
-            <article class="service-card"><div class="service-fallback" aria-hidden="true">ML</div><div class="service-body"><h3>Membership & Loyalty</h3><p class="service-note">Ask the Stuwie's team about loyalty rewards, member benefits and regular-care perks.</p><ul class="price-list"><li>Membership / Loyalty Program <strong>Member benefits</strong></li></ul><a class="btn btn-primary" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20ask%20about%20membership%20and%20loyalty%20benefits." target="_blank" rel="noreferrer">Ask</a></div></article>
+            <article class="service-card"><div class="service-fallback" aria-hidden="true">GV</div><div class="service-body"><h3>Gift Vouchers</h3><p class="service-note">Perfect for every occasion when someone deserves to look good, feel great and live beautifully.</p><ul class="price-list"><li>Gift Voucher <strong>Choose amount</strong><button class="item-add" type="button" data-name="Gift Voucher" data-category="Gift Vouchers" data-duration="" data-price="Choose amount">Add</button></li></ul><a class="btn btn-primary" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20ask%20about%20gift%20vouchers." target="_blank" rel="noreferrer">Ask</a></div></article>
+            <article class="service-card"><div class="service-fallback" aria-hidden="true">ML</div><div class="service-body"><h3>Membership & Loyalty</h3><p class="service-note">Ask the Stuwie's team about loyalty rewards, member benefits and regular-care perks.</p><ul class="price-list"><li>Membership / Loyalty Program <strong>Member benefits</strong><button class="item-add" type="button" data-name="Membership / Loyalty Program" data-category="Membership &amp; Loyalty" data-duration="" data-price="Member benefits">Add</button></li></ul><a class="btn btn-primary" href="https://wa.me/256706081927?text=Hello%20Stuwie%27s%20Salon%20%26%20Spa%2C%20I%27d%20like%20to%20ask%20about%20membership%20and%20loyalty%20benefits." target="_blank" rel="noreferrer">Ask</a></div></article>
           </div>
         </div>
         </div>
@@ -1054,7 +1072,7 @@
     const SALON_WHATSAPP = "256706081927";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa, Kampala";
     const BRAND = { blue: "#0064b4", grey: "#dcdcdc", black: "#000000" };
-    const BOOKING_WEB_APP_URL = window.STUWIES_CONFIG.webAppUrl;
+    const BOOKING_WEB_APP_URL = window.STUWIES_CONFIG?.webAppUrl || "";
     const bookingModal = document.getElementById("bookingModal");
     const bookingForm = document.getElementById("bookingForm");
     let bookingAvailability = { booked_slots: [], blocked_slots: [], closed_days: [] };
@@ -1390,6 +1408,15 @@
       renderCart();
       renderSelectedServices();
     }
+    function updateAddButtonStates() {
+      document.querySelectorAll(".item-add").forEach((button) => {
+        const key = [button.dataset.category || "Service", button.dataset.name || "", button.dataset.duration || "", button.dataset.price || ""].join("|");
+        const isAdded = bookingCart.some((item) => item.key === key);
+        button.disabled = isAdded;
+        button.textContent = isAdded ? "Added ✓" : "Add";
+        button.setAttribute("aria-pressed", String(isAdded));
+      });
+    }
     function renderCart() {
       const cart = document.getElementById("bookingCart");
       const toggle = document.getElementById("cartToggle");
@@ -1398,8 +1425,9 @@
       cart.classList.toggle("visible", bookingCart.length > 0);
       if (!bookingCart.length) cart.classList.remove("open");
       toggle.classList.toggle("visible", bookingCart.length > 0);
-      toggle.textContent = `Cart ${bookingCart.length}`;
+      toggle.textContent = "Service Cart " + bookingCart.length;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
+      updateAddButtonStates();
       document.body.classList.toggle("cart-active", bookingCart.length > 0);
       document.body.classList.toggle("cart-open", bookingCart.length > 0 && cart.classList.contains("open"));
       items.innerHTML = "";
@@ -1440,58 +1468,35 @@
       document.body.style.overflow = "";
       resetGpsLocationState();
     }
-    function getServiceRowName(row, fallback) {
-      const clone = row.cloneNode(true);
-      clone.querySelectorAll("span, strong, button").forEach((node) => node.remove());
-      return clone.textContent.replace(/\s+/g, " ").trim() || fallback;
-    }
-    document.querySelectorAll(".price-list li").forEach((row) => {
-      const card = row.closest(".service-card");
-      if (!card) return;
-      const category = card.querySelector("h3")?.textContent.trim() || "Service";
-      const name = getServiceRowName(row, category);
-      const price = row.querySelector("strong")?.textContent.trim() || "";
-      if (!name || !price) return;
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "item-add";
-      button.textContent = "Add";
-      button.dataset.category = category;
-      button.dataset.name = name;
-      button.dataset.price = price;
-      row.appendChild(button);
-    });
-    document.addEventListener("click", (event) => {
-      const button = event.target.closest(".item-add");
-      if (!button) return;
+    function addServiceFromButton(event, button) {
       event.preventDefault();
       event.stopPropagation();
       addCartItem({
         category: button.dataset.category || "Service",
         name: button.dataset.name || "",
+        duration: button.dataset.duration || "",
         price: button.dataset.price || ""
       });
-    });
-    document.querySelectorAll(".service-card").forEach((card) => {
-      const rows = Array.from(card.querySelectorAll(".price-list li"));
-      if (rows.length <= 3) return;
-      rows.slice(3).forEach((row) => row.classList.add("card-row-extra"));
-      card.querySelectorAll(".subhead").forEach((subhead) => {
-        const nextList = subhead.nextElementSibling;
-        if (nextList?.matches(".price-list") && Array.from(nextList.children).every((row) => row.classList.contains("card-row-extra"))) {
-          subhead.classList.add("subhead-extra");
-        }
+    }
+    function toggleServiceCard(button) {
+      const card = button.closest(".service-card");
+      const isExpanded = card.classList.toggle("expanded");
+      button.textContent = isExpanded ? "View less" : "View more";
+    }
+    document.addEventListener("click", (event) => {
+      const direct = event.target.closest?.(".item-add:not(:disabled), .view-more");
+      const control = direct || Array.from(document.querySelectorAll(".item-add:not(:disabled), .view-more")).find((candidate) => {
+        const rect = candidate.getBoundingClientRect();
+        return event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
       });
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "view-more";
-      toggle.textContent = "View more";
-      toggle.addEventListener("click", () => {
-        const isExpanded = card.classList.toggle("expanded");
-        toggle.textContent = isExpanded ? "View less" : "View more";
-      });
-      card.querySelector(".service-body")?.appendChild(toggle);
-    });
+      if (!control) return;
+      if (control.classList.contains("item-add")) addServiceFromButton(event, control);
+      else {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleServiceCard(control);
+      }
+    }, true);
     document.addEventListener("click", (event) => {
       const button = event.target.closest(".open-booking");
       if (!button) return;
@@ -1503,6 +1508,12 @@
       const cart = document.getElementById("bookingCart");
       cart.classList.toggle("open");
       renderCart();
+    });
+    window.addEventListener("storage", (event) => {
+      if (event.key !== CART_STORAGE_KEY) return;
+      bookingCart = loadStoredCart();
+      renderCart();
+      renderSelectedServices();
     });
     renderCart();
     renderSelectedServices();
@@ -1556,7 +1567,7 @@
         const bg = index % 2 === 0 ? "#e9f5ff" : "#f1f1f1";
         return `<tr><th style="text-align:left;padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};width:42%;">${label}</th><td style="padding:12px;border:1px solid ${BRAND.grey};background:${bg};color:${BRAND.black};">${value}</td></tr>`;
       }).join("");
-      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:${BRAND.black};"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:${BRAND.blue};color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">No Place You'd Rather Be</p></td></tr><tr><td style="padding:24px;"><h2 style="margin:0 0 14px;font-size:20px;color:${BRAND.black};">New appointment request</h2><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rowHtml}</table></td></tr><tr><td style="background:${BRAND.black};color:#ffffff;padding:16px 24px;font-size:13px;">Booked via website - Stuwie's Salon & Spa<br>${SALON_ADDRESS}</td></tr></table></td></tr></table><\/body><\/html>`;
     }
     function setupGpsLocation() {
       const button = document.getElementById("useGpsLocation");

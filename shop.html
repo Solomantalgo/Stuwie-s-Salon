@@ -539,7 +539,8 @@
         transform: translateX(0);
       }
     }
-  </style>
+  .service-cart-global{position:fixed;left:16px;bottom:16px;z-index:1000;display:inline-flex;align-items:center;gap:7px;min-height:48px;padding:10px 16px;border-radius:999px;background:#0064b4;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 14px 34px rgba(0,0,0,.28);touch-action:manipulation}.service-cart-global span{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:#fff;color:#0064b4;font-size:12px}
+</style>
 </head>
 <body>
   <header class="site-header">
@@ -660,7 +661,7 @@
     const SALON_WHATSAPP = "256706081927";
     const SALON_EMAIL = "stuwiessalonandspa@gmail.com";
     const SALON_ADDRESS = "Wilsen Hotel Building (Basement), Nansana-Masitowa";
-    const ORDER_WEB_APP_URL = window.STUWIES_CONFIG.webAppUrl;
+    const ORDER_WEB_APP_URL = window.STUWIES_CONFIG?.webAppUrl || "";
     const SHOP_CART_KEY = "stuwiesShopCart";
     let shopCart = loadShopCart();
 
@@ -865,7 +866,7 @@
         ["Products", orderItemsText().replace(/\n/g, "<br>")],
         ["Notes", data.notes || "N/A"]
       ].map(([label, value]) => `<tr><th style="text-align:left;padding:12px;border:1px solid #d7e6f2;background:#f5f9fc;width:42%;">${label}</th><td style="padding:12px;border:1px solid #d7e6f2;">${value}</td></tr>`).join("");
-      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:#141414;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:#0064b4;color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">New product order request</p></td></tr><tr><td style="padding:24px;"><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rows}</table><p style="margin:24px 0 0;"><a href="${customerCallUrl(data)}" style="display:inline-block;background:#000;color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;">&#9742; Call Customer</a></p></td></tr><tr><td style="background:#000;color:#ffffff;padding:16px 24px;font-size:13px;">Ordered via website - ${SALON_ADDRESS}</td></tr></table></td></tr></table></body></html>`;
+      return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f9fc;font-family:Arial,sans-serif;color:#141414;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f9fc;padding:24px;"><tr><td align="center"><table role="presentation" width="620" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border-collapse:collapse;"><tr><td style="background:#0064b4;color:#ffffff;padding:22px 24px;"><h1 style="margin:0;font-size:24px;">Stuwie's Salon & Spa</h1><p style="margin:6px 0 0;font-size:15px;">New product order request</p></td></tr><tr><td style="padding:24px;"><table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${rows}</table><p style="margin:24px 0 0;"><a href="${customerCallUrl(data)}" style="display:inline-block;background:#000;color:#ffffff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;">&#9742; Call Customer</a></p></td></tr><tr><td style="background:#000;color:#ffffff;padding:16px 24px;font-size:13px;">Ordered via website - ${SALON_ADDRESS}</td></tr></table></td></tr></table><\/body><\/html>`;
     }
 
     document.addEventListener("click", (event) => {
@@ -958,6 +959,22 @@
       const isOpen = fab.classList.toggle("open");
       document.getElementById("fabToggle").setAttribute("aria-expanded", String(isOpen));
     });
+  </script>
+  <a class="service-cart-global" id="globalServiceCart" href="services.html#service-menu" aria-label="Open service cart">Service Cart <span id="globalServiceCartCount">0</span></a>
+  <script>
+    (() => {
+      const key = "stuwiesBookingCart";
+      const updateServiceCartCount = () => {
+        let items = [];
+        try { items = JSON.parse(localStorage.getItem(key) || "[]"); } catch (error) {}
+        const count = Array.isArray(items) ? items.length : 0;
+        document.getElementById("globalServiceCartCount").textContent = String(count);
+        document.getElementById("globalServiceCart").setAttribute("aria-label", "Open service cart with " + count + " selected service" + (count === 1 ? "" : "s"));
+      };
+      updateServiceCartCount();
+      window.addEventListener("pageshow", updateServiceCartCount);
+      window.addEventListener("storage", (event) => { if (event.key === key) updateServiceCartCount(); });
+    })();
   </script>
 </body>
 </html>

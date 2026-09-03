@@ -661,7 +661,7 @@
       right: 14px;
       bottom: 84px;
       z-index: 36;
-      display: none;
+      display: inline-flex;
       border: 0;
       border-radius: 999px;
       background: #000;
@@ -2858,7 +2858,7 @@
       cart.classList.toggle("visible", bookingCart.length > 0);
       if (!bookingCart.length) cart.classList.remove("open");
       toggle.classList.toggle("visible", bookingCart.length > 0);
-      toggle.textContent = `Cart ${bookingCart.length}`;
+      toggle.textContent = "Service Cart " + bookingCart.length;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
       updateAddButtonStates();
       document.body.classList.toggle("cart-active", bookingCart.length > 0);
@@ -3010,6 +3010,12 @@
       const cart = document.getElementById("bookingCart");
       cart.classList.toggle("open");
       renderCart();
+    });
+    window.addEventListener("storage", (event) => {
+      if (event.key !== CART_STORAGE_KEY) return;
+      bookingCart = loadStoredCart();
+      renderCart();
+      renderSelectedServices();
     });
     renderCart();
     renderSelectedServices();

@@ -101,7 +101,8 @@
       text-align: center;
       overflow-wrap: anywhere;
     }
-  </style>
+  .service-cart-global{position:fixed;left:16px;bottom:16px;z-index:1000;display:inline-flex;align-items:center;gap:7px;min-height:48px;padding:10px 16px;border-radius:999px;background:#0064b4;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 14px 34px rgba(0,0,0,.28);touch-action:manipulation}.service-cart-global span{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:#fff;color:#0064b4;font-size:12px}
+</style>
 </head>
 <body>
   <main>
@@ -192,6 +193,22 @@
     document.querySelectorAll(".backend-action").forEach((button) => {
       button.addEventListener("click", () => runBackendAction(button, button.dataset.status));
     });
+  </script>
+  <a class="service-cart-global" id="globalServiceCart" href="services.html#service-menu" aria-label="Open service cart">Service Cart <span id="globalServiceCartCount">0</span></a>
+  <script>
+    (() => {
+      const key = "stuwiesBookingCart";
+      const updateServiceCartCount = () => {
+        let items = [];
+        try { items = JSON.parse(localStorage.getItem(key) || "[]"); } catch (error) {}
+        const count = Array.isArray(items) ? items.length : 0;
+        document.getElementById("globalServiceCartCount").textContent = String(count);
+        document.getElementById("globalServiceCart").setAttribute("aria-label", "Open service cart with " + count + " selected service" + (count === 1 ? "" : "s"));
+      };
+      updateServiceCartCount();
+      window.addEventListener("pageshow", updateServiceCartCount);
+      window.addEventListener("storage", (event) => { if (event.key === key) updateServiceCartCount(); });
+    })();
   </script>
 </body>
 </html>
