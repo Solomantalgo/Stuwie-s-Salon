@@ -1945,6 +1945,7 @@
       to { transform: rotate(360deg); }
     }
   </style>
+  <link rel="stylesheet" href="team.css">
 </head>
 <body>
   <header class="site-header">
@@ -2665,6 +2666,11 @@
     animateCount(document.getElementById("happyClientsCount"), 3000);
 
     function openBooking(serviceName = "") {
+      if (!new URLSearchParams(window.location.search).has("legacyBooking")) {
+        saveCart();
+        window.location.href = "bookings.html" + (serviceName ? "?service=" + encodeURIComponent(serviceName) : "");
+        return;
+      }
       if (serviceName) {
         const serviceSelect = document.getElementById("requestedService");
         const match = Array.from(serviceSelect.options).find((option) => option.value === serviceName);
@@ -3268,5 +3274,6 @@
     });
 
   </script>
+  <script src="team.js"></script>
 </body>
 </html>

@@ -1454,6 +1454,11 @@
       });
     }
     function openBooking(serviceName = "") {
+      if (!new URLSearchParams(window.location.search).has("legacyBooking")) {
+        saveCart();
+        window.location.href = "bookings.html" + (serviceName ? "?service=" + encodeURIComponent(serviceName) : "");
+        return;
+      }
       if (serviceName) {
         const serviceSelect = document.getElementById("requestedService");
         const match = Array.from(serviceSelect.options).find((option) => option.value === serviceName);

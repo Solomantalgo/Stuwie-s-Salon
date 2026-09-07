@@ -1,4 +1,6 @@
 window.STUWIES_CONFIG = {
   webAppUrl: "https://script.google.com/macros/s/AKfycbxWzNJaHxmiTWEeFEmUt9OrhnyF-q30RZcZoKLGq_6B2RsPIo_Z36D9LdPVwhy0A4TO/exec",
+  // Supply the salon-approved payment destination here when available.
+  payment: { provider: "", merchantId: "" },
   confirmPageUrl: "http://stuwies-salon.vercel.app/confirm.html"
 };
