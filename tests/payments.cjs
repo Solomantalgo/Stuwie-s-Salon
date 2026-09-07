@@ -1,0 +1,62 @@
+// Run: node tests/payments.cjs (requires Playwright; see BOOKINGS.md).
+// All HTTP is served from local files or mocked. Dialer navigation is intercepted.
+const fs=require('node:fs');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'/tmp/mobile-hero-check/node_modules/playwright');
+const root=path.resolve(__dirname,'..');
+(async()=>{
+ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{executablePath:'/tmp/trial-builder-browser/chrome-linux/headless_shell'}),args:['--no-sandbox']});
+ const errors=[],payloads=[];let conflict=false,fail=false;
+ async function setup(mobile=false,configured=true){
+  const context=await browser.newContext({viewport:{width:mobile?390:1280,height:900},userAgent:mobile?'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36':undefined});
+  await context.route('**/*',async route=>{
+   const url=new URL(route.request().url());
+   if(url.hostname==='script.google.com'){
+    if(route.request().method()==='POST'){payloads.push(JSON.parse(route.request().postData()));return route.fulfill({body:'{}'});}
+    if(fail)return route.abort();
+    return route.fulfill({contentType:'text/javascript',body:`${url.searchParams.get('callback')}(${JSON.stringify({ok:true,closed_days:[],blocked_slots:[],booked_slots:conflict?[{date:'2026-10-10',time:'10:00'}]:[]})})`});
+   }
+   if(url.hostname!=='booking.test')return route.abort();
+   const file=path.join(root,url.pathname);if(!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});
+   let body=fs.readFileSync(file);
+   if(file.endsWith('config.js')&&configured)body=body.toString()+`;Object.values(window.STUWIES_CONFIG.payment.providers).forEach(p=>{p.merchantId='1';p.merchantConfigured=true;});`;
+   if(file.endsWith('bookings.js'))body=body.toString().replace('window.location.href=uri','window.__handoffs.push(uri)');
+   return route.fulfill({body,contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.html')?'text/html':'image/jpeg'});
+  });
+  const page=await context.newPage();await page.addInitScript(()=>window.__handoffs=[]);page.on('pageerror',e=>errors.push(e.message));
+  return page;
+ }
+ const next=p=>p.locator('#journey-form button[type=submit]').click();
+ async function visit(p,service='Hair Cut'){
+  await p.goto('http://booking.test/bookings.html?service='+encodeURIComponent(service));await next(p);await next(p);
+  await p.locator('#date').fill('2026-10-10');await next(p);await p.locator('[name=time][value="10:00"]').check();await next(p);
+  await p.locator('#name').fill('Payment QA');await p.locator('#phone').fill('0700000000');await p.locator('#email').fill('qa@example.com');await next(p);await p.locator('#notes').fill('Keep these notes');await next(p);await p.locator('[name=consent]').check();await next(p);
+ }
+ const select=(p,type,provider)=>p.locator(`[name=${type}][value=${provider}]`).check();
+ const page=await setup();await visit(page);
+ assert.equal(await page.locator('[name=paymentType]:checked,[name=paymentProvider]:checked').count(),0);
+ await next(page);assert.match(await page.locator('#booking-error').innerText(),/Choose either.*Choose MTN/);assert.equal(payloads.length,0);
+ await select(page,'paymentType','deposit');await next(page);assert.match(await page.locator('#booking-error').innerText(),/Choose MTN/);
+ await select(page,'paymentProvider','mtn');await page.waitForFunction(()=>[...document.querySelectorAll('.provider-logo')].every(img=>img.complete&&img.naturalWidth>0&&!img.hidden));assert.match(await page.locator('.payment-amount').innerText(),/5,000/);
+ assert.equal(await page.locator('#paymentReference,#paymentPhone,select[name=paymentProvider]').count(),0);
+ await page.locator('#pay-mobile-money').click();assert.match(await page.locator('#payment-instructions').innerText(),/Dial.*\*165\*3#/s);assert.deepEqual(await page.evaluate(()=>window.__handoffs),[]);
+ await page.locator('#back').click();await next(page);assert.equal(await page.locator('[name=paymentType][value=deposit]').isChecked(),true);assert.equal(await page.locator('[name=paymentProvider][value=mtn]').isChecked(),true);assert.match(await page.locator('#step-body').innerText(),/Complete the payment/);
+ for(const width of [360,390,768,1280]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);}
+ await next(page);await page.getByText('Your request is on its way').waitFor();let record=payloads.at(-1).payment;
+ assert.equal(record.serviceTotal,10000);assert.equal(record.paymentAmount,5000);assert.equal(record.balanceRemaining,5000);assert.equal(record.paymentStatus,'initiated');assert.ok(record.paymentInitiatedAt);assert.equal(record.paymentVerifiedAt,null);assert.equal(record.paymentReference,'');assert.match(payloads.at(-1).notes,/Keep these notes/);
+ const mobile=await setup(true);await visit(mobile,'Royal Glow Experience');await select(mobile,'paymentType','full');await select(mobile,'paymentProvider','mtn');await mobile.locator('#pay-mobile-money').click();assert.deepEqual(await mobile.evaluate(()=>window.__handoffs),['tel:*165*3*1*180000%23']);
+ // Change the cart through existing review edit controls; keep choice, invalidate initiation.
+ await mobile.locator('#back').click();await mobile.locator('[data-edit="1"]').click();await mobile.locator('#category').selectOption('Barbering Services (Gents)');await mobile.locator('[data-service="0"]').check();await next(mobile);await next(mobile);await next(mobile);await mobile.locator('[name=time][value="10:00"]').check();await next(mobile);await next(mobile);await next(mobile);await mobile.locator('[name=consent]').check();await next(mobile);
+ assert.match(await mobile.locator('.payment-amount').innerText(),/190,000/);assert.doesNotMatch(await mobile.locator('#step-body').innerText(),/Complete the payment on your phone/);
+ await select(mobile,'paymentType','deposit');await mobile.locator('#pay-mobile-money').click();assert.equal((await mobile.evaluate(()=>window.__handoffs)).at(-1),'tel:*165*3*1*95000%23');
+ await select(mobile,'paymentType','full');await next(mobile);await mobile.getByText('Your request is on its way').waitFor();record=payloads.at(-1).payment;assert.equal(record.paymentAmount,190000);assert.equal(record.balanceRemaining,0);assert.equal(record.paymentStatus,'not_started');assert.equal(record.paymentInitiatedAt,null);
+ const airtel=await setup(true);await visit(airtel);await select(airtel,'paymentProvider','airtel');await next(airtel);assert.match(await airtel.locator('#booking-error').innerText(),/Choose either/);await select(airtel,'paymentType','deposit');await airtel.locator('#pay-mobile-money').click();assert.deepEqual(await airtel.evaluate(()=>window.__handoffs),[]);assert.match(await airtel.locator('#payment-instructions').innerText(),/Airtel Money menu/);await next(airtel);await airtel.getByText('Your request is on its way').waitFor();assert.equal(payloads.at(-1).payment.paymentProvider,'Airtel Money');assert.equal(payloads.at(-1).payment.paymentStatus,'initiated');
+ for(const service of ['Braids (Short)','Swedish Massage','Birthday Spa Party','Gift Voucher']){
+  const variable=await setup();await visit(variable,service);await select(variable,'paymentType','deposit');await select(variable,'paymentProvider','mtn');assert.equal(await variable.locator('#pay-mobile-money').count(),0);assert.match(await variable.locator('#step-body').innerText(),/One or more selected services require/);await next(variable);await variable.getByText('Your request is on its way').waitFor();record=payloads.at(-1).payment;assert.equal(record.paymentAmount,null);assert.equal(record.serviceTotal,null);assert.equal(record.balanceRemaining,null);await variable.context().close();
+ }
+ const unconfigured=await setup(false,false);await visit(unconfigured);await select(unconfigured,'paymentType','deposit');for(const provider of ['mtn','airtel']){await select(unconfigured,'paymentProvider',provider);assert.equal(await unconfigured.locator('#pay-mobile-money').isDisabled(),true);assert.match(await unconfigured.locator('#step-body').innerText(),/not configured/);}
+ // Final conflict and availability failure still block submission without losing selections.
+ conflict=true;const before=payloads.length;await next(unconfigured);await unconfigured.getByText('That time is no longer available. Please choose another time.').waitFor();assert.equal(payloads.length,before);conflict=false;
+ assert.deepEqual(errors,[]);await browser.close();console.log('PASS: required choices, deposit/full, recalculation/reset, back/forward, MTN mobile URI, desktop/Airtel fallback, variable prices, missing configuration, unverified records, conflicts, responsive widths. No live requests.');
+})().catch(e=>{console.error(e);process.exit(1)});

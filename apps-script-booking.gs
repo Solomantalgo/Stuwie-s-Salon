@@ -274,6 +274,8 @@ function isSlotAvailable_(date, time) {
 function handleBookingAction_(params) {
   const bookingId = String(params.id || '').trim();
   const status = displayStatus_(params.status || '');
+  // Public booking actions cannot verify a transaction or mark it paid.
+  if (status === 'Paid') return { ok: false, error: 'Payment verification requires server-side reconciliation.' };
   if (!bookingId) return { ok: false, error: 'Booking ID is required.' };
   if (!status) return { ok: false, error: 'A valid status is required.' };
 
