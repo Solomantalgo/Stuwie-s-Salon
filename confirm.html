@@ -194,7 +194,7 @@
       button.addEventListener("click", () => runBackendAction(button, button.dataset.status));
     });
   </script>
-  <a class="service-cart-global" id="globalServiceCart" href="services.html#service-menu" aria-label="Open service cart">Service Cart <span id="globalServiceCartCount">0</span></a>
+  <a class="service-cart-global" id="globalServiceCart" href="services.html#service-menu" aria-label="Open service cart" style="display: none">Service Cart <span id="globalServiceCartCount">0</span></a>
   <script>
     (() => {
       const key = "stuwiesBookingCart";
@@ -202,12 +202,13 @@
         let items = [];
         try { items = JSON.parse(localStorage.getItem(key) || "[]"); } catch (error) {}
         const count = Array.isArray(items) ? items.length : 0;
+        document.getElementById("globalServiceCart").style.display = count > 0 ? "inline-flex" : "none";
         document.getElementById("globalServiceCartCount").textContent = String(count);
         document.getElementById("globalServiceCart").setAttribute("aria-label", "Open service cart with " + count + " selected service" + (count === 1 ? "" : "s"));
       };
       updateServiceCartCount();
       window.addEventListener("pageshow", updateServiceCartCount);
-      window.addEventListener("storage", (event) => { if (event.key === key) updateServiceCartCount(); });
+      window.addEventListener("storage", (event) => { if (event.key === key || event.key === null) updateServiceCartCount(); });
     })();
   </script>
 </body>

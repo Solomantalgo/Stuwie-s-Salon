@@ -985,7 +985,7 @@
           </div>
         </div>
         </div>
-        <div class="booking-cart" id="bookingCart" aria-live="polite">
+        <div class="booking-cart" id="bookingCart" aria-live="polite" style="display: none">
           <div>
             <strong>Selected services</strong>
             <div class="cart-meta" id="cartMeta"></div>
@@ -1064,7 +1064,7 @@
     <p>Wilsen Hotel Building (Basement), Nansana-Masitowa | +256 706 081 927</p>
   </footer>
   <!-- Website by Solomantalgo: https://solomantalgo.com -->
-  <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
+  <button class="cart-toggle" id="cartToggle" style="display: none" type="button" aria-expanded="false">Cart 0</button>
   <div class="cart-toast" id="cartToast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
@@ -1424,6 +1424,8 @@
       const meta = document.getElementById("cartMeta");
       cart.classList.toggle("visible", bookingCart.length > 0);
       if (!bookingCart.length) cart.classList.remove("open");
+      cart.style.display = bookingCart.length > 0 && cart.classList.contains("open") ? "flex" : "none";
+      toggle.style.display = bookingCart.length > 0 ? "inline-flex" : "none";
       toggle.classList.toggle("visible", bookingCart.length > 0);
       toggle.textContent = "Service Cart " + bookingCart.length;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));

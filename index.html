@@ -2068,7 +2068,7 @@
           <div class="section-actions reveal"><a class="btn btn-primary" href="services.html#services">View All Services</a></div>
         </div>
         </div>
-        <div class="booking-cart" id="bookingCart" aria-live="polite">
+        <div class="booking-cart" id="bookingCart" aria-live="polite" style="display: none">
           <div>
             <strong id="cartTitle">Selected services</strong>
             <div class="cart-meta" id="cartMeta"></div>
@@ -2297,7 +2297,7 @@
   </footer>
   <!-- Website by Solomantalgo: https://solomantalgo.com -->
   <script src="https://elfsightcdn.com/platform.js" async></script>
-  <button class="cart-toggle" id="cartToggle" type="button" aria-expanded="false">Cart 0</button>
+  <button class="cart-toggle" id="cartToggle" style="display: none" type="button" aria-expanded="false">Cart 0</button>
   <aside class="shop-cart" id="homeShopCart" aria-live="polite">
     <div class="shop-cart-head">
       <strong>Product cart</strong>
@@ -2857,6 +2857,8 @@
       const meta = document.getElementById("cartMeta");
       cart.classList.toggle("visible", bookingCart.length > 0);
       if (!bookingCart.length) cart.classList.remove("open");
+      cart.style.display = bookingCart.length > 0 && cart.classList.contains("open") ? "flex" : "none";
+      toggle.style.display = bookingCart.length > 0 ? "inline-flex" : "none";
       toggle.classList.toggle("visible", bookingCart.length > 0);
       toggle.textContent = "Service Cart " + bookingCart.length;
       toggle.setAttribute("aria-expanded", String(cart.classList.contains("open")));
