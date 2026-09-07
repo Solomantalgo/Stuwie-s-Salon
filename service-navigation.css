@@ -1,0 +1,46 @@
+/* Category navigation only; the existing service cards retain their styles. */
+html, body { overflow-x: clip; }
+:root { --service-header-height: 0px; --service-tabs-height: 64px; }
+#service-menu, #services { scroll-margin-top: calc(var(--service-header-height) + 16px); }
+.service-tabs {
+  position: sticky;
+  top: var(--service-header-height);
+  z-index: 19;
+  padding: 10px 0;
+  margin-bottom: 18px;
+  background: var(--wash);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 4px 8px -7px rgba(0, 34, 67, .35);
+}
+.service-tab:focus-visible { outline: 3px solid var(--blue-bright); outline-offset: 2px; }
+.service-panels { display: block; }
+.service-category {
+  display: block;
+  padding: 0;
+  margin: 0 0 40px;
+  scroll-margin-top: calc(var(--service-header-height) + var(--service-tabs-height) + 16px);
+}
+.service-category:last-child { margin-bottom: 0; }
+.service-category-heading { margin: 0 0 18px; font-size: clamp(24px, 3vw, 32px); line-height: 1.2; color: var(--ink); }
+@media (max-width: 900px) {
+  .service-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .service-tabs::-webkit-scrollbar { display: none; }
+  .service-tabs .service-tab { flex: 0 0 auto; white-space: nowrap; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .service-tab { transition: none; }
+}
+
+/* The homepage clips decorative sections; clip without creating a sticky scroll container. */
+#services { overflow: clip; }
+.service-category [id] { scroll-margin-top: calc(var(--service-header-height) + var(--service-tabs-height) + 16px); }
