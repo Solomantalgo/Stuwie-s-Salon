@@ -20,7 +20,7 @@ For `From` prices, ranges, per-person packages or custom quotes, payment amount 
 
 ## Team and catalogue
 
-`team.js` uses the four existing staff members, photographs and published specialties. Home-page profiles offer booking links with the professional preselected. Preferences are requests, not guarantees: the existing API has a shared salon calendar, not staff-specific availability.
+`team.js` lists only Jalira Muyonjo, the current staff member confirmed by the salon owner, with her supplied portrait and role (Masseuse & Esthetician). She can be requested for massage, facial and body-scrub categories; other categories retain no-preference booking. Removed professional IDs safely resolve to no preference. Home-page profiles offer booking links with the professional preselected. Preferences are requests, not guarantees: the existing API has a shared salon calendar, not staff-specific availability.
 
 `booking-catalogue.js` contains the 71 service choices and nine packages extracted from `services.html`. Keep it in sync when changing that menu. `bookings-base.css` carries the existing service-page visual styles; `bookings.css` adds the responsive booking structure. `team.css` adds profile and action styles without replacing the existing team layout.
 

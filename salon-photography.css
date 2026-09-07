@@ -1,0 +1,11 @@
+/* Real salon photography, within the existing Stuwie visual system. */
+.salon-space-layout { display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; align-items: center; }
+.salon-space-photo { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.salon-space-photo img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.salon-space-copy h2 { margin: 0 0 16px; font-size: clamp(28px, 3vw, 40px); }
+.salon-space-copy p:not(.eyebrow) { color: var(--muted); margin-bottom: 24px; }
+.service-card img.real-barbering, .quick-book-card img.real-barbering { object-fit: cover; object-position: 50% 46%; }
+.gallery-item img.real-salon-chair { object-position: 50% 66%; }
+@media (max-width: 800px) {
+  .salon-space-layout { grid-template-columns: 1fr; gap: 24px; }
+}

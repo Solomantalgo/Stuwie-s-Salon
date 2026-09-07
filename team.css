@@ -1,1 +1,15 @@
 .team-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.team-actions .btn{font-size:12px;padding:9px 12px}.team-specialties{display:flex;flex-wrap:wrap;gap:5px}.team-specialties span{font-size:11px;background:var(--wash);border:1px solid var(--line);padding:3px 7px;border-radius:var(--radius)}.team-profile{position:fixed;width:min(760px,calc(100% - 28px));max-height:90vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);padding:28px;color:var(--ink);background:var(--paper);box-shadow:var(--shadow)}.team-profile::backdrop{background:rgba(0,13,28,.7)}.team-profile>img{width:190px;max-width:100%;border-radius:var(--radius);float:left;margin:0 24px 16px 0}.team-profile .close-btn{float:right;background:var(--blue)}.team-profile a:not(.btn){color:var(--blue)}@media(max-width:600px){.team-profile>img{float:none;width:100%;height:240px;object-fit:cover}.team-profile{padding:20px}.team-profile .close-btn{position:absolute;right:26px;top:26px}}
+
+/* One confirmed professional: retain the existing card and button styling. */
+#team .confirmed-team { display: block; }
+#team .confirmed-team .member-card { display: grid; grid-template-columns: minmax(260px, .8fr) 1.2fr; max-width: 960px; margin-inline: auto; align-items: center; }
+#team .confirmed-team .member-card > img { display: block; width: 100%; height: 480px; object-fit: cover; object-position: 50% 22%; }
+#team .confirmed-team .member-card > div { padding: 32px; }
+#team .confirmed-team .team-actions { padding: 0; }
+#team .confirmed-team .team-specialties { margin-top: 16px; }
+.team-profile > img { height: 285px; object-fit: cover; object-position: 50% 22%; }
+@media (max-width: 700px) {
+  #team .confirmed-team .member-card { display: block; }
+  #team .confirmed-team .member-card > img { height: auto; aspect-ratio: 4 / 5; }
+  #team .confirmed-team .member-card > div { padding: 20px; }
+}

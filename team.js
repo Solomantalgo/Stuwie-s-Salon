@@ -1,9 +1,6 @@
-/* Stuwie's existing professionals and their published specialties. */
+/* Current staff identity and role confirmed by the salon owner. */
 window.STUWIES_TEAM = [
-  {id:'barbra',name:'Barbra',role:'Hairstylist',image:'Barbra-Hairstylist.jpg',bio:"Ladies' hair, styling and treatments.",categories:['Hair Services (Ladies)'],specialties:['Hair styling','Treatments','Ladies’ hair']},
-  {id:'james',name:'James',role:'Barber',image:'james-Barber.jpg',bio:"Gents' cuts, fades and beard care.",categories:['Barbering Services (Gents)'],specialties:['Haircuts','Fades','Beard care']},
-  {id:'brenda',name:'Brenda',role:'Massage Therapist',image:'Brenda-Massage-Therapist.jpg',bio:'Relaxation, deep tissue and prenatal care.',categories:['Massages'],specialties:['Relaxation','Deep tissue','Prenatal massage']},
-  {id:'scovia',name:'Scovia',role:'Nail Technician',image:'Scovia-Nails.jpg',bio:'Manicures, pedicures and nail enhancements.',categories:['Manicure & Pedicure'],specialties:['Manicures','Pedicures','Nail enhancements']}
+  {id:'jalira-muyonjo',name:'Jalira Muyonjo',role:'Masseuse & Esthetician',image:'jalira-muyonjo.jpg',bio:'Providing professional massage and esthetic treatments in a calm, welcoming environment.',categories:['Massages','Facials','Body Scrubs'],specialties:['Massage Therapy','Esthetic Treatments','Skin & Body Care']}
 ];
 (() => {
   const cards = document.querySelectorAll('#team .member-card');
@@ -24,7 +21,7 @@ window.STUWIES_TEAM = [
     const book=document.createElement('a'); book.className='btn btn-primary'; book.href='bookings.html?professional='+person.id; book.textContent='Book with '+person.name;
     actions.append(profile,book); content.append(actions);
     profile.addEventListener('click', () => {
-      dialog.innerHTML=`<button class="close-btn" type="button" aria-label="Close profile">&times;</button><img src="assets/images/${person.image}" alt="${person.name}"><div><p class="eyebrow">Meet your professional</p><h2 id="profile-name">${person.name}</h2><h3>${person.role}</h3><p>${person.bio}</p><p>${person.specialties.join(' · ')}</p><h3>Services with ${person.name}</h3>${person.categories.map(category=>`<p><a href="bookings.html?professional=${person.id}&service=${encodeURIComponent(category)}">${category} ↗</a></p>`).join('')}<a class="btn btn-primary" href="${book.href}">Book with ${person.name}</a><p>Professional requests are subject to salon confirmation.</p></div>`;
+      dialog.innerHTML=`<button class="close-btn" type="button" aria-label="Close profile">&times;</button><img src="assets/images/${person.image}" srcset="assets/images/responsive/${person.id}-480.webp 480w, assets/images/responsive/${person.id}-960.webp 960w" sizes="(max-width: 600px) 90vw, 190px" width="4480" height="6720" alt="${person.name}, Masseuse and Esthetician" decoding="async"><div><p class="eyebrow">Meet your professional</p><h2 id="profile-name">${person.name}</h2><h3>${person.role}</h3><p>${person.bio}</p><p>${person.specialties.join(' · ')}</p><h3>Services with ${person.name}</h3>${person.categories.map(category=>`<p><a href="bookings.html?professional=${person.id}&service=${encodeURIComponent(category)}">${category} ↗</a></p>`).join('')}<a class="btn btn-primary" href="${book.href}">Book with ${person.name}</a><p>Professional requests are subject to salon confirmation.</p></div>`;
       dialog.querySelector('button').onclick=()=>dialog.close(); dialog.showModal();
     });
   });
