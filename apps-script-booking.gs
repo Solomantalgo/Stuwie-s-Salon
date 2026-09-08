@@ -112,6 +112,10 @@ function doGet(e) {
       payload = getAvailabilityPayload_();
     } else if (action === 'booking_action') {
       payload = handleBookingAction_(params);
+    } else if (action === 'find_payment') {
+      payload = findPaymentByReference_(params);
+    } else if (action === 'verify_payment') {
+      payload = verifyPaymentFromStaff_(params);
     } else if (action === 'setup') {
       payload = setupWorkbook_();
     } else {
@@ -420,6 +424,7 @@ function verifyPaymentRow_(sheet, number, event) {
   }
   const paidBefore = booking ? verifiedPaymentSum_(rows, bookingId, number) : 0;
   if (!reason && !Number.isSafeInteger(paidBefore + actual)) reason = 'Verified payment sum exceeds safe numeric range.';
+  if (!reason && booking.total !== null && paidBefore + actual > booking.total) reason = 'Verified payments cannot exceed the booking total.';
   if (reason) {
     sheet.getRange(number, 13).setValue('Mismatch');
     sheet.getRange(number, 15, 1, 2).setValues([['', '']]);
@@ -437,6 +442,44 @@ function verifyPaymentRow_(sheet, number, event) {
   sheet.getRange(number, 13).setValue('Verified');
   sheet.getRange(number, 15, 1, 2).setValues([[new Date(), staff || 'Sheet staff']]);
   recalculateBookingPayment_(bookingId);
+}
+
+function paymentRowForStaff_(row) { return { paymentId:String(row[0] || ""), bookingId:String(row[1] || ""), provider:String(row[3] || ""), providerKey:String(row[4] || ""), paymentType:String(row[5] || ""), expectedAmount:sheetAmount_(row[6]), transactionAmount:sheetAmount_(row[7]), transactionReference:String(row[10] || ""), providerStatus:String(row[11] || ""), verificationStatus:String(row[12] || ""), initiatedAt:row[13] || "", verifiedAt:row[14] || "" }; }
+
+function bookingForStaff_(booking) { const row=booking.row; return { bookingId:String(row[0] || ""), location:String(row[5] || ""), customerName:String(row[2] || ""), phone:String(row[3] || ""), email:String(row[4] || ""), service:String(row[6] || ""), selectedItems:String(row[7] || ""), total:booking.total, preferredDate:normalizeDate_(row[9]), preferredTime:normalizeTime_(row[10]), bookingStatus:String(row[12] || ""), paymentStatus:String(row[15] || ""), amountPaid:sheetAmount_(row[16]) || 0, balance:sheetAmount_(row[17]), notes:String(row[13] || "") }; }
+
+function findPaymentByReference_(params) {
+  const reference = paymentReference_(params && params.reference);
+  if (!reference) return { ok:false, error:"No payment was found with that transaction reference." };
+  const rows = getSheet_(PAYMENTS_SHEET).getDataRange().getValues();
+  const matches = rows.map(function(row,index) { return {row:row,number:index+1}; }).filter(function(item) { return item.number > 1 && paymentReference_(item.row[10]).toUpperCase() === reference.toUpperCase(); });
+  if (!matches.length) return { ok:false, error:"No payment was found with that transaction reference." };
+  if (matches.length > 1) return { ok:false, error:"Multiple payments use that reference. Check the Payments sheet." };
+  const payment = matches[0].row;
+  const booking = findPaymentBooking_(String(payment[1] || "").trim());
+  if (!booking) return { ok:false, error:"The payment was found, but its linked booking could not be found." };
+  return { ok:true, payment:paymentRowForStaff_(payment), booking:bookingForStaff_(booking) };
+}
+
+function verifyPaymentFromStaff_(params) {
+  return withBookingLock_(function() {
+    const reference = paymentReference_(params && params.reference);
+    if (!reference) return { ok:false, error:"Enter a valid transaction reference." };
+    const rows = getSheet_(PAYMENTS_SHEET).getDataRange().getValues();
+    const matches = rows.map(function(row,index) { return {row:row,number:index+1}; }).filter(function(item) { return item.number > 1 && paymentReference_(item.row[10]).toUpperCase() === reference.toUpperCase(); });
+    if (!matches.length) return { ok:false, error:"No payment was found with that transaction reference." };
+    if (matches.length > 1) return { ok:false, error:"Multiple payments use that reference. Check the Payments sheet." };
+    const match = matches[0];
+    const sheet = getSheet_(PAYMENTS_SHEET);
+    const actual = sheetAmount_(params.amount);
+    sheet.getRange(match.number, 8).setValue(actual === null ? String(params.amount || "") : actual);
+    sheet.getRange(match.number, 13).setValue("Verified");
+    verifyPaymentRow_(sheet, match.number, { user:{ getEmail:function() { return "Manage Booking page"; } } });
+    const updated = sheet.getRange(match.number, 1, 1, PAYMENT_HEADERS.length).getValues()[0];
+    const booking = findPaymentBooking_(String(updated[1] || "").trim());
+    if (normalizeStatus_(updated[12]) !== "verified") return { ok:false, error:String(updated[16] || "Payment verification was blocked."), payment:paymentRowForStaff_(updated), booking:booking ? bookingForStaff_(booking) : null };
+    return { ok:true, payment:paymentRowForStaff_(updated), booking:booking ? bookingForStaff_(booking) : null };
+  });
 }
 
 function installPaymentEditTrigger() {

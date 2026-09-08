@@ -48,7 +48,7 @@
   function slotFree(date,time) { return availability && !availability.closed_days.includes(date) && ![...availability.booked_slots,...availability.blocked_slots].some(slot=>slot.date===date&&slot.time===time) && future(date,time); }
   function invalidate() { syncPayment();draft.time='';draft.consent=false; }
   function error(message) { $('booking-error').textContent=message; }
-  function capture() { const form=$('journey-form');if(!form)return; const data=new FormData(form);for(const name of ['category','professional','date','time','name','phone','email','location','notes','paymentType','paymentProvider'])if(data.has(name))draft[name]=String(data.get(name)).trim();if(step===7)draft.consent=data.has('consent'); }
+  function capture() { const form=$('journey-form');if(!form)return; const data=new FormData(form);for(const name of ['category','professional','date','time','name','phone','email','location','notes','paymentType','paymentProvider','paymentReference'])if(data.has(name))draft[name]=String(data.get(name)).trim();if(step===7)draft.consent=data.has('consent'); }
   function showSummary() {
     $('summary-count').textContent=cart.length?`(${cart.length})`:'';
     $('booking-summary').innerHTML=`${cart.length?`<ul>${cart.map((item,index)=>`<li><strong>${esc(item.name)}</strong><small>${esc(item.price)}${item.duration?' · '+esc(item.duration):''}</small>${!complete?`<button type="button" data-remove="${index}" aria-label="Remove ${esc(item.name)}">Remove</button>`:''}</li>`).join('')}</ul>`:'<p>Choose a service to start your visit.</p>'}<dl><div><dt>${fixedPrices()?'Estimated total':'Estimate from'}</dt><dd>${cart.length&&total()?money(total()):'Confirm with salon'}</dd></div><div><dt>Professional</dt><dd>${esc(personName())}</dd></div><div><dt>Date</dt><dd>${esc(draft.date)||'To be chosen'}</dd></div><div><dt>Time</dt><dd>${draft.time?esc(draft.time)+' EAT':'To be chosen'}</dd></div></dl><p class="journey-note">Final pricing and your appointment are subject to salon confirmation.</p>`;
@@ -128,7 +128,7 @@
       ${draft.paymentAmount!==null?`<p class="payment-amount">Amount to pay: <strong>${money(draft.paymentAmount)}</strong></p>${!validPaymentAmount()?'<p role="status">The salon must confirm an amount payable in whole Uganda shillings before payment.</p>':''}`:''}
       ${provider&&!getMerchantId()?`<p class="payment-warning" role="status">${esc(provider.name)} merchant payment is not configured yet. Payment cannot be initiated. Contact the salon for assistance.</p>`:''}
       ${provider&&validPaymentAmount()?`<button class="btn btn-primary" type="button" id="pay-mobile-money" ${getMerchantId()?'':'disabled'}>Pay with ${provider.providerKey==='mtn'?'MTN MoMo':'Airtel Money'}</button>`:''}
-      ${draft.paymentStatus==='initiated'?'<p role="status">Complete the payment on your phone. Payment has not been verified.</p>':''}
+      ${draft.paymentStatus==='initiated'?'<p role="status">Complete the payment on your phone. Payment has not been verified.</p><div class="field payment-reference-field"><label for="paymentReference">Transaction Reference</label><input id="paymentReference" name="paymentReference" type="text" value="' + esc(draft.paymentReference) + '" placeholder="e.g. ABC123XYZ" maxlength="120" required><small>Enter the transaction reference from your Mobile Money confirmation message.</small></div>':''}
       ${manualPaymentInstructions()}<p class="journey-note">You can send your request after selecting both options. Your appointment and payment still require salon confirmation.</p>`;
   }
   function body() {
@@ -221,18 +221,17 @@
   function paymentRecord() {
     syncPayment();
     const provider=getSelectedProvider(), serviceTotal=payableTotal();
-    return {paymentType:draft.paymentType,paymentProvider:provider?.name||'',providerKey:provider?.providerKey||'',paymentStatus:draft.paymentStatus,merchantId:getMerchantId(),serviceTotal,paymentAmount:draft.paymentAmount,balanceRemaining:draft.paymentAmount===null?null:serviceTotal-draft.paymentAmount,paymentReference:'',paymentInitiatedAt:draft.paymentInitiatedAt,paymentVerifiedAt:null,paymentPriceReviewRequired:serviceTotal===null};
+    return {paymentType:draft.paymentType,paymentProvider:provider?.name||'',providerKey:provider?.providerKey||'',paymentStatus:draft.paymentStatus,merchantId:getMerchantId(),serviceTotal,paymentAmount:draft.paymentAmount,balanceRemaining:draft.paymentAmount===null?null:serviceTotal-draft.paymentAmount,paymentReference:draft.paymentReference,paymentInitiatedAt:draft.paymentInitiatedAt,paymentVerifiedAt:null,paymentPriceReviewRequired:serviceTotal===null};
   }
 
   function payload() {
     const payment=paymentRecord();
-    const paymentNote=`Payment choice: ${payment.paymentType}; ${payment.paymentProvider}; browser initiation: ${payment.paymentStatus}; NOT verified. ${payment.paymentAmount!==null?'Amount to pay '+money(payment.paymentAmount)+'; balance after verification '+money(payment.balanceRemaining)+'.':'Final price requires salon confirmation.'}`;
-    return {submitted_at:new Date().toISOString(),type:'Appointment booking',source:'Website / guided bookings',customer_name:draft.name,phone:draft.phone,customer_phone:draft.phone,customer_email:draft.email,customer_location:draft.location||'None',customer_location_link:draft.locationCoords?'https://www.google.com/maps?q='+encodeURIComponent(draft.locationCoords):'',service:cart.length===1?cart[0].name:'Multiple selected services',selected_items:cart.map((item,index)=>`${index+1}. ${item.category}: ${item.name} - ${item.price}${item.duration?' · '+item.duration:''}`).join('\n'),estimated_total:total()?money(total())+(fixedPrices()?'':' (estimate; confirm final price)'):'Confirm with salon',preferred_date:draft.date,preferred_time:draft.time,notes:[draft.notes,'Preferred professional: '+personName()+' (subject to confirmation).',paymentNote].filter(Boolean).join('\n'),raw_items:cart.map(item=>({...item})),preferred_professional:draft.professional,payment};
+    return {submitted_at:new Date().toISOString(),type:'Appointment booking',source:'Website / guided bookings',customer_name:draft.name,phone:draft.phone,customer_phone:draft.phone,customer_email:draft.email,customer_location:draft.location||'None',customer_location_link:draft.locationCoords?'https://www.google.com/maps?q='+encodeURIComponent(draft.locationCoords):'',service:cart.length===1?cart[0].name:'Multiple selected services',selected_items:cart.map((item,index)=>`${index+1}. ${item.category}: ${item.name} - ${item.price}${item.duration?' · '+item.duration:''}`).join('\n'),estimated_total:total()?money(total())+(fixedPrices()?'':' (estimate; confirm final price)'):'Confirm with salon',preferred_date:draft.date,preferred_time:draft.time,notes:[draft.notes,'Preferred professional: '+personName()+' (subject to confirmation).'].filter(Boolean).join('\n'),raw_items:cart.map(item=>({...item})),preferred_professional:draft.professional,payment};
   }
   async function submit() {
     normalizeProfessional();
     if(!cart.length||!draft.date||!draft.time||!draft.name||!draft.phone||!draft.email||!draft.consent){error('Please review your booking details before submitting.');return;}
-    const validation=paymentValidation();if(validation){error(validation);return;}
+    const validation=paymentValidation();if(validation){error(validation);return;} if(payableTotal()!==null && draft.paymentStatus!=="initiated"){error("Initiate payment before submitting your booking.");return;} if(payableTotal()!==null && !draft.paymentReference.trim()){error("Enter the transaction reference from your Mobile Money confirmation message.");return;}
     busy=true;render();
     // Lock the request snapshot while checking the shared calendar and sending.
     document.querySelectorAll('#journey-form input,#journey-form select,#journey-form textarea,#journey-form button,[data-remove]').forEach(control=>control.disabled=true);

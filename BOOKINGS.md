@@ -53,7 +53,7 @@ From prices, ranges, custom quotes, per-person pricing, and nonnumeric prices pr
 
 The draft starts with empty type/provider, `paymentStatus: 'not_started'`, `paymentAmount: null`, `paymentInitiatedAt: null`, and an empty reference. Lifecycle values are `not_started`, `initiated`, `submitted`, `verified`, `failed`, and `cancelled`. This frontend assigns only `not_started` and `initiated`. Pay clicks, including manual instruction flows, mean initiated only. Booking submission does not advance payment status. Choice survives rerender and Back/Forward. Cart, payment type, provider, or merchant changes reset initiation and recalculate the amount.
 
-`paymentRecord()` supplies type, provider name and key, status, merchant ID, service total, amount, balance remaining, empty reference, initiation timestamp, null verification timestamp, and a price-review flag. Deposit balance is `serviceTotal - paymentAmount`; it is a projected balance after verification, not proof of payment. These fields accompany the existing booking POST and downloadable request. A concise unverified summary remains in Notes for current Sheet/email compatibility.
+`paymentRecord()` supplies type, provider name and key, status, merchant ID, service total, amount, balance remaining, the customer transaction reference, initiation timestamp, null verification timestamp, and a price-review flag. Deposit balance is `serviceTotal - paymentAmount`; it is a projected balance after verification, not proof of payment. These fields accompany the existing booking POST and downloadable request. Payment summary text is kept in structured `data.payment`; new bookings do not append generated payment text to Appointment Notes.
 
 ### Payment storage and staff verification
 
