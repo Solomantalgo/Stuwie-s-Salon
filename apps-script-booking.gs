@@ -5,6 +5,7 @@
   - Bookings: every website booking request
   - Availability: salon-managed blocked/free dates and times
   - Dashboard: quick admin notes and status guide
+  - Payments: linked transactions, reconciled by staff in the sheet
   - Salon-Email: stuwiessalonandspa@gmail.com
 
   Public website reads only safe availability data. Customer details stay private.
@@ -13,6 +14,7 @@
 const SALON_EMAIL = 'stuwiessalonandspa@gmail.com';
 const SHEET_ID = '1Z7TYosoYPI3vsHqv3ftm2Z6C1Rvlyge81fRiD1Q1Sl0';
 const BOOKINGS_SHEET = 'Bookings';
+const PAYMENTS_SHEET = 'Payments';
 const AVAILABILITY_SHEET = 'Availability';
 const DASHBOARD_SHEET = 'Dashboard';
 const CONFIRM_PAGE_URL = 'http://stuwies-salon.vercel.app/confirm.html';
@@ -45,7 +47,17 @@ const BOOKING_HEADERS = [
   'Duration',
   'Status',
   'Notes',
-  'Source'
+  'Source',
+  'Payment Status',
+  'Amount Paid',
+  'Balance'
+];
+
+const PAYMENT_HEADERS = [
+  'Payment ID', 'Booking ID', 'Created At', 'Provider', 'Provider Key',
+  'Payment Type', 'Expected Amount', 'Transaction Amount', 'Balance Before',
+  'Balance After', 'Transaction Reference', 'Provider Status', 'Verification Status',
+  'Initiated At', 'Verified At', 'Verified By', 'Notes'
 ];
 
 const AVAILABILITY_HEADERS = [
@@ -72,10 +84,14 @@ function doPost(e) {
     const time = normalizeTime_(data.preferred_time);
 
     if (!isProductOrder && (!date || !time)) return json_({ ok: false, error: 'Preferred date and time are required.' });
-    if (!isProductOrder && !isSlotAvailable_(date, time)) return json_({ ok: false, error: 'That date and time is already booked or unavailable.', available: false });
-
-    const sheet = getSheet_(BOOKINGS_SHEET);
-    const bookingId = appendBooking_(sheet, data, date, time);
+    const payment = normalizePayment_(data.payment, data.estimated_total);
+    const bookingId = withBookingLock_(function() {
+      if (!isProductOrder && !isSlotAvailable_(date, time)) throw new Error('That date and time is already booked or unavailable.');
+      const sheet = getSheet_(BOOKINGS_SHEET);
+      const id = appendBooking_(sheet, data, date, time, payment);
+      if (payment) appendPayment_(getSheet_(PAYMENTS_SHEET), id, payment);
+      return id;
+    });
     data.booking_id = bookingId;
     sendBookingEmail_(data);
     return json_({ ok: true, available: true, booking_id: bookingId });
@@ -121,13 +137,15 @@ function setupWorkbook_() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const bookings = ensureSheet_(ss, BOOKINGS_SHEET, BOOKING_HEADERS);
   const availability = ensureSheet_(ss, AVAILABILITY_SHEET, AVAILABILITY_HEADERS);
+  const payments = ensureSheet_(ss, PAYMENTS_SHEET, PAYMENT_HEADERS);
   const dashboard = ensureSheet_(ss, DASHBOARD_SHEET, ['Area', 'How to Use']);
 
   styleBookings_(bookings);
+  stylePayments_(payments);
   styleAvailability_(availability);
   styleDashboard_(dashboard);
 
-  return { ok: true, sheets: [BOOKINGS_SHEET, AVAILABILITY_SHEET, DASHBOARD_SHEET], spreadsheetUrl: ss.getUrl() };
+  return { ok: true, sheets: [BOOKINGS_SHEET, AVAILABILITY_SHEET, DASHBOARD_SHEET, PAYMENTS_SHEET], spreadsheetUrl: ss.getUrl() };
 }
 
 function ensureSheet_(ss, name, headers) {
@@ -137,6 +155,9 @@ function ensureSheet_(ss, name, headers) {
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   } else {
     const current = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
+    if (current.some((value, index) => value !== '' && value !== headers[index])) {
+      throw new Error(name + ' headers do not match the expected schema; no columns were moved.');
+    }
     if (current.join('|') !== headers.join('|')) sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   }
   sheet.setFrozenRows(1);
@@ -155,6 +176,8 @@ function styleBookings_(sheet) {
   sheet.setColumnWidths(10, 3, 120);
   sheet.setColumnWidth(13, 120);
   sheet.setColumnWidth(14, 260);
+  sheet.setColumnWidths(16, 3, 160);
+  sheet.getRange(2, 17, Math.max(1, sheet.getMaxRows() - 1), 2).setNumberFormat('#,##0');
   applyStatusValidation_(sheet, 13);
   applyBookingConditionalFormatting_(sheet);
 }
@@ -178,30 +201,21 @@ function styleAvailability_(sheet) {
 }
 
 function styleDashboard_(sheet) {
-  sheet.clear();
-  const rows = [
-    ['Area', 'How to Use'],
-    ['Booking statuses that block a slot', 'New, Pending, Booked, Confirmed, Paid'],
-    ['Automatic booking aging', 'New becomes Pending after 1 minute. Pending/New becomes Cancelled after 1 hour if staff does not confirm or mark paid.'],
-    ['Manual staff actions', 'Use the buttons in the booking email, or edit the Status column directly. Confirmed/Paid keeps the slot. Cancelled/Completed/Free releases it.'],
-    ['Statuses that free a booked slot', 'Cancelled, Completed, Free, Reschedule'],
-    ['Block a full day', 'Go to Availability and add Date + Time = all_day + Status = closed'],
-    ['Block one time slot', 'Go to Availability and add Date + Time, then Status = blocked'],
-    ['Reopen a slot', 'Change the booking status to Cancelled/Completed/Free, or add Availability status = free']
-  ];
-  sheet.getRange(1, 1, rows.length, 2).setValues(rows);
-  styleHeader_(sheet, 2);
-  sheet.setColumnWidth(1, 260);
-  sheet.setColumnWidth(2, 620);
-  sheet.getRange(2, 1, rows.length - 1, 2)
-    .setBackground(BRAND.wash)
-    .setWrap(true)
-    .setVerticalAlignment('middle')
-    .setBorder(true, true, true, true, true, true, BRAND.grey, SpreadsheetApp.BorderStyle.SOLID);
+  const rows = Math.max(sheet.getLastRow(), 28);
+  sheet.getRange(1, 1, rows, 8).setValues(Array.from({length: rows}, function() { return Array(8).fill(""); }));
+  sheet.getRange(1, 1, rows, 8).setBackground("#ffffff").setFontColor(BRAND.black).setFontWeight("normal");
+  sheet.setFrozenRows(2); sheet.setColumnWidths(1, 8, 118); sheet.setColumnWidth(1, 180);
+  sheet.getRange(1, 1, 2, 8).merge().setValue("STUWIE SALON & SPA\nBooking & Payment Dashboard").setBackground(BRAND.blue).setFontColor("#ffffff").setFontWeight("bold").setFontSize(18).setVerticalAlignment("middle").setWrap(true);
+  const cards = [["A4:B4","A5:B6","New Bookings",`=COUNTIF(Bookings!M:M,"New")`,BRAND.lightBlue],["C4:D4","C5:D6","Pending",`=COUNTIF(Bookings!M:M,"Pending")`,BRAND.softWarm],["E4:F4","E5:F6","Confirmed",`=COUNTIF(Bookings!M:M,"Confirmed")`,BRAND.green],["G4:H4","G5:H6","Cancelled",`=COUNTIF(Bookings!M:M,"Cancelled")`,BRAND.red],["A8:B8","A9:B10","Awaiting Payment",`=COUNTIF(Bookings!P:P,"Awaiting Payment")`,BRAND.wash],["C8:D8","C9:D10","Payment Initiated",`=COUNTIF(Bookings!P:P,"Payment Initiated")`,BRAND.lightBlue],["E8:F8","E9:F10","Deposit Paid",`=COUNTIF(Bookings!P:P,"Deposit Paid")`,BRAND.green],["G8:H8","G9:H10","Paid in Full",`=COUNTIF(Bookings!P:P,"Paid in Full")`,BRAND.green],["A12:B12","A13:B14","Today Bookings",`=COUNTIF(Bookings!J:J,TEXT(TODAY(),"yyyy-mm-dd"))+COUNTIF(Bookings!J:J,TODAY())`,BRAND.wash],["C12:D12","C13:D14","Today Confirmed",`=COUNTIFS(Bookings!M:M,"Confirmed",Bookings!J:J,TEXT(TODAY(),"yyyy-mm-dd"))+COUNTIFS(Bookings!M:M,"Confirmed",Bookings!J:J,TODAY())`,BRAND.green],["E12:F12","E13:F14","Today Verified Payments",`=SUMIFS(Payments!H:H,Payments!M:M,"Verified",Payments!O:O,">="&TODAY(),Payments!O:O,"<"&TODAY()+1)`,BRAND.lightBlue],["G12:H12","G13:H14","Outstanding Balance",`=SUMIFS(Bookings!R:R,Bookings!M:M,"<>Cancelled",Bookings!R:R,">0")`,BRAND.softWarm]];
+  cards.forEach(function(card) { sheet.getRange(card[0]).merge().setValue(card[2]).setBackground(BRAND.wash).setFontColor(BRAND.blue).setFontWeight("bold").setHorizontalAlignment("center").setVerticalAlignment("middle").setWrap(true); sheet.getRange(card[1]).merge().setFormula(card[3]).setBackground(card[4]).setFontWeight("bold").setFontSize(20).setHorizontalAlignment("center").setVerticalAlignment("middle").setBorder(true,true,true,true,true,true,BRAND.grey,SpreadsheetApp.BorderStyle.SOLID); });
+  sheet.getRange(13, 5, 2, 2).setNumberFormat("#,##0"); sheet.getRange(13, 7, 2, 2).setNumberFormat("UGX #,##0");
+  sheet.getRange(17, 1, 1, 8).merge().setValue("QUICK GUIDE").setBackground(BRAND.blue).setFontColor("#ffffff").setFontWeight("bold");
+  const guide = [["Booking aging","New requests move to Pending after 1 minute and may be cancelled after 1 hour if not confirmed. Verified Deposit Paid and Paid in Full bookings are protected from automatic cancellation."],["Manage bookings","Use Manage Booking for appointment status and customer contact. Booking Status and Payment Status are separate."],["Verify a payment","Open Payments, find the Booking ID, confirm the merchant transaction, enter Transaction Amount and Transaction Reference, then set Verification Status to Verified."],["Payment results","Matching rows update Bookings Payment Status, Amount Paid and Balance. Missing or mismatched information becomes Mismatch and does not credit the booking."],["Availability","Add a blocked time or set Time to all_day with Status closed. Use free to reopen a slot."]];
+  sheet.getRange(18, 1, guide.length, 2).setValues(guide).setBackground(BRAND.wash).setWrap(true).setVerticalAlignment("middle").setBorder(true,true,true,true,true,true,BRAND.grey,SpreadsheetApp.BorderStyle.SOLID); sheet.getRange(18,1,guide.length,1).setFontWeight("bold").setFontColor(BRAND.blue); sheet.getRange(18, 2, 5, 7).mergeAcross(); sheet.setRowHeights(18,guide.length,42);
 }
 
-function appendBooking_(sheet, data, date, time) {
-  const bookingId = 'STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss');
+function appendBooking_(sheet, data, date, time, payment) {
+  const bookingId = 'STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8);
   const locationLabel = data.customer_location || 'None';
   const locationLink = data.customer_location_link || '';
   const row = [
@@ -213,13 +227,16 @@ function appendBooking_(sheet, data, date, time) {
     locationLink ? '=HYPERLINK("' + locationLink + '","Location")' : locationLabel,
     data.service || '',
     data.selected_items || '',
-    data.estimated_total || '',
+    payment && payment.serviceTotal !== null ? 'UGX ' + payment.serviceTotal : data.estimated_total || '',
     date,
     time,
     data.duration || '',
     'New',
     data.notes || '',
-    'Website'
+    'Website',
+    payment ? (payment.paymentStatus === 'initiated' ? 'Payment Initiated' : 'Awaiting Payment') : 'Unpaid',
+    0,
+    payment ? (payment.serviceTotal === null ? '' : payment.serviceTotal) : sheetAmount_(data.estimated_total) ?? ''
   ];
 
   sheet.appendRow(row);
@@ -235,6 +252,198 @@ function appendBooking_(sheet, data, date, time) {
   sheet.getRange(lastRow, 11).setNumberFormat('@');
   sheet.getRange(lastRow, 13).setFontWeight('bold').setBackground(BRAND.lightBlue);
   return bookingId;
+}
+
+// Shared by submissions, sheet verification, staff actions and booking aging.
+function withBookingLock_(work) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(25000);
+  try { return work(); }
+  finally { try { SpreadsheetApp.flush(); } finally { lock.releaseLock(); } }
+}
+
+function paymentAmount_(value) {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) return null;
+  return value;
+}
+
+// Never parse the first number of a range, From price or indicative estimate.
+function sheetAmount_(value) {
+  if (typeof value === 'number') return paymentAmount_(value);
+  const text = String(value == null ? '' : value).trim();
+  if (!/^(?:UGX\s*)?(?:0|[1-9]\d*|[1-9]\d{0,2}(?:,\d{3})+)$/.test(text)) return null;
+  return paymentAmount_(Number(text.replace(/^UGX\s*/, '').replace(/,/g, '')));
+}
+
+function paymentReference_(value) {
+  const text = String(value == null ? '' : value).trim();
+  return /^[A-Za-z0-9][A-Za-z0-9._ /-]{0,119}$/.test(text) ? text : '';
+}
+
+function normalizePayment_(raw, estimatedTotal) {
+  if (raw == null) return null; // Preserve legacy booking and product integrations.
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Invalid payment selection.');
+  if (['deposit', 'full'].indexOf(raw.paymentType) === -1 || ['mtn', 'airtel'].indexOf(raw.providerKey) === -1) {
+    throw new Error('Select deposit or full payment and MTN or Airtel.');
+  }
+  ['serviceTotal', 'paymentAmount', 'balanceRemaining'].forEach(function(field) {
+    if (raw[field] != null && paymentAmount_(raw[field]) === null) throw new Error('Invalid payment amount: ' + field);
+  });
+  let total = raw.serviceTotal == null ? null : paymentAmount_(raw.serviceTotal);
+  const estimate = sheetAmount_(estimatedTotal);
+  if (total !== null && estimate !== null && total !== estimate) throw new Error('Payment total does not match booking total.');
+  // Explicit price-review flags and labelled estimates cannot become a payable quote.
+  if (raw.paymentPriceReviewRequired === true || (estimatedTotal && estimate === null)) total = null;
+  const expected = total === null ? null : total * (raw.paymentType === 'deposit' ? 0.5 : 1);
+  const amount = paymentAmount_(expected);
+  if (amount !== null && raw.paymentAmount != null && amount !== raw.paymentAmount) throw new Error('Expected payment must match deposit/full calculation.');
+  const state = raw.paymentStatus === 'initiated' ? 'initiated' : 'not_started';
+  const initiated = typeof raw.paymentInitiatedAt === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(raw.paymentInitiatedAt) ? new Date(raw.paymentInitiatedAt) : null;
+  return {
+    paymentType: raw.paymentType, providerKey: raw.providerKey,
+    paymentProvider: raw.providerKey === 'mtn' ? 'MTN Mobile Money' : 'Airtel Money',
+    paymentStatus: state, serviceTotal: total, paymentAmount: amount,
+    paymentReference: paymentReference_(raw.paymentReference),
+    paymentInitiatedAt: state === 'initiated' && initiated && Number.isFinite(initiated.getTime()) && initiated.getTime() <= Date.now() + 300000 ? initiated : ''
+  };
+}
+
+function appendPayment_(sheet, bookingId, payment) {
+  const id = 'PAY-STW-' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8);
+  sheet.appendRow([
+    id, bookingId, new Date(), payment.paymentProvider, payment.providerKey,
+    payment.paymentType, payment.paymentAmount === null ? '' : payment.paymentAmount, '',
+    payment.serviceTotal === null ? '' : payment.serviceTotal, '', payment.paymentReference,
+    payment.paymentStatus, 'Pending', payment.paymentInitiatedAt, '', '',
+    'Browser payment state is not verification. Staff must check merchant records and the booking total.'
+  ]);
+  return id;
+}
+
+function stylePayments_(sheet) {
+  styleHeader_(sheet, PAYMENT_HEADERS.length);
+  sheet.setFrozenColumns(2);
+  sheet.setColumnWidths(1, 2, 260);
+  sheet.setColumnWidth(3, 160);
+  sheet.setColumnWidth(4, 160);
+  sheet.setColumnWidths(5, 6, 135);
+  sheet.setColumnWidth(11, 210);
+  sheet.setColumnWidths(12, 2, 155);
+  sheet.setColumnWidths(14, 3, 170);
+  sheet.setColumnWidth(17, 420);
+  const count = Math.max(1, sheet.getMaxRows() - 1);
+  sheet.getRange(2, 1, count, PAYMENT_HEADERS.length).setWrap(true).setVerticalAlignment('middle');
+  sheet.getRange(2, 7, count, 4).setNumberFormat('#,##0');
+  sheet.getRange(2, 11, count, 1).setNumberFormat('@');
+  sheet.getRange(2, 3, count, 1).setNumberFormat('yyyy-mm-dd hh:mm:ss');
+  sheet.getRange(2, 14, count, 2).setNumberFormat('yyyy-mm-dd hh:mm:ss');
+  const validation = SpreadsheetApp.newDataValidation().requireValueInList(['Pending', 'Verified', 'Mismatch', 'Failed', 'Cancelled'], true).setAllowInvalid(false).build();
+  sheet.getRange(2, 13, count, 1).setDataValidation(validation);
+}
+
+function findPaymentBooking_(id) {
+  const sheet = getSheet_(BOOKINGS_SHEET);
+  const rows = sheet.getDataRange().getValues();
+  const matches = rows.map((row, index) => ({row: row, number: index + 1})).filter(item => item.number > 1 && String(item.row[0]).trim() === id);
+  if (matches.length !== 1) return null;
+  return {sheet: sheet, row: matches[0].row, number: matches[0].number, total: sheetAmount_(matches[0].row[8])};
+}
+
+function verifiedPaymentSum_(rows, bookingId, excludedRow) {
+  let paid = 0;
+  const references = new Set();
+  rows.forEach(function(row, index) {
+    if (index === 0 || index + 1 === excludedRow || String(row[1]).trim() !== bookingId || normalizeStatus_(row[12]) !== 'verified') return;
+    const amount = sheetAmount_(row[7]);
+    const reference = paymentReference_(row[10]);
+    // A pasted status alone is not enough: only processed verification rows count.
+    if (amount === null || amount <= 0 || amount !== sheetAmount_(row[6]) || !reference || !row[14] || !row[15]) return;
+    const key = row[4] + ':' + reference.toUpperCase();
+    if (references.has(key)) return;
+    references.add(key);
+    if (!Number.isSafeInteger(paid + amount)) throw new Error('Verified payment sum exceeds safe numeric range.');
+    paid += amount;
+  });
+  return paid;
+}
+
+function recalculateBookingPayment_(bookingId) {
+  const booking = findPaymentBooking_(bookingId);
+  if (!booking) return;
+  const rows = getSheet_(PAYMENTS_SHEET).getDataRange().getValues();
+  const linked = rows.slice(1).filter(row => String(row[1]).trim() === bookingId);
+  const paid = verifiedPaymentSum_(rows, bookingId);
+  let status = linked.length ? 'Awaiting Payment' : 'Unpaid';
+  if (linked.some(row => normalizeStatus_(row[11]) === 'initiated' && normalizeStatus_(row[12]) === 'pending')) status = 'Payment Initiated';
+  if (linked.length && linked.every(row => ['failed', 'cancelled', 'mismatch'].indexOf(normalizeStatus_(row[12])) !== -1)) status = 'Payment Failed';
+  if (paid > 0) status = booking.total !== null && paid >= booking.total ? 'Paid in Full' : 'Deposit Paid';
+  booking.sheet.getRange(booking.number, 16, 1, 3).setValues([[status, paid, booking.total === null ? '' : Math.max(booking.total - paid, 0)]]);
+  // Main booking Status (M) is intentionally untouched, including Cancelled.
+}
+
+// Install once using installPaymentEditTrigger(). triggerUid distinguishes the
+// installable event from the automatic simple trigger in bound projects.
+function onEdit(e) {
+  if (!e || !e.range || !e.source || e.source.getId() !== SHEET_ID || !e.triggerUid) return;
+  const sheet = e.range.getSheet();
+  if (sheet.getName() !== PAYMENTS_SHEET || e.range.getColumn() > 13 || e.range.getLastColumn() < 13 || e.range.getLastRow() < 2) return;
+  return withBookingLock_(function() {
+    for (let row = Math.max(2, e.range.getRow()); row <= e.range.getLastRow(); row++) verifyPaymentRow_(sheet, row, e);
+  });
+}
+
+function verifyPaymentRow_(sheet, number, event) {
+  const row = sheet.getRange(number, 1, 1, PAYMENT_HEADERS.length).getValues()[0];
+  const bookingId = String(row[1] || '').trim();
+  const status = normalizeStatus_(row[12]);
+  if (status !== 'verified') {
+    // Reversals remove the row from the sum and clear current verification markers.
+    sheet.getRange(number, 10).setValue('');
+    sheet.getRange(number, 15, 1, 2).setValues([['', '']]);
+    recalculateBookingPayment_(bookingId);
+    return;
+  }
+  const booking = findPaymentBooking_(bookingId);
+  const expected = sheetAmount_(row[6]), actual = sheetAmount_(row[7]), reference = paymentReference_(row[10]);
+  let reason = '';
+  if (!bookingId || !booking) reason = 'Booking ID is missing, unknown or ambiguous.';
+  else if (booking.total === null) reason = 'Confirm the exact service total in Bookings Estimated Total before verification.';
+  else if (expected === null || expected <= 0) reason = 'Expected Amount must be a positive whole-shilling amount.';
+  else if (actual === null || actual <= 0) reason = 'Transaction Amount must be a positive whole-shilling amount.';
+  else if (actual !== expected) reason = 'Transaction Amount does not equal Expected Amount.';
+  else if (!reference) reason = 'Transaction Reference is missing or invalid.';
+  else if (['mtn', 'airtel'].indexOf(row[4]) === -1) reason = 'Provider Key must be mtn or airtel.';
+  else if (['deposit', 'full'].indexOf(row[5]) === -1) reason = 'Payment Type must be deposit or full.';
+  const rows = sheet.getDataRange().getValues();
+  if (!reason && rows.some((other, index) => index > 0 && index + 1 !== number && other[4] === row[4] && paymentReference_(other[10]).toUpperCase() === reference.toUpperCase() && normalizeStatus_(other[12]) === 'verified')) {
+    reason = 'This provider transaction reference is already used by another Verified payment.';
+  }
+  const paidBefore = booking ? verifiedPaymentSum_(rows, bookingId, number) : 0;
+  if (!reason && !Number.isSafeInteger(paidBefore + actual)) reason = 'Verified payment sum exceeds safe numeric range.';
+  if (reason) {
+    sheet.getRange(number, 13).setValue('Mismatch');
+    sheet.getRange(number, 15, 1, 2).setValues([['', '']]);
+    sheet.getRange(number, 10).setValue('');
+    sheet.getRange(number, 17).setValue(appendNote_(row[16], 'Verification blocked: ' + reason));
+    recalculateBookingPayment_(bookingId);
+    return;
+  }
+  let staff = '';
+  try { staff = (event && event.user && event.user.getEmail()) || Session.getActiveUser().getEmail(); } catch (error) { /* Identity may be unavailable to the trigger. */ }
+  if (!row[0]) sheet.getRange(number, 1).setValue('PAY-STW-' + Utilities.getUuid());
+  if (!row[2]) sheet.getRange(number, 3).setValue(new Date());
+  sheet.getRange(number, 4).setValue(row[4] === 'mtn' ? 'MTN Mobile Money' : 'Airtel Money');
+  sheet.getRange(number, 9, 1, 2).setValues([[Math.max(booking.total - paidBefore, 0), Math.max(booking.total - paidBefore - actual, 0)]]);
+  sheet.getRange(number, 13).setValue('Verified');
+  sheet.getRange(number, 15, 1, 2).setValues([[new Date(), staff || 'Sheet staff']]);
+  recalculateBookingPayment_(bookingId);
+}
+
+function installPaymentEditTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'onEdit' && trigger.getTriggerSourceId() === SHEET_ID) ScriptApp.deleteTrigger(trigger);
+  });
+  ScriptApp.newTrigger('onEdit').forSpreadsheet(SHEET_ID).onEdit().create();
 }
 
 function getAvailabilityPayload_() {
@@ -272,6 +481,10 @@ function isSlotAvailable_(date, time) {
 }
 
 function handleBookingAction_(params) {
+  return withBookingLock_(function() { return applyBookingAction_(params); });
+}
+
+function applyBookingAction_(params) {
   const bookingId = String(params.id || '').trim();
   const status = displayStatus_(params.status || '');
   // Public booking actions cannot verify a transaction or mark it paid.
@@ -298,6 +511,10 @@ function handleBookingAction_(params) {
 }
 
 function updateBookingAging_() {
+  return withBookingLock_(ageBookings_);
+}
+
+function ageBookings_() {
   const sheet = getSheet_(BOOKINGS_SHEET);
   if (!sheet || sheet.getLastRow() < 2) return;
 
@@ -313,7 +530,8 @@ function updateBookingAging_() {
     if (Object.prototype.toString.call(createdAt) !== '[object Date]') return;
 
     const ageMinutes = (now - createdAt.getTime()) / 60000;
-    if (ageMinutes >= AUTO_CANCEL_AFTER_MINUTES) {
+    const paymentProtected = ['deposit paid', 'paid in full'].indexOf(normalizeStatus_(row[15])) !== -1;
+    if (ageMinutes >= AUTO_CANCEL_AFTER_MINUTES && !paymentProtected) {
       row[12] = 'Cancelled';
       row[13] = appendNote_(row[13], 'Auto-cancelled after 1 hour with no staff confirmation.');
       changed = true;
@@ -324,7 +542,8 @@ function updateBookingAging_() {
     }
   });
 
-  if (changed) range.setValues(values);
+  // Never rewrite payment summaries or other booking fields from an aging snapshot.
+  if (changed) values.forEach((row, index) => sheet.getRange(index + 2, 13, 1, 2).setValues([[row[12], row[13]]]));
 }
 
 function runBookingAging() {
@@ -384,7 +603,7 @@ function applyStatusValidation_(sheet, col) {
     .requireValueInList(['New', 'Pending', 'Booked', 'Confirmed', 'Paid', 'Completed', 'Cancelled', 'Reschedule', 'Free'], true)
     .setAllowInvalid(false)
     .build();
-  sheet.getRange(2, col, Math.max(999, sheet.getMaxRows() - 1), 1).setDataValidation(rule);
+  sheet.getRange(2, col, Math.max(1, sheet.getMaxRows() - 1), 1).setDataValidation(rule);
 }
 
 function applyAvailabilityValidation_(sheet, col) {
@@ -392,11 +611,11 @@ function applyAvailabilityValidation_(sheet, col) {
     .requireValueInList(['blocked', 'closed', 'not available', 'free'], true)
     .setAllowInvalid(false)
     .build();
-  sheet.getRange(2, col, Math.max(999, sheet.getMaxRows() - 1), 1).setDataValidation(rule);
+  sheet.getRange(2, col, Math.max(1, sheet.getMaxRows() - 1), 1).setDataValidation(rule);
 }
 
 function applyBookingConditionalFormatting_(sheet) {
-  const range = sheet.getRange(2, 1, Math.max(999, sheet.getMaxRows() - 1), BOOKING_HEADERS.length);
+  const range = sheet.getRange(2, 1, Math.max(1, sheet.getMaxRows() - 1), BOOKING_HEADERS.length);
   const rules = [
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="New"').setBackground(BRAND.lightBlue).setRanges([range]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$M2="Pending"').setBackground(BRAND.softWarm).setRanges([range]).build(),
@@ -407,7 +626,7 @@ function applyBookingConditionalFormatting_(sheet) {
 }
 
 function applyAvailabilityConditionalFormatting_(sheet) {
-  const range = sheet.getRange(2, 1, Math.max(999, sheet.getMaxRows() - 1), AVAILABILITY_HEADERS.length);
+  const range = sheet.getRange(2, 1, Math.max(1, sheet.getMaxRows() - 1), AVAILABILITY_HEADERS.length);
   const rules = [
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($C2="blocked",$C2="closed",$C2="not available")').setBackground(BRAND.red).setRanges([range]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$C2="free"').setBackground(BRAND.green).setRanges([range]).build()
@@ -416,7 +635,7 @@ function applyAvailabilityConditionalFormatting_(sheet) {
 }
 
 function sendBookingEmail_(data) {
-  const htmlBody = data.html_email || fallbackEmail_(data);
+  const htmlBody = fallbackEmail_(data);
   const ss = SpreadsheetApp.openById(SHEET_ID);
   MailApp.sendEmail({
     to: SALON_EMAIL,
@@ -430,7 +649,7 @@ function sendBookingEmail_(data) {
 function staffActionHtml_(data) {
   const bookingId = data.booking_id || '';
   const manageUrl = manageBookingUrl_(bookingId, data);
-  return '<div style="font-family:Arial,sans-serif;margin-top:22px;padding:16px;border:1px solid #d7e6f2;background:#f5f9fc;"><h3 style="margin:0 0 8px;color:#0064b4;">Staff Actions</h3><p style="margin:0 0 8px;color:#333;">New requests become Pending after 1 minute and Cancelled after 1 hour unless confirmed or marked paid.</p><a href="' + manageUrl + '" style="display:inline-block;margin:6px 6px 0 0;background:#0064b4;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;font-family:Arial,sans-serif;font-size:13px;">Manage Booking</a></div>';
+  return '<div style="font-family:Arial,sans-serif;margin-top:22px;padding:16px;border:1px solid #d7e6f2;background:#f5f9fc;"><h3 style="margin:0 0 8px;color:#0064b4;">Staff Actions</h3><p style="margin:0 0 8px;color:#333;">New requests move to Pending after 1 minute and may be cancelled after 1 hour if not confirmed. Verified Deposit Paid and Paid in Full bookings are protected from automatic cancellation. Payment initiation is not verification; review and verify money separately in the Payments sheet. Manage Booking controls appointments only.</p><a href="' + manageUrl + '" style="display:inline-block;margin:6px 6px 0 0;background:#0064b4;color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;font-family:Arial,sans-serif;font-size:13px;">Manage Booking</a></div>';
 }
 
 function actionUrl_(bookingId, status) {
@@ -452,7 +671,13 @@ function manageBookingUrl_(bookingId, data) {
     time: data.preferred_time || '',
     location: data.customer_location || '',
     location_url: data.customer_location_link || '',
-    notes: data.notes || ''
+    notes: data.notes || '',
+    payment_type: data.payment && data.payment.paymentType === 'deposit' ? 'Deposit' : data.payment && data.payment.paymentType === 'full' ? 'Full' : '',
+    payment_provider: data.payment && data.payment.providerKey === 'mtn' ? 'MTN Mobile Money' : data.payment && data.payment.providerKey === 'airtel' ? 'Airtel Money' : '',
+    expected_amount: data.payment && data.payment.paymentAmount != null ? data.payment.paymentAmount : '',
+    amount_paid: 0,
+    balance: data.payment && data.payment.serviceTotal != null ? data.payment.serviceTotal : sheetAmount_(data.estimated_total) || '',
+    payment_status: data.payment && data.payment.paymentStatus === 'initiated' ? 'Payment Initiated' : data.payment ? 'Awaiting Payment' : 'Unpaid'
   };
   const query = Object.keys(params)
     .map(function(key) { return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]); })
@@ -461,6 +686,18 @@ function manageBookingUrl_(bookingId, data) {
 }
 
 function fallbackEmail_(data) {
+  const p = data.payment || {};
+  const total = p.serviceTotal != null ? p.serviceTotal : sheetAmount_(data.estimated_total);
+  const expected = p.paymentAmount != null ? p.paymentAmount : "Not available";
+  const type = p.paymentType === "deposit" ? "Deposit" : p.paymentType === "full" ? "Full" : "Not selected";
+  const provider = p.providerKey === "mtn" ? "MTN Mobile Money" : p.providerKey === "airtel" ? "Airtel Money" : "Not selected";
+  const state = p.paymentStatus === "initiated" ? "Payment Initiated" : p ? "Awaiting Payment" : "Unpaid";
+  const money = function(v) { return v == null || v === "" ? "Not available" : "UGX " + Number(v).toLocaleString("en-US"); };
+  const row = function(label, value) { return "<p>" + label + ": <strong>" + value + "</strong></p>"; };
+  return "<div><h1>STUWIE SALON &amp; SPA</h1><h2>New Booking Request</h2><p>Booking ID: <strong>" + escape_(data.booking_id || "Pending") + "</strong></p><h3>CUSTOMER DETAILS</h3>" + row("Name", escape_(data.customer_name)) + row("Phone", escape_(data.phone || data.customer_phone || "")) + row("Email", escape_(data.customer_email || "")) + row("Location", escape_(data.customer_location || "None")) + "<h3>APPOINTMENT DETAILS</h3>" + row("Services", escape_(data.selected_items || data.service || "Not provided")) + row("Date", escape_(data.preferred_date)) + row("Time", escape_(data.preferred_time)) + row("Professional", escape_(data.professional || data.professional_name || "No preference")) + row("Notes", escape_(data.notes || "None")) + "<h3>PAYMENT SUMMARY</h3>" + row("Payment Type", type) + row("Provider", provider) + row("Expected Amount", money(expected)) + row("Amount Paid", money(0)) + row("Balance", money(total)) + row("Payment Status", state) + "</div>";
+}
+
+function fallbackEmailLegacy_(data) {
   const phone = data.phone || data.customer_phone || '';
   const email = data.customer_email || '';
   const location = data.customer_location_link ? '<a href="' + escape_(data.customer_location_link) + '">Location</a>' : escape_(data.customer_location || 'None');
