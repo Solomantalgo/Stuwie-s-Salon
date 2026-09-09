@@ -271,7 +271,7 @@ function getStaffSchedule_(params) {
         String(row[13] || ''),
 
       professional:
-        '',
+        professionalFromNotes_(row[13]),
 
       paymentType:
         latestPayment
@@ -332,6 +332,24 @@ function getStaffSchedule_(params) {
 
     appointments: appointments
   };
+}
+
+
+function professionalFromNotes_(notes) {
+  const match = String(notes || '').match(/(?:^|\n)Preferred professional:\s*([^\n(]+)/i);
+  if (!match) return '';
+
+  const professional = String(match[1] || '').trim();
+  const normalized = normalizeStatus_(professional).replace(/—/g, '-');
+  const noPreference = [
+    'no preference',
+    'no preference - salon to assign',
+    'salon to assign',
+    'none',
+    'not provided'
+  ];
+
+  return noPreference.indexOf(normalized) !== -1 ? '' : professional;
 }
 
 function setupWorkbook_() {
