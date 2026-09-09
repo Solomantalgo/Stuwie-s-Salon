@@ -115,6 +115,8 @@ function doGet(e) {
       payload = findPaymentByReference_(params);
     } else if (action === 'verify_payment') {
       payload = verifyPaymentFromStaff_(params);
+    } else if (action === 'staff_dashboard') {
+      payload = getStaffDashboard_(params);
     } else if (action === 'setup') {
       payload = setupWorkbook_();
     } else {
@@ -135,6 +137,8 @@ function doGet(e) {
     return json_(payload);
   }
 }
+
+function getStaffDashboard_(params) { var q=String((params&&params.q)||"").trim().toLowerCase(); var bs=getSheet_(BOOKINGS_SHEET).getDataRange().getValues(); var ps=getSheet_(PAYMENTS_SHEET).getDataRange().getValues(); var by={}; ps.slice(1).forEach(function(r){var id=String(r[1]||"").trim();if(id)(by[id]||(by[id]=[])).push(r);}); var list=bs.slice(1).filter(function(r){return String(r[0]||"").trim();}).map(function(r){var id=String(r[0]).trim(), rows=by[id]||[], pay=rows[rows.length-1]||[]; rows.forEach(function(x){if(normalizeStatus_(x[12])==="pending")pay=x;}); return {bookingId:id,createdAt:r[1]||"",customerName:String(r[2]||""),phone:String(r[3]||""),email:String(r[4]||""),location:String(r[5]||""),service:String(r[6]||""),selectedItems:String(r[7]||""),preferredDate:normalizeDate_(r[9]),preferredTime:normalizeTime_(r[10]),bookingStatus:String(r[12]||""),notes:String(r[13]||""),estimatedTotal:sheetAmount_(r[8]),paymentStatus:String(r[15]||""),amountPaid:sheetAmount_(r[16])||0,balance:sheetAmount_(r[17]),paymentType:String(pay[5]||""),provider:String(pay[3]||""),expectedAmount:sheetAmount_(pay[6]),transactionReference:String(pay[10]||""),verificationStatus:String(pay[12]||"")};}); list.sort(function(a,b){return String(b.createdAt).localeCompare(String(a.createdAt));}); var needsPayment=function(x){var p=normalizeStatus_(x.paymentStatus),v=normalizeStatus_(x.verificationStatus);return ["payment initiated","awaiting payment","payment failed"].indexOf(p)!==-1||["pending","mismatch","failed"].indexOf(v)!==-1;}; var summary={new:list.filter(function(x){return normalizeStatus_(x.bookingStatus)==="new";}).length,pending:list.filter(function(x){return normalizeStatus_(x.bookingStatus)==="pending";}).length,paymentAttention:list.filter(needsPayment).length,confirmed:list.filter(function(x){return normalizeStatus_(x.bookingStatus)==="confirmed";}).length}; if(q){var found=list.filter(function(x){return [x.bookingId,x.customerName,x.phone,x.transactionReference].some(function(v){return String(v||"").toLowerCase().indexOf(q)!==-1;});}); return {ok:true,query:params.q||"",results:found.slice(0,50),summary:summary};} var attention=list.filter(function(x){return needsPayment(x)||["new","pending"].indexOf(normalizeStatus_(x.bookingStatus))!==-1;}); return {ok:true,summary:summary,attention:attention.slice(0,20),recent:list.slice(0,20)}; }
 
 function setupWorkbook_() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
