@@ -247,6 +247,87 @@
       confirmation();
     }catch(err){busy=false;render();error(err.name==='AbortError'?'The request timed out and its delivery is uncertain. Contact the salon before retrying. Your details are still here.':err.message||'Your request could not be sent. Please try again or contact the salon.');}
   }
+  function pdfText(value) {
+    return String(value == null ? '' : value)
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201c\u201d]/g, '"')
+      .replace(/[\u2013\u2014]/g, '-')
+      .replace(/[^\x20-\x7E]/g, '?')
+      .replace(/\\/g, '\\\\')
+      .replace(/\(/g, '\\(')
+      .replace(/\)/g, '\\)');
+  }
+  function pdfWrap(value, width) {
+    const words = pdfText(value).split(/\s+/).filter(Boolean), lines = [];
+    let line = '';
+    words.forEach(word => {
+      const next = line ? line + ' ' + word : word;
+      if (next.length > width && line) { lines.push(line); line = word; }
+      else line = next;
+    });
+    if (line || !lines.length) lines.push(line);
+    return lines;
+  }
+  function downloadBookingPdf(record) {
+    const pageWidth = 595, pageHeight = 842, left = 48, right = 547;
+    const commands = [], textLine = (text, x, y, size = 10, bold = false) => {
+      commands.push(`BT /F${bold ? 2 : 1} ${size} Tf ${x} ${y} Td (${pdfText(text)}) Tj ET`);
+    };
+    const rule = y => commands.push(`0.82 0.88 0.93 RG 48 ${y} m 547 ${y} l S`);
+    let y = 790;
+    textLine("STUWIE'S SALON & SPA", left, y, 20, true); y -= 25;
+    textLine('Appointment Request', left, y, 12, true); y -= 17;
+    textLine('Awaiting salon confirmation - not a confirmed reservation', left, y, 9); y -= 15;
+    rule(y); y -= 22;
+    const section = title => { textLine(title.toUpperCase(), left, y, 10, true); y -= 17; };
+    const row = (label, value) => {
+      const lines = pdfWrap(`${label}: ${value || 'Not provided'}`, 82);
+      lines.forEach(line => { textLine(line, left, y, 10); y -= 14; });
+      y -= 2;
+    };
+    section('Appointment');
+    row('Date', `${record.date || 'Not provided'} ${record.time || ''} ${record.timezone || ''}`.trim());
+    row('Professional', record.professional);
+    row('Status', record.status);
+    y -= 4; rule(y); y -= 22;
+    section('Customer');
+    row('Name', draft.name); row('Phone', draft.phone); row('Email', draft.email); row('Location', draft.location || 'None');
+    y -= 4; rule(y); y -= 22;
+    section('Services');
+    (record.services || []).forEach((item, index) => {
+      const details = `${index + 1}. ${item.name || 'Service'} - ${item.price || 'Price on confirmation'}${item.duration ? ' - ' + item.duration : ''}`;
+      pdfWrap(details, 82).forEach(line => { textLine(line, left, y, 10); y -= 14; });
+    });
+    y -= 4; rule(y); y -= 22;
+    section('Payment request');
+    row('Provider', record.payment && record.payment.paymentProvider);
+    row('Payment type', record.payment && record.payment.paymentType === 'deposit' ? '50% Deposit' : record.payment && record.payment.paymentType === 'full' ? 'Full Payment' : 'Not selected');
+    row('Status', record.payment && record.payment.paymentStatus === 'initiated' ? 'Payment initiated - awaiting verification' : 'Not initiated');
+    if (record.payment && record.payment.paymentAmount != null) row('Amount to pay', money(record.payment.paymentAmount));
+    if (record.payment && record.payment.balanceRemaining != null) row('Balance after verification', money(record.payment.balanceRemaining));
+    y -= 4; rule(y); y -= 22;
+    section('Notes');
+    pdfWrap(draft.notes || 'None', 82).forEach(line => { textLine(line, left, y, 10); y -= 14; });
+    textLine('Generated from the Stuwie\'s Salon & Spa booking request.', left, 45, 8);
+    const stream = commands.join('\n');
+    const objects = [
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>`,
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
+      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`
+    ];
+    let pdf = '%PDF-1.4\n', offsets = [0];
+    objects.forEach((object, index) => { offsets[index + 1] = pdf.length; pdf += `${index + 1} 0 obj\n${object}\nendobj\n`; });
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+    offsets.slice(1).forEach(offset => { pdf += String(offset).padStart(10, '0') + ' 00000 n \n'; });
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const url = URL.createObjectURL(new Blob([pdf], {type:'application/pdf'}));
+    const link = document.createElement('a'); link.href = url; link.download = 'stuwies-booking-request.pdf'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
   function confirmation() {
     showSummary();$('step-label').textContent='Request submitted · awaiting salon confirmation';$('progress').value=9;$('step-list').innerHTML='';error('');
     const payment=completedPayload.payment;
@@ -254,7 +335,7 @@
     $('step-body').innerHTML=`<h2 class="journey-success">Your request is on its way</h2><p>Please wait for Stuwie’s to confirm your appointment. This submission is not a confirmed reservation.</p><div class="payment-box"><h3>${esc(draft.date)} · ${esc(draft.time)} EAT</h3><p>${esc(personName())}</p><p>${esc(payment.paymentProvider)} · ${payment.paymentType==='deposit'?'50% Deposit':'Full Payment'}<br>${payment.paymentStatus==='initiated'?'Complete the payment on your phone.':'Payment has not been initiated.'} Payment has not been verified.</p>${payment.paymentAmount!==null?`<p>Amount to pay: ${money(payment.paymentAmount)}<br>Balance after payment verification: ${money(payment.balanceRemaining)}</p>`:''}</div><p>The salon will confirm receipt, availability and payment status. You can also send these details via WhatsApp.</p><div class="success-actions"><a class="btn btn-primary" href="https://wa.me/256706081927?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Send via WhatsApp</a><button class="btn btn-light" id="download-booking" type="button">Download request</button><a class="btn btn-light" href="index.html">Back to home</a></div>`;
     $('download-booking').onclick=()=>{
       const record={status:'Awaiting salon confirmation',services:completedPayload.raw_items,date:draft.date,time:draft.time,timezone:'Africa/Kampala',professional:personName(),payment};
-      const url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='stuwies-booking-request.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      downloadBookingPdf(record);
     };
     $('step-body').focus();
   }
