@@ -103,7 +103,7 @@
     /* Approved staff console layout */
     body{display:block;min-height:100vh;padding:24px 10px;background:#eef3f8;color:#162337}
     main{width:min(900px,100%);margin:0 auto;padding:32px;background:#fff;border:1px solid #dce6ef;border-radius:24px;box-shadow:0 20px 55px rgba(20,49,80,.12)}
-    .staff-back{display:none;margin:0 0 12px;color:#0064b4;font-size:13px;font-weight:800;text-decoration:none}.from-staff .staff-back{display:inline-block}.admin-header{padding:0 0 20px;margin:0 0 16px;border-bottom:1px solid #dce6ef}
+    .staff-back{display:none;margin:0 0 12px;color:#0064b4;font-size:13px;font-weight:800;text-decoration:none}.from-staff .staff-back,.from-today .staff-back{display:inline-block}.admin-header{padding:0 0 20px;margin:0 0 16px;border-bottom:1px solid #dce6ef}
     .eyebrow{margin-bottom:7px;color:#0064b4;font-size:12px;letter-spacing:1.5px;font-weight:800}
     .admin-header h1{margin:0 0 5px;text-align:left;color:#162337;font-size:32px;line-height:1.1;letter-spacing:-.4px}
     .admin-header p{margin:0;text-align:left;color:#667085;font-size:14px}
@@ -213,7 +213,7 @@
     }
 
     const bookingId = value("id");
-    const hasBooking = Boolean(bookingId); document.body.classList.toggle("from-staff", value("source") === "staff");
+    const hasBooking = Boolean(bookingId); const source = value("source"); document.body.classList.toggle("from-staff", source === "staff"); document.body.classList.toggle("from-today", source === "today"); if (source === "today") { const returnDate = value("return_date"); document.getElementById("staffBack").textContent = "← Back to Appointments"; document.getElementById("staffBack").href = "today.html" + (returnDate ? "?date=" + encodeURIComponent(returnDate) : ""); }
     document.body.classList.toggle("no-booking", !hasBooking); document.getElementById("bookingStatus").textContent = value("booking_status", "New"); document.getElementById("bookingStatus").className = "badge " + value("booking_status", "New").toLowerCase().replace(/[^a-z0-9]+/g, "-");
     document.getElementById("bookingLabel").textContent = bookingId ? "Booking " + bookingId : hasBooking ? "Booking details" : "No booking loaded";
     if (!hasBooking) { document.querySelectorAll(".backend-action").forEach((button) => { button.disabled = true; }); ["callCustomer", "replyConfirm"].forEach((id) => { const link = document.getElementById(id); link.setAttribute("aria-disabled", "true"); link.tabIndex = -1; link.style.pointerEvents = "none"; }); }
