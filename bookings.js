@@ -13,7 +13,7 @@
   const titles = ['What brings you in?','Choose your services','Choose your professional','A day that works for you','Choose your preferred time','A little about you','Make it personal','Review your visit','Payment details'];
   const params = new URLSearchParams(location.search);
   const professional = team.find(person => person.id === params.get('professional'));
-  let cart = readCart(), step = 0, busy = false, availability = null, availabilityLoading = false, availabilityError = '', availabilityPromise = null, loadId = 0;
+  let cart = readCart().filter(item => !String(item.price).includes('/') || !variableOptions(item).length), step = 0, busy = false, availability = null, availabilityLoading = false, availabilityError = '', availabilityPromise = null, loadId = 0;
   let complete = false, completedPayload = null;
   let availabilityPreview = false, availabilityPreviewTimer = null;
   function previewAvailability() {
@@ -28,7 +28,7 @@
   const draft = {category:professional?.categories[0] || cart[0]?.category || categories[0],professional:professional?.id || 'any',date:'',time:'',name:'',phone:'',email:'',location:'',locationCoords:'',notes:'',paymentType:'',paymentProvider:'',paymentStatus:'not_started',paymentAmount:null,paymentInitiatedAt:null,paymentVerifiedAt:null,paymentReference:'',consent:false};
   const entry = params.get('service');
   const selected = catalogue.find(item => item.name === entry);
-  if (selected) { if (!cart.some(item=>item.name===selected.name)) cart.push({...selected}); draft.category=selected.category; step=1; saveCart(); }
+  if (selected) { if (!cart.some(item=>item.name===selected.name)) { const options=variableOptions(selected); if (!options.length) cart.push({...selected}); } draft.category=selected.category; step=1; saveCart(); }
   else if (categories.includes(entry)) { draft.category=entry; step=1; }
   else if (entry==='Package' || entry==='Spa Packages') {draft.category='Spa Packages';step=1;}
   else if (cart.length) step=1;
@@ -37,6 +37,19 @@
   }
   function saveCart() { try { if(cart.length)localStorage.setItem(key,JSON.stringify(cart));else localStorage.removeItem(key); } catch { /* Current page can still submit the selected services. */ } }
   function amount(item) { return Number(String(item.price).match(/\d[\d,]*/)?.[0].replace(/,/g,'') || 0); }
+  function variableOptions(item) {
+    const prices = String(item.price || '').split('/').map(value => value.trim()).filter(Boolean);
+    const durations = String(item.duration || '').split('/').map(value => value.trim()).filter(Boolean);
+    if (prices.length < 2 || prices.length !== durations.length) return [];
+    const options = prices.map((price, index) => {
+      const cleanPrice = price.replace(/^UGX\s*/i, '').trim();
+      const cleanDuration = durations[index].replace(/\s*(?:min|mins|minutes)\s*$/i, '').trim();
+      return { price: cleanPrice, duration: cleanDuration ? cleanDuration + ' min' : '', label: cleanDuration ? cleanDuration + ' min' : cleanPrice };
+    });
+    return options.every(option => /^[1-9]\d{0,2}(?:,\d{3})+$/.test(option.price) && option.duration);
+  }
+  function exactVariant(item, option) { return {...item, price: option.price, duration: option.duration, key: [item.category, item.name, option.duration, option.price].join('|')}; }
+  function baseMatches(selected, item) { return selected.name === item.name && selected.category === item.category; }
   function total() { return cart.reduce((sum,item)=>sum+amount(item),0); }
   function fixedPrices() { return cart.length>0 && cart.every(item=>/^(?:UGX\s*)?(?:[1-9]\d*|[1-9]\d{0,2}(?:,\d{3})+)$/.test(item.price.trim()) && !/per[ -]person|\/person|custom|variable/i.test([item.name,item.duration,item.description].join(' ')) && Number.isSafeInteger(amount(item)) && amount(item)>0) && Number.isSafeInteger(total()); }
   function compatible() { return team.filter(person=>cart.some(item=>person.categories.includes(item.category))); }
@@ -56,8 +69,16 @@
   }
   function field(label,name,type='text',required=false,value=draft[name]||'') {return `<div class="field"><label for="${name}">${label}</label><input id="${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?'required':''} ${name==='email'?'autocomplete="email"':name==='name'?'autocomplete="name"':name==='phone'?'autocomplete="tel"':''} maxlength="${type==='email'?120:80}"></div>`;}
   function choice(name,value,label,description='',checked=false) {return `<label class="journey-choice"><input type="radio" name="${name}" value="${esc(value)}" ${checked?'checked':''} required><span><strong>${esc(label)}</strong>${description?`<small>${esc(description)}</small>`:''}</span></label>`;}
+  function serviceChoice(item, index) {
+    const options = variableOptions(item);
+    const selectedItem = cart.find(selected => baseMatches(selected, item));
+    const exactSelected = selectedItem && options.some(option => selectedItem.price === option.price && selectedItem.duration === option.duration);
+    const checked = options.length ? Boolean(exactSelected) : Boolean(selectedItem);
+    if (!options.length) return '<label class="journey-choice"><input type="checkbox" data-service="'+index+'" '+(checked?'checked':'')+'><span><strong>'+esc(item.name)+'</strong><small>'+esc(item.price)+(item.duration?' &middot; '+esc(item.duration):'')+'</small></span></label>';
+    return '<div class="variable-service"><label class="journey-choice"><input type="checkbox" data-service="'+index+'" '+(checked?'checked':'')+'><span><strong>'+esc(item.name)+'</strong><small>Choose duration</small></span></label><div class="service-variants"><span class="service-option-label">Choose duration</span>'+options.map((option, optionIndex) => '<label class="journey-choice"><input type="radio" name="service-option-'+index+'" data-service-option="'+index+'" data-option-index="'+optionIndex+'" '+(selectedItem&&selectedItem.price===option.price&&selectedItem.duration===option.duration?'checked':'')+'><span><strong>'+esc(option.label)+'</strong><small>'+money(Number(option.price.replace(/,/g,'')))+'</small></span></label>').join('')+'</div></div>';
+  }
   function reviewRow(label,content,target) {return `<div class="review-row"><div><strong>${label}</strong><p>${content}</p></div><button type="button" data-edit="${target}">Edit</button></div>`;}
-  function review() {return reviewRow('Services',cart.map(item=>esc(item.name)+' · '+esc(item.price)).join('<br>'),1)+reviewRow('Preferred professional',esc(personName()),2)+reviewRow('Date and time',esc(draft.date)+' · '+esc(draft.time)+' EAT',3)+reviewRow('Your details',esc(draft.name)+'<br>'+esc(draft.phone)+'<br>'+esc(draft.email),5)+reviewRow('Notes',esc(draft.notes)||'No additional notes',6);}
+  function review() {return reviewRow('Services',cart.map(item=>esc(item.name)+(item.duration?'<br>'+esc(item.duration)+' &middot; ':' &middot; ')+esc(item.price)).join('<br>'),1)+reviewRow('Preferred professional',esc(personName()),2)+reviewRow('Date and time',esc(draft.date)+' · '+esc(draft.time)+' EAT',3)+reviewRow('Your details',esc(draft.name)+'<br>'+esc(draft.phone)+'<br>'+esc(draft.email),5)+reviewRow('Notes',esc(draft.notes)||'No additional notes',6);}
   // These lifecycle values are a contract for the next backend phase. Only
   // not_started/initiated are assigned here; browser state is never payment proof.
   const paymentStatuses = Object.freeze(['not_started','initiated','submitted','verified','failed','cancelled']);
@@ -133,7 +154,7 @@
   }
   function body() {
     if(step===0)return `<p>Start with a category. You can add services from more than one category.</p><div class="journey-options">${categories.map(category=>choice('category',category,category,'',draft.category===category)).join('')}</div>`;
-    if(step===1)return `<p>Select the services you’d like. Your current service cart is included.</p><div class="field"><label for="category">Service category</label><select id="category" name="category">${categories.map(category=>`<option ${category===draft.category?'selected':''}>${esc(category)}</option>`).join('')}</select></div><div class="journey-options">${catalogue.filter(item=>item.category===draft.category).map(item=>`<label class="journey-choice"><input type="checkbox" data-service="${catalogue.indexOf(item)}" ${cart.some(selected=>selected.key===item.key||selected.name===item.name&&selected.category===item.category)?'checked':''}><span><strong>${esc(item.name)}</strong><small>${esc(item.price)}${item.duration?' · '+esc(item.duration):''}</small></span></label>`).join('')}</div><p class="journey-note">Range prices and custom packages are confirmed with the salon.</p>`;
+    if(step===1)return `<p>Select the services you’d like. Your current service cart is included.</p><div class="field"><label for="category">Service category</label><select id="category" name="category">${categories.map(category=>`<option ${category===draft.category?'selected':''}>${esc(category)}</option>`).join('')}</select></div><div class="journey-options">${catalogue.filter(item=>item.category===draft.category).map(item=>serviceChoice(item,catalogue.indexOf(item))).join('')}</div><p class="journey-note">Range prices and custom packages are confirmed with the salon.</p>`;
     if(step===2)return `<p>Choose a preferred professional for their specialty, or let the salon arrange your team. For a visit with several specialties, the salon will coordinate the remaining services.</p><div class="journey-options">${choice('professional','any','No preference','Let the salon arrange the right professional.',draft.professional==='any')}${compatible().map(person=>`<label class="journey-choice"><input type="radio" name="professional" value="${person.id}" ${draft.professional===person.id?'checked':''}><img src="assets/images/${person.image}" srcset="assets/images/responsive/${person.id}-480.webp 480w, assets/images/responsive/${person.id}-960.webp 960w" sizes="64px" width="4480" height="6720" class="professional-portrait" alt="${person.name}, Masseuse and Esthetician" loading="lazy" decoding="async"><span><strong>${person.name}</strong><small>${person.role}</small><small>${person.bio}</small></span></label>`).join('')}</div><p class="journey-note">Professional preferences are subject to confirmation. Availability below is the salon’s shared calendar.</p>`;
     if(step===3)return `<p>Choose a date within the next six months. All appointment times are in Kampala (EAT, UTC+3).</p><div class="journey-fields"><div class="field"><label for="date">Preferred date</label><input type="date" id="date" name="date" required min="${today()}" max="${maxDate()}" value="${esc(draft.date)}"></div></div>`;
     if(step===4) {
@@ -162,8 +183,8 @@
     document.querySelectorAll('[data-edit]').forEach(button=>button.onclick=()=>{step=Number(button.dataset.edit);render(true);});
     $('category')?.addEventListener('change',()=>{capture();render();});
     $('date')?.addEventListener('change',()=>{capture();invalidate();showSummary();});
-    document.querySelectorAll('[data-service]').forEach(input=>input.onchange=()=>{const item=catalogue[Number(input.dataset.service)];if(input.checked){cart.push({...item});}else{cart=cart.filter(selected=>!(selected.key===item.key||selected.name===item.name&&selected.category===item.category));}saveCart();normalizeProfessional();invalidate();showSummary();});
-    document.querySelectorAll('[name="paymentType"],[name="paymentProvider"]').forEach(input=>input.onchange=()=>{const name=input.name,value=input.value;capture();render();document.querySelector(`[name="${name}"][value="${value}"]`)?.focus();});
+    document.querySelectorAll('[data-service]').forEach(input=>input.onchange=()=>{const item=catalogue[Number(input.dataset.service)],options=variableOptions(item);if(input.checked&&options.length){const selectedOption=document.querySelector('[data-service-option="'+input.dataset.service+'"]:checked');if(!selectedOption){input.checked=false;render();error('Choose a duration for '+item.name+'.');return;}cart=cart.filter(selected=>!baseMatches(selected,item));cart.push(exactVariant(item,options[Number(selectedOption.dataset.optionIndex)]));}else if(input.checked){if(!cart.some(selected=>baseMatches(selected,item)))cart.push({...item});}else{cart=cart.filter(selected=>!baseMatches(selected,item));}saveCart();normalizeProfessional();invalidate();showSummary();});
+    document.querySelectorAll('[data-service-option]').forEach(input=>input.onchange=()=>{const item=catalogue[Number(input.dataset.serviceOption)],options=variableOptions(item),checkbox=document.querySelector('[data-service="'+input.dataset.serviceOption+'"]');checkbox.checked=true;cart=cart.filter(selected=>!baseMatches(selected,item));cart.push(exactVariant(item,options[Number(input.dataset.optionIndex)]));saveCart();normalizeProfessional();invalidate();render();});    document.querySelectorAll('[name="paymentType"],[name="paymentProvider"]').forEach(input=>input.onchange=()=>{const name=input.name,value=input.value;capture();render();document.querySelector(`[name="${name}"][value="${value}"]`)?.focus();});
     document.querySelectorAll('[name="professional"],[name="time"]').forEach(input=>input.onchange=()=>{capture();showSummary();});
     $('pay-mobile-money')?.addEventListener('click',initiatePayment);
     document.querySelectorAll('.provider-logo').forEach(img=>{img.onerror=()=>{img.hidden=true;};if(img.complete&&!img.naturalWidth)img.hidden=true;});

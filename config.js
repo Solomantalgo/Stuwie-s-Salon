@@ -3,8 +3,8 @@ window.STUWIES_CONFIG = {
   // Only enable a provider after setting its salon-approved merchant ID.
   // Empty IDs disable initiation. Never put a test merchant number here.
   payment: { providers: {
-    mtn: { name: "MTN Mobile Money", merchantId: "", merchantConfigured: false, logo: "assets/images/payment/mtn-momo-logo.png" },
-    airtel: { name: "Airtel Money", merchantId: "", merchantConfigured: false, logo: "assets/images/payment/airtel-money-logo.png" }
+    mtn: { name: "MTN Mobile Money", merchantId: "151538", merchantConfigured: true, logo: "assets/images/payment/mtn-momo-logo.png" },
+    airtel: { name: "Airtel Money", merchantId: "1522748", merchantConfigured: true, logo: "assets/images/payment/airtel-money-logo.png" }
   } },
   confirmPageUrl: "http://stuwies-salon.vercel.app/confirm.html"
 };
