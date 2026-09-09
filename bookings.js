@@ -91,7 +91,7 @@
   function getMerchantId() {
     const provider=getSelectedProvider();
     const id=String(provider?.merchantId||'').trim();
-    return provider?.merchantConfigured===true && /^[0-9]+$/.test(id) && !/^0+$/.test(id)?id:'';
+    return /^[0-9]+$/.test(id) && !/^0+$/.test(id) ? id : '';
   }
   // Future salon-approved quotes must enter here through a verified server response.
   function payableTotal() { return fixedPrices()?total():null; }
@@ -118,14 +118,26 @@
     // Preserve dial characters; encode the terminal # so it is not a URL fragment.
     return 'tel:'+ussd.replace(/#/g,'%23');
   }
-  function buildAirtelPaymentUri() { return null; } // Await a verified merchant sequence.
+  function buildAirtelPaymentUri() {
+    if (!getMerchantId() || !validPaymentAmount()) return null;
+    return 'tel:' + '*185*9#'.replace(/#/g, '%23');
+  }
   function manualPaymentInstructions() {
     const provider=getSelectedProvider();
-    if(!provider||!getMerchantId()||!validPaymentAmount())return '';
-    const instructions=provider.providerKey==='mtn'
-      ?'<li>Dial <strong>*165*3#</strong></li><li>Choose Merchant Code</li><li>Enter the Stuwie’s merchant code</li><li>Enter the displayed amount</li><li>Confirm the merchant details</li><li>Enter your MoMo PIN on your phone</li>'
-      :'<li>Open the Airtel Money menu on your Airtel phone</li><li>Choose the merchant payment option</li><li>Enter the Stuwie’s merchant code and the displayed amount</li><li>Confirm the merchant details</li><li>Authorize the payment on your phone</li>';
-    return `<div class="payment-box" id="payment-instructions"><h3>Pay from your ${provider.providerKey==='mtn'?'MTN':'Airtel'} phone</h3><p>Merchant ID: <strong>${esc(getMerchantId())}</strong><br>Amount: <strong>${money(draft.paymentAmount)}</strong></p><ol>${instructions}</ol>${provider.providerKey==='airtel'?'<p>Automatic Airtel handoff is not available yet. If the merchant option is unavailable, contact the salon before paying.</p>':''}<p>Enter your PIN only on your phone, never on this website.</p></div>`;
+    if(!provider||provider.providerKey!=='airtel'||!getMerchantId()||!validPaymentAmount())return '';
+    return '<p class="payment-helper"><span>Merchant ID</span> <strong>'+esc(getMerchantId())+'</strong> <button class="btn btn-light" type="button" id="copy-airtel-merchant">Copy</button><br>Amount: <strong>'+money(draft.paymentAmount)+'</strong></p>';
+  }
+  async function copyAirtelMerchant() {
+    const merchantId=getMerchantId(), button=$('copy-airtel-merchant');
+    if(!merchantId||!button)return;
+    try {
+      if(navigator.clipboard&&navigator.clipboard.writeText) await navigator.clipboard.writeText(merchantId);
+      else {
+        const field=document.createElement('textarea'); field.value=merchantId; field.setAttribute('readonly',''); field.style.position='fixed'; field.style.opacity='0'; document.body.appendChild(field); field.select(); document.execCommand('copy'); field.remove();
+      }
+      button.textContent='Copied ✓';
+      setTimeout(()=>{if(button.isConnected)button.textContent='Copy';},2000);
+    } catch { button.textContent='Copy'; }
   }
   function initiatePayment() {
     capture();syncPayment();
@@ -149,7 +161,7 @@
       ${draft.paymentAmount!==null?`<p class="payment-amount">Amount to pay: <strong>${money(draft.paymentAmount)}</strong></p>${!validPaymentAmount()?'<p role="status">The salon must confirm an amount payable in whole Uganda shillings before payment.</p>':''}`:''}
       ${provider&&!getMerchantId()?`<p class="payment-warning" role="status">${esc(provider.name)} merchant payment is not configured yet. Payment cannot be initiated. Contact the salon for assistance.</p>`:''}
       ${provider&&validPaymentAmount()?`<button class="btn btn-primary" type="button" id="pay-mobile-money" ${getMerchantId()?'':'disabled'}>Pay with ${provider.providerKey==='mtn'?'MTN MoMo':'Airtel Money'}</button>`:''}
-      ${draft.paymentStatus==='initiated'?'<p role="status">Complete the payment on your phone. Payment has not been verified.</p><div class="field payment-reference-field"><label for="paymentReference">Transaction Reference</label><input id="paymentReference" name="paymentReference" type="text" value="' + esc(draft.paymentReference) + '" placeholder="e.g. ABC123XYZ" maxlength="120" required><small>Enter the transaction reference from your Mobile Money confirmation message.</small></div>':''}
+      ${draft.paymentStatus==='initiated'?'<p role="status">Complete the payment on your phone. Payment has not been verified.</p><div class="field payment-reference-field"><label for="paymentReference">Transaction Reference</label><input id="paymentReference" name="paymentReference" type="text" value="' + esc(draft.paymentReference) + '" placeholder="e.g. 43363868996" maxlength="120" required><small>Enter the transaction reference from your Mobile Money confirmation message.</small></div>':''}
       ${manualPaymentInstructions()}<p class="journey-note">You can send your request after selecting both options. Your appointment and payment still require salon confirmation.</p>`;
   }
   function body() {
@@ -187,6 +199,7 @@
     document.querySelectorAll('[data-service-option]').forEach(input=>input.onchange=()=>{const item=catalogue[Number(input.dataset.serviceOption)],options=variableOptions(item),checkbox=document.querySelector('[data-service="'+input.dataset.serviceOption+'"]');checkbox.checked=true;cart=cart.filter(selected=>!baseMatches(selected,item));cart.push(exactVariant(item,options[Number(input.dataset.optionIndex)]));saveCart();normalizeProfessional();invalidate();render();});    document.querySelectorAll('[name="paymentType"],[name="paymentProvider"]').forEach(input=>input.onchange=()=>{const name=input.name,value=input.value;capture();render();document.querySelector(`[name="${name}"][value="${value}"]`)?.focus();});
     document.querySelectorAll('[name="professional"],[name="time"]').forEach(input=>input.onchange=()=>{capture();showSummary();});
     $('pay-mobile-money')?.addEventListener('click',initiatePayment);
+    $('copy-airtel-merchant')?.addEventListener('click',copyAirtelMerchant);
     document.querySelectorAll('.provider-logo').forEach(img=>{img.onerror=()=>{img.hidden=true;};if(img.complete&&!img.naturalWidth)img.hidden=true;});
     $('retry-availability')?.addEventListener('click',refreshAvailability);
     $('use-gps')?.addEventListener('click',()=>{
@@ -326,6 +339,7 @@
     row('Status', record.payment && record.payment.paymentStatus === 'initiated' ? 'Payment initiated - awaiting verification' : 'Not initiated');
     if (record.payment && record.payment.paymentAmount != null) row('Amount to pay', money(record.payment.paymentAmount));
     if (record.payment && record.payment.balanceRemaining != null) row('Balance after verification', money(record.payment.balanceRemaining));
+    row('Transaction reference', record.payment && record.payment.paymentReference);
     y -= 4; rule(y); y -= 22;
     section('Notes');
     pdfWrap(draft.notes || 'None', 82).forEach(line => { textLine(line, left, y, 10); y -= 14; });
@@ -352,7 +366,7 @@
   function confirmation() {
     showSummary();$('step-label').textContent='Request submitted · awaiting salon confirmation';$('progress').value=9;$('step-list').innerHTML='';error('');
     const payment=completedPayload.payment;
-    const message=`Hello Stuwie's Salon & Spa, please confirm my appointment request.\n\nName: ${draft.name}\nPhone: ${draft.phone}\nEmail: ${draft.email}\n${completedPayload.selected_items}\nDate: ${draft.date}\nTime: ${draft.time} EAT\n${completedPayload.notes}`;
+    const message=`Hello Stuwie's Salon & Spa, please confirm my appointment request.\n\nName: ${draft.name}\nPhone: ${draft.phone}\nEmail: ${draft.email}\n${completedPayload.selected_items}\nDate: ${draft.date}\nTime: ${draft.time} EAT\n${completedPayload.notes}\nTransaction Reference: ${payment.paymentReference || 'Not provided'}`;
     $('step-body').innerHTML=`<h2 class="journey-success">Your request is on its way</h2><p>Please wait for Stuwie’s to confirm your appointment. This submission is not a confirmed reservation.</p><div class="payment-box"><h3>${esc(draft.date)} · ${esc(draft.time)} EAT</h3><p>${esc(personName())}</p><p>${esc(payment.paymentProvider)} · ${payment.paymentType==='deposit'?'50% Deposit':'Full Payment'}<br>${payment.paymentStatus==='initiated'?'Complete the payment on your phone.':'Payment has not been initiated.'} Payment has not been verified.</p>${payment.paymentAmount!==null?`<p>Amount to pay: ${money(payment.paymentAmount)}<br>Balance after payment verification: ${money(payment.balanceRemaining)}</p>`:''}</div><p>The salon will confirm receipt, availability and payment status. You can also send these details via WhatsApp.</p><div class="success-actions"><a class="btn btn-primary" href="https://wa.me/256706081927?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Send via WhatsApp</a><button class="btn btn-light" id="download-booking" type="button">Download request</button><a class="btn btn-light" href="index.html">Back to home</a></div>`;
     $('download-booking').onclick=()=>{
       const record={status:'Awaiting salon confirmation',services:completedPayload.raw_items,date:draft.date,time:draft.time,timezone:'Africa/Kampala',professional:personName(),payment};
