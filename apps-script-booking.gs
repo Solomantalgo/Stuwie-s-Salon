@@ -103,7 +103,6 @@ function doPost(e) {
 function doGet(e) {
   try {
     setupWorkbook_();
-    updateBookingAging_();
     const params = (e && e.parameter) || {};
     const action = params.action || 'status';
     let payload;
@@ -139,17 +138,22 @@ function doGet(e) {
 
 function setupWorkbook_() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
-  const bookings = ensureSheet_(ss, BOOKINGS_SHEET, BOOKING_HEADERS);
-  const availability = ensureSheet_(ss, AVAILABILITY_SHEET, AVAILABILITY_HEADERS);
-  const payments = ensureSheet_(ss, PAYMENTS_SHEET, PAYMENT_HEADERS);
-  const dashboard = ensureSheet_(ss, DASHBOARD_SHEET, ['Area', 'How to Use']);
+  ensureSheet_(ss, BOOKINGS_SHEET, BOOKING_HEADERS);
+  ensureSheet_(ss, AVAILABILITY_SHEET, AVAILABILITY_HEADERS);
+  ensureSheet_(ss, PAYMENTS_SHEET, PAYMENT_HEADERS);
+  if (!ss.getSheetByName(DASHBOARD_SHEET)) ss.insertSheet(DASHBOARD_SHEET);
+  return { ok: true, sheets: [BOOKINGS_SHEET, PAYMENTS_SHEET, AVAILABILITY_SHEET, DASHBOARD_SHEET], spreadsheetUrl: ss.getUrl() };
+}
 
-  styleBookings_(bookings);
-  stylePayments_(payments);
-  styleAvailability_(availability);
-  styleDashboard_(dashboard);
-
-  return { ok: true, sheets: [BOOKINGS_SHEET, AVAILABILITY_SHEET, DASHBOARD_SHEET, PAYMENTS_SHEET], spreadsheetUrl: ss.getUrl() };
+function initializeWorkbook() {
+  setupWorkbook_();
+  styleBookings_(getSheet_(BOOKINGS_SHEET));
+  stylePayments_(getSheet_(PAYMENTS_SHEET));
+  styleAvailability_(getSheet_(AVAILABILITY_SHEET));
+  styleDashboard_(getSheet_(DASHBOARD_SHEET));
+  installPaymentEditTrigger();
+  installBookingAgingTrigger();
+  return { ok: true, message: 'Workbook initialized.' };
 }
 
 function ensureSheet_(ss, name, headers) {
@@ -206,6 +210,10 @@ function styleAvailability_(sheet) {
 
 function styleDashboard_(sheet) {
   const rows = Math.max(sheet.getLastRow(), 28);
+  const dashboardRange = sheet.getRange(1, 1, Math.max(sheet.getMaxRows(), rows, 30), 8);
+  dashboardRange.breakApart();
+  dashboardRange.clearContent();
+  dashboardRange.clearFormat();
   sheet.getRange(1, 1, rows, 8).setValues(Array.from({length: rows}, function() { return Array(8).fill(""); }));
   sheet.getRange(1, 1, rows, 8).setBackground("#ffffff").setFontColor(BRAND.black).setFontWeight("normal");
   sheet.setFrozenRows(2); sheet.setColumnWidths(1, 8, 118); sheet.setColumnWidth(1, 180);
